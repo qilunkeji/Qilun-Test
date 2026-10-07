@@ -6,6 +6,10 @@ import type {Database} from './db.ts';
 import {encryptContact,decryptContact,digest} from '../../packages/security/index.ts';
 import {registerRecruitingRoutes,recruitingBrief,recruitingEvidence} from './recruiting.ts';
 import {ServiceError} from './http-error.ts';
+import {assertModelCallAllowed,guardedTransport} from './model-guard.ts';
+import {externalAgentMode,agentConfigured} from './processing-mode.ts';
+import {aiOutput,validateAIOutput} from './ai-output.ts';
+export {aiOutput,validateAIOutput} from './ai-output.ts';
 export const features={job_optimize:'招聘优化',resume_review:'简历材料分析',interview_outline:'面试提纲',transcript_analysis:'面试文稿分析',comprehensive_review:'综合证据评估',report_interpretation:'员工发展沟通'};
 const feature=z.enum(['job_optimize','resume_review','interview_outline','transcript_analysis','comprehensive_review','report_interpretation']);
 const configFeature=z.enum(['default',...Object.keys(features)] as ['default',...string[]]);
@@ -13,19 +17,15 @@ const setting=z.object({feature:configFeature,provider:z.enum(['deepseek','opena
 type Config={feature:string;provider:'deepseek'|'openai';model:string;key_cipher:string|null;prompt:string;budget:number;input_price:number;output_price:number};
 const send=(res:Response,data:unknown)=>res.json({data,request_id:res.locals.requestId});
 function allowed(res:Response,settings=false){const a=res.locals.auth;if(!(settings?['talent_lead']:['talent_lead','hr']).includes(a.role))throw new ServiceError(403,'FORBIDDEN_SCOPE','当前角色无此权限');return a;}
-export const aiOutput=z.object({findings:z.array(z.object({kind:z.enum(['observation','suggestion']),text:z.string().min(1).max(1500),citations:z.array(z.object({id:z.string(),quote:z.string().min(3).max(500)}).strict()).min(1).max(6)}).strict()).max(12),unknowns:z.array(z.string().max(1000)).max(12)}).strict();
-export function validateAIOutput(raw:unknown,evidence:{id:string;text:string}[]){
- const result=aiOutput.parse(raw);
- for(const f of result.findings)for(const c of f.citations)if(!evidence.some(e=>e.id===c.id&&e.text.includes(c.quote)))throw new Error('UNVERIFIABLE_CITATION');
- return result;
-}
 export function registerAIRoutes(app:Express,db:Database,key:Buffer,transport:typeof fetch=fetch){
  registerRecruitingRoutes(app,db,key); registerInterviewRoutes(app,db,key);
  app.get('/api/v1/ai/settings',async(_req,res)=>{
+  if(externalAgentMode()){allowed(res);throw new ServiceError(503,'AGENT_NOT_READY','外部智能体接入尚未完成，暂不可启用');}
   const a=allowed(res);const rows=(await db.query('SELECT feature,provider,model,prompt,budget,input_price,output_price,(key_cipher IS NOT NULL) AS has_key,updated_at FROM ai_configs WHERE tenant_id=$1',[a.tenant_id])).rows;
   send(res,{features,configs:rows,providers:['deepseek','openai'],currency:'USD',pricing_unit:'每百万token',budget_scope:'累计预算（本地估算），不是供应商账单'});
  });
  app.post('/api/v1/ai/settings',async(req,res)=>{
+  if(externalAgentMode()){allowed(res,true);throw new ServiceError(409,'EXTERNAL_AGENT_MODE','外部智能体模式下模型配置不生效');}
   const a=allowed(res,true),input=setting.parse(req.body);
   await db.transaction(async tx=>{
    const old=(await tx.query<Config>('SELECT * FROM ai_configs WHERE tenant_id=$1 AND feature=$2 FOR UPDATE',[a.tenant_id,input.feature])).rows[0];
@@ -37,6 +37,7 @@ export function registerAIRoutes(app:Express,db:Database,key:Buffer,transport:ty
   });send(res,{saved:true,key_returned:false});
  });
  app.post('/api/v1/ai/settings/inherit',async(req,res)=>{
+  if(externalAgentMode()){allowed(res,true);throw new ServiceError(409,'EXTERNAL_AGENT_MODE','外部智能体模式下模型配置不生效');}
   const a=allowed(res,true),input=z.object({feature}).strict().parse(req.body);
   await db.query('DELETE FROM ai_configs WHERE tenant_id=$1 AND feature=$2',[a.tenant_id,input.feature]);send(res,{inherits_default:true});
  });
@@ -44,6 +45,7 @@ export function registerAIRoutes(app:Express,db:Database,key:Buffer,transport:ty
   const a=allowed(res);send(res,{items:(await db.query('SELECT id,feature,status,result,error_code,reserved_cost,cost,usage,config_snapshot,created_at FROM ai_runs WHERE tenant_id=$1 AND interview_id IS NULL AND retention_until>now() ORDER BY created_at DESC LIMIT 50',[a.tenant_id])).rows});
  });
  app.post('/api/v1/ai/run',async(req,res)=>{
+  if(externalAgentMode()){allowed(res);throw new ServiceError(503,agentConfigured()?'AGENT_NOT_READY':'AGENT_NOT_CONFIGURED',agentConfigured()?'外部智能体接入尚未完成，暂不可启用':'外部智能体未配置');}
   const a=allowed(res),input=z.object({feature,material:z.string().trim().min(10).max(12000).optional(),recruiting:recruitingBrief.optional(),interview:interviewRequest.optional(),authorized_to_send:z.literal(true)}).strict().parse(req.body);
   if(input.recruiting&&input.feature!=='job_optimize')throw new ServiceError(400,'INVALID_FEATURE','招聘需求仅用于招聘优化');
   if(input.interview&&(input.recruiting||input.material||input.feature!==(input.interview.mode==='questions'?'interview_outline':'comprehensive_review')))throw new ServiceError(400,'INVALID_FEATURE','面试任务与功能不匹配');
@@ -70,7 +72,8 @@ export function registerAIRoutes(app:Express,db:Database,key:Buffer,transport:ty
   });
   let cost:number|null=null,usage:unknown=null;
   try{
-   const response=await transport(config.provider==='deepseek'?'https://api.deepseek.com/chat/completions':'https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${decryptContact(config.key_cipher!,key,`ai:${a.tenant_id}:${config.feature}`)}`},body:JSON.stringify(payload),signal:AbortSignal.timeout(45000),redirect:'error'});
+   assertModelCallAllowed(input.feature);
+   const response=await guardedTransport(transport,input.feature)(config.provider==='deepseek'?'https://api.deepseek.com/chat/completions':'https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${decryptContact(config.key_cipher!,key,`ai:${a.tenant_id}:${config.feature}`)}`},body:JSON.stringify(payload),signal:AbortSignal.timeout(45000),redirect:'error'});
    if(!response.ok)throw new Error('PROVIDER_REJECTED');
    const raw=await response.text();if(raw.length>200000)throw new Error('RESPONSE_TOO_LARGE');
    const json=JSON.parse(raw);const u=z.object({prompt_tokens:z.number().int().nonnegative(),completion_tokens:z.number().int().nonnegative()}).safeParse(json.usage);

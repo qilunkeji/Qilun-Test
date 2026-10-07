@@ -28,10 +28,12 @@ export async function interviewEvidence(db:Database,key:Buffer,tenant:string,inp
  if(JSON.stringify(evidence).length>32000)throw new ServiceError(400,'MATERIAL_TOO_LONG','本次关联材料超过32000字符，请使用更精简的材料版本');return {session:s,evidence,mode:input.mode};
 }
 const citation=z.object({id:z.string(),quote:z.string().min(3).max(500)}).strict();
+export const interviewQuestionsOutput=z.object({questions:z.array(z.object({question:z.string().min(5).max(700),purpose:z.string().min(3).max(500),follow_up:z.string().min(3).max(500),citations:z.array(citation).min(1).max(4)}).strict())}).strict();
+export const interviewEvaluationOutput=z.object({items:z.array(z.object({criterion:z.string(),score:z.number().int().min(0).max(4).nullable(),reason:z.string().min(3).max(1000),citations:z.array(citation).max(5)}).strict()),unknowns:z.array(z.string().max(1000)).max(20)}).strict();
 export function validateInterviewOutput(raw:unknown,ctx:InterviewContext){
  const verify=(citations:z.infer<typeof citation>[],transcript=false)=>{for(const c of citations)if(!ctx.evidence.some(e=>e.id===c.id&&e.text.includes(c.quote)&&(!transcript||e.source==='transcript')))throw new Error('UNVERIFIABLE_INTERVIEW_CITATION');};
- if(ctx.mode==='questions'){const r=z.object({questions:z.array(z.object({question:z.string().min(5).max(700),purpose:z.string().min(3).max(500),follow_up:z.string().min(3).max(500),citations:z.array(citation).min(1).max(4)}).strict()).length(ctx.session.question_count)}).strict().parse(raw);r.questions.forEach(q=>verify(q.citations));return {...r,type:'interview_questions'};}
- const r=z.object({items:z.array(z.object({criterion:z.string(),score:z.number().int().min(0).max(4).nullable(),reason:z.string().min(3).max(1000),citations:z.array(citation).max(5)}).strict()),unknowns:z.array(z.string().max(1000)).max(20)}).strict().parse(raw);
+ if(ctx.mode==='questions'){const r=interviewQuestionsOutput.extend({questions:interviewQuestionsOutput.shape.questions.length(ctx.session.question_count)}).parse(raw);r.questions.forEach(q=>verify(q.citations));return {...r,type:'interview_questions'};}
+ const r=interviewEvaluationOutput.parse(raw);
  if(r.items.length!==ctx.session.rubric.length||new Set(r.items.map(i=>i.criterion)).size!==r.items.length)throw new Error('RUBRIC_MISMATCH');
  let weighted=0,covered=0,total=0;for(const criterion of ctx.session.rubric){const item=r.items.find(i=>i.criterion===criterion.name);if(!item)throw new Error('RUBRIC_MISMATCH');total+=criterion.weight;if(item.score!==null){if(!item.citations.length)throw new Error('SCORE_WITHOUT_EVIDENCE');verify(item.citations,true);covered+=criterion.weight;weighted+=item.score/4*criterion.weight;}else verify(item.citations,true);}
  return {type:'interview_evaluation',...r,score:covered===total?Math.round(weighted/total*100):null,coverage:Math.round(covered/total*100),formula:'sum(score / 4 × weight) / sum(weight) × 100；有未知项时不生成总分',rubric:ctx.session.rubric,review_required:true};
