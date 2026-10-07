@@ -1,0 +1,114 @@
+/* Talent-site implementation of the supplied common UI contract.
+   Report evidence canvases are intentionally not selected here. */
+.top-shell{--paper:#f7f7f8;--line:#e7e3e3;--muted:#5f5b5b}
+.top-shell .content{min-width:0}
+.top-shell .top-header{background:#fff;backdrop-filter:none}
+.top-shell button:not(.original-slot-hit){min-height:44px}
+.top-shell button:disabled{opacity:.58;cursor:not-allowed;transform:none}
+.top-shell :is(button,a,summary):focus-visible{outline:2px solid #9b0000;outline-offset:3px}
+.top-shell :is(input,select,textarea){border-color:#8e8585}
+.top-shell :is(h1,h2,h3,[id]){scroll-margin-top:96px}
+.top-shell .page-heading{padding-top:24px;margin-bottom:24px;gap:16px;align-items:center}
+.top-shell .page-heading:before{display:none}
+.top-shell .page-heading h1{font-size:24px;line-height:1.4;margin:0 0 8px}
+.top-shell .page-heading p{font-size:14px;margin:0;color:var(--muted)}
+.top-shell .panel{margin-bottom:24px}
+.top-shell .section-heading{gap:16px;flex-wrap:wrap}
+.top-shell .section-heading h2{font-size:20px;margin:0 0 8px}
+.top-shell .toolbar{flex-wrap:wrap;align-items:center}
+.top-shell .toolbar input{flex:1 1 220px;min-width:0}
+.top-shell .table-scroll{max-width:100%;overflow-x:auto}
+.top-shell :is(th,td){font-size:14px;padding:12px 16px;vertical-align:top}
+.top-shell th{white-space:nowrap;letter-spacing:0;color:#5f5b5b}
+.top-shell td{overflow-wrap:anywhere}
+.top-shell td small{display:block;font-size:12px;color:#5f5b5b;margin-top:4px}
+.top-shell .badge,.top-shell .status-pill{font-size:12px}
+.top-shell .field{min-width:0}
+.top-shell .field small{font-size:12px;color:#5f5b5b;line-height:1.6}
+.top-shell .tabbar{display:flex;overflow-x:auto;max-width:100%;gap:4px}
+.top-shell .tabbar button{white-space:nowrap;padding:10px 16px;color:#5f5b5b}
+.top-shell .tabbar button.active{color:#9b0000;background:#fff1f1}
+.top-shell .home-hero{min-height:240px;margin:24px 0 32px;padding:32px 40px 64px}
+.top-shell .home-hero h1{font-size:30px;margin:12px 0;line-height:1.35}
+.top-shell .hero-actions{margin-top:20px}
+.top-shell .hero-actions button.primary{background:#9b0000;color:#fff;border-color:#fd8770}
+.top-shell .hero-actions button.primary:hover{background:#7d1316}
+.top-shell .hero-principles{font-size:12px;color:#c8c0bd;left:40px;right:40px}
+.top-shell .hero-copy>span{color:#fff;font-size:12px}
+.top-shell .home-section{margin-bottom:32px}
+.top-shell .home-title{margin-bottom:16px}
+.top-shell .home-title h2{font-size:20px}
+.top-shell .home-title p{font-size:14px}
+.top-shell .assessment-overview{display:grid;grid-template-columns:minmax(220px,1fr) minmax(0,2fr);gap:24px;padding:24px;border-radius:12px;margin-bottom:24px}
+.top-shell .assessment-overview>div{padding:0;margin:0;border:0;min-width:0}
+.top-shell .overview-intro h2{font-size:18px;margin:0 0 8px}
+.top-shell .overview-intro p{font-size:14px;margin:0 0 8px}
+.top-shell .overview-intro small{font-size:12px;color:#5f5b5b}
+.top-shell .overview-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:center}
+.top-shell .overview-metrics>div{padding-left:16px;border-left:1px solid #e7e3e3;min-width:0}
+.top-shell .overview-metrics span{display:flex;align-items:flex-end;min-height:40px;font-size:14px;color:#5f5b5b}
+.top-shell .overview-metrics strong{display:block;font-size:32px;line-height:1.4;margin-top:8px;font-variant-numeric:tabular-nums}
+.loading-state,.error-state{min-height:110px;padding:24px;background:#fafafa;border-radius:8px;color:#5f5b5b;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:12px}
+.error-state{background:#fff1f1;color:#9b0000}
+.error-state p{margin:0;color:inherit}
+.top-shell .danger-menu{margin-top:8px;border-top:1px solid #e7e3e3;padding-top:4px}
+.top-shell .danger-menu summary{min-height:44px;cursor:pointer;display:flex;align-items:center;font-size:12px;color:#5f5b5b;text-decoration:underline}
+.top-shell .danger-menu>div{display:flex;flex-direction:column;gap:8px;margin:8px 0}
+button.danger,.top-shell td button.danger{color:#9b0000;background:#fff;border:1px solid #9b0000;font-size:14px}
+button.danger:hover{background:#fff1f1}
+.top-shell td .report-action{background:#fff1f1;color:#9b0000;font-size:14px}
+.confirm-dialog{width:min(560px,calc(100% - 32px));max-height:calc(100dvh - 32px);padding:24px;border:1px solid #e7e3e3;border-radius:12px;color:#1f1b1a;box-shadow:0 8px 32px #0002}
+.confirm-dialog::backdrop{background:#1f1b1a80}
+.confirm-dialog h2{font-size:20px;margin:0 0 16px}
+.confirm-dialog .dialog-body{overflow:auto;max-height:calc(100dvh - 220px)}
+.confirm-dialog p{color:#5f5b5b;overflow-wrap:anywhere}
+.dialog-actions{display:flex;justify-content:flex-end;gap:12px;margin-top:24px;flex-wrap:wrap}
+.dialog-actions button{min-height:44px}
+.top-shell .form-sections{display:flex;gap:16px;flex-wrap:wrap}
+.top-shell .form-sections a{color:#9b0000;min-height:44px;display:flex;align-items:center}
+.top-shell .sticky-actions{position:sticky;bottom:0;z-index:5;background:#fff;border-top:1px solid #e7e3e3;padding:16px 0;margin-top:16px;gap:16px;flex-wrap:wrap}
+.top-shell .sticky-actions p{flex:1 1 300px;font-size:12px;margin:0}
+.top-shell .recruit-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,340px);gap:24px;align-items:start}
+.top-shell .recruit-compose,.top-shell .recruit-library{min-width:0}
+.top-shell fieldset.recruit-fields{border:0;padding:0;margin:0;min-width:0}
+.top-shell .model-indicator{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:12px;margin:16px 0;font-size:14px}
+.top-shell .model-indicator strong{overflow-wrap:anywhere;min-width:0}
+.table-hint{display:none}
+.top-shell .recruit-library{padding:20px}
+.top-shell .recruit-library>summary{font-size:18px;font-weight:600;cursor:pointer;min-height:44px}
+.top-shell .recruit-library .section-heading{margin-top:16px}
+.top-shell .upload-label{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px;border-radius:8px;min-height:44px;font-size:14px}
+.top-shell .upload-label input{width:100%;max-width:100%;min-width:0;height:auto;min-height:44px;white-space:normal}
+.top-shell .outbound-scope{padding:16px;background:#f7f7f8;border:1px solid #e7e3e3;border-radius:8px}
+.top-shell .outbound-scope :is(p,li){font-size:14px}
+.top-shell .privacy-details{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0}
+.top-shell .privacy-details div{min-width:0;border-bottom:1px solid #e7e3e3;padding-bottom:12px}
+.top-shell .privacy-details dt{font-size:12px;color:#5f5b5b}
+.top-shell .privacy-details dd{margin:4px 0 0;font-size:14px;overflow-wrap:anywhere}
+.top-shell .audit-reference{max-width:250px}
+.top-shell .audit-reference summary{cursor:pointer;min-height:44px}
+.top-shell .audit-reference p{font-size:12px;overflow-wrap:anywhere}
+.top-shell .settings-workspace>.page-heading{margin-bottom:16px}
+.top-shell .settings-workspace .page-heading:not(:first-child){padding-top:0}
+.top-shell .settings-workspace .page-heading h2{font-size:20px;margin:0}
+.top-shell .readiness-row{gap:16px}
+.top-shell .readiness-row h3{font-size:18px;margin:0 0 8px}
+.top-shell .readiness-row p{font-size:14px;margin:0 0 8px}
+.top-shell .route-unavailable{margin-top:24px}
+.skip-link{position:fixed;left:16px;top:-100px;z-index:100;background:#fff;color:#9b0000;padding:12px}
+.skip-link:focus{top:8px}
+/* Only the template's WEB controls: no .original-sheet / SVG / slot rules. */
+.top-shell .original-toolbar h2{font-size:20px;margin:0 0 8px;color:#1f1b1a}
+.top-shell :is(.original-controls,.original-modebar,.original-editor-tools,.original-field-editor) button[aria-pressed=true]{background:#9b0000;color:#fff;border-color:#9b0000}
+.top-shell :is(.original-controls,.original-modebar,.original-editor-tools) button:hover{border-color:#9b0000}
+.top-shell :is(.original-controls,.original-modebar,.original-editor-tools,.original-field-editor) :is(button,select,textarea):focus-visible{outline:2px solid #9b0000;border-color:#9b0000}
+/* Reading report controls, distinct from the protected one-page evidence. */
+.h5-reference-report .h5-module-nav{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 24px}
+.h5-reference-report .h5-module-nav a{flex:0 0 auto;padding:8px 12px;min-height:44px;display:flex;align-items:center;color:#5f5b5b;background:#f7f7f8;border:1px solid #8e8585;border-radius:8px;font-size:14px;text-decoration:none}
+.h5-reference-report .h5-module-nav a:focus-visible{outline:2px solid #9b0000;outline-offset:3px}
+.h5-reference-report .h5-result-section{scroll-margin-top:96px}
+@media(max-width:1020px){.top-shell .recruit-layout{grid-template-columns:1fr}.top-shell .assessment-overview{grid-template-columns:1fr}.top-shell .overview-metrics>div{padding-left:0;border:0}.top-shell .top-header{grid-template-columns:140px 1fr auto}.shell .top-header nav button{padding:0 8px}}
+@media(max-width:800px){.top-shell .top-header{grid-template-columns:1fr auto auto}.top-shell .content{padding-left:16px;padding-right:16px}.top-shell .page-heading{align-items:flex-start;flex-wrap:wrap}.top-shell .page-heading h1{font-size:24px}.top-shell .home-hero{min-height:260px;padding:24px 24px 64px;margin-bottom:24px}.top-shell .home-hero h1{font-size:26px}.top-shell .hero-principles{left:24px;right:24px;gap:12px}.top-shell .home-section{padding:0}.top-shell .assessment-overview{padding:20px;gap:16px}.top-shell .overview-metrics{gap:12px}.top-shell .overview-metrics span{font-size:12px}.top-shell .overview-metrics strong{font-size:28px}.top-shell .privacy-details{grid-template-columns:1fr}.top-shell .sticky-actions{bottom:0}.h5-reference-report .h5-result-section{scroll-margin-top:76px}.top-shell .table-hint{display:block;font-size:12px;color:#5f5b5b}}
+@media(prefers-reduced-motion:reduce){.top-shell button{transition:none}.top-shell .job-card{transition:none;transform:none}}
+.report-print-only{display:none}
+@media print{.report-print-only{display:block!important}.h5-reference-footer{display:none!important}.h5-reference-report,.report-sheet-container{margin:0!important;padding:0!important}.top-shell .sticky-actions,.top-shell .skip-link{display:none!important}.top-shell .content>.report-stage{margin:0!important}.h5-reference-report .h5-module-nav{display:none!important}}

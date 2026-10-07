@@ -1,0 +1,76 @@
+{
+  "version": "gh-server-evidence-20260930-v1",
+  "date": "2026-09-30",
+  "hashes": {
+    "v6": 60,
+    "base_v3": 1634
+  },
+  "ordinary_questions": 277,
+  "scoring_rows": 1385,
+  "value_config_count": 64,
+  "first_layer": {
+    "compared": 158,
+    "passed": 158,
+    "samples": 4,
+    "scope": "一份56项基础分＋三份各34项优势分；不是158个人，也不是整份报告一致。"
+  },
+  "closure": {
+    "records": 45,
+    "counts": {
+      "matrix_constraint_solution": 22,
+      "repeated_candidate_snapshot": 6,
+      "time_segmented_matrix_constraint_solution": 10,
+      "member_constraint_solution": 7
+    },
+    "unresolved_in_package": 0,
+    "matrix_recomputed": 32,
+    "member_table_consistent_only": 7,
+    "snapshot_not_recovered": 6,
+    "historical_state_recovered": false
+  },
+  "source_hashes": {
+    "outer_manifest": "b52b2b8f75dea6b125c6af364ac826247b3e10ef3939dd64e785b77f090db7e8",
+    "base_manifest": "e272ad4c1e40807bd35e9df75f30aeb969536f787a47ad96c8cdd1a72535f5f6",
+    "scoring_table": "c009ce6955dd323fb5def0d6a0c9a3b7a46cb63a6d132347c1b9e7c1d6acb5f0",
+    "closure_table": "c55041a1d2447239d9dbbc330e1625638efd81885662fe6a63307b57fb2e66dc"
+  },
+  "derived": {
+    "method": "SHA-pinned reviewed package functions; not an independent TypeScript port",
+    "sample_count": 1,
+    "type16": [
+      {
+        "route": "server_inputs",
+        "compared": 42,
+        "passed": 42
+      },
+      {
+        "route": "answer_inputs",
+        "compared": 42,
+        "passed": 42
+      }
+    ],
+    "role8": [
+      {
+        "route": "server_inputs",
+        "compared": 56,
+        "passed": 56
+      },
+      {
+        "route": "answer_inputs",
+        "compared": 56,
+        "passed": 56
+      }
+    ],
+    "role8_requires_server_c4top": true,
+    "grade": "SOURCE_FORMULA_ONLY",
+    "current_unconfigured_trait_ids": [
+      278,
+      279,
+      280,
+      281,
+      282,
+      283
+    ],
+    "not_integrated_into_formal_report": true
+  }
+}

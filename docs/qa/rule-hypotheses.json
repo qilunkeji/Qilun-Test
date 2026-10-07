@@ -1,0 +1,22 @@
+{
+  "sample_count": 5,
+  "methods": {
+    "sum": {
+      "unique_agreement": 4,
+      "tie_compatible": 1,
+      "contradiction": 0
+    },
+    "maximum": {
+      "unique_agreement": 5,
+      "tie_compatible": 0,
+      "contradiction": 0
+    },
+    "product": {
+      "unique_agreement": 4,
+      "tie_compatible": 0,
+      "contradiction": 1
+    }
+  },
+  "scope": "仅动机组标签；没有拟合题项或岗位总分",
+  "conclusion": "零矛盾不证明唯一算法；E1/E5的代码观察支持加和，报告样本仅用于交叉核对。"
+}

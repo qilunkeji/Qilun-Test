@@ -1,0 +1,63 @@
+/* Qilun VIS task surface: real ribbon in the heading, quiet answer area.
+   Scoped to the 277-question quiz; reports, scoring and the legacy 24 UI stay intact. */
+.h5-assessment:has(.h5-quiz){max-width:820px}
+.h5-reference .h5-quiz{padding:0 32px 28px;overflow:hidden;background:var(--white);border-color:var(--line)}
+.h5-reference .h5-quiz:before{display:none}
+.h5-quiz .h5-quiz-heading{position:relative;isolation:isolate;overflow:hidden;background:var(--ink);margin:0 -32px;padding:24px 32px;color:var(--white)}
+.h5-quiz-heading:after{content:"";position:absolute;z-index:-1;top:0;right:0;bottom:0;width:48%;background:url('/brand/qilun-ribbon-dark.jpg') 52% 32%/cover no-repeat;mask-image:linear-gradient(to right,transparent,#000 40%);pointer-events:none}
+.h5-quiz .h5-quiz-kicker{display:block;font-size:11px;font-weight:500;letter-spacing:2px;opacity:.78}
+.h5-quiz .section-heading{position:relative;flex-wrap:nowrap;gap:12px;margin:12px 0 8px}
+.h5-quiz .section-heading h1{color:var(--white);font-size:32px;font-weight:650;line-height:1.2;margin:0;letter-spacing:-.8px}
+.h5-quiz .section-heading>span{flex:0 0 auto;font-size:12px;font-weight:500;padding:4px 10px;background:rgba(31,27,26,.85);border:1px solid rgba(255,255,255,.35);border-radius:4px;color:var(--white)}
+.h5-quiz .h5-quiz-heading>p{position:relative;margin:0;font-size:14px;color:var(--white);opacity:.85;line-height:1.6}
+.h5-quiz .h5-quiz-progress{padding-top:22px}
+.h5-quiz .h5-quiz-progress progress{display:block;height:6px;accent-color:var(--primary);background:var(--paper)}
+.h5-quiz progress::-webkit-progress-bar{background:var(--paper)}
+.h5-quiz .h5-save-status{font-size:12px;margin:9px 0 0;line-height:1.6;color:var(--muted)}
+.h5-quiz .h5-save-status.failed{color:var(--primary)}
+.h5-quiz .h5-phase-nav{display:inline-flex;gap:4px;padding:4px;margin:20px 0 12px;background:var(--paper);border:1px solid var(--line);border-radius:8px}
+.h5-quiz .h5-phase-nav button{min-width:88px;min-height:44px;padding:8px 18px;border-color:transparent;border-radius:4px;background:transparent;font-size:14px;color:var(--muted)}
+.h5-quiz .h5-phase-nav button[aria-pressed=true]{background:var(--white);color:var(--primary);border-color:var(--line)}
+.h5-quiz .h5-answer-guide{font-size:14px;line-height:1.6;margin:0 0 22px;color:var(--muted)}
+.h5-reference .h5-quiz .h5-compact-question{min-width:0;margin:0 0 24px;padding:0 0 24px;border:0;border-bottom:1px solid var(--line)}
+.h5-reference .h5-quiz .h5-compact-question:last-child{margin-bottom:0}
+.h5-quiz .h5-question-title{display:flex;align-items:center;gap:10px;width:100%;padding:0 0 16px;font-size:16px;font-weight:600;color:var(--ink)}
+.h5-question-title>span{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:4px;background:var(--paper);color:var(--muted);font-size:12px;font-weight:500;font-variant-numeric:tabular-nums}
+.h5-question-title>small{margin-left:auto;font-size:12px;font-weight:400;color:var(--primary)}
+.h5-quiz .h5-statements{display:grid;gap:16px;align-items:stretch}
+.h5-quiz .h5-statements-paired{grid-template-columns:repeat(2,minmax(0,1fr))}
+.h5-quiz .h5-statements-single{grid-template-columns:minmax(0,1fr)}
+.h5-quiz .h5-statements .h5-statement{min-width:0;display:flex;align-items:flex-start;gap:12px;margin:0;padding:20px;background:var(--paper);border:1px solid transparent;border-radius:8px;font-size:16px;line-height:1.65;color:var(--ink-soft)}
+.h5-quiz .h5-statement>span{min-width:0;overflow-wrap:anywhere;white-space:normal}
+.h5-quiz .h5-statement>b{flex:0 0 28px;display:inline-flex;align-items:center;justify-content:center;min-height:28px;background:var(--white);border:1px solid var(--line);border-radius:4px;color:var(--ink);font-size:14px;font-weight:600}
+.h5-quiz .h5-statements .h5-statement.is-preferred{border-color:var(--primary);background:var(--white)}
+.h5-quiz .h5-statement.is-preferred>b{background:var(--primary);border-color:var(--primary);color:var(--white)}
+.h5-quiz .h5-dot-options{position:relative;isolation:isolate;gap:4px;margin-top:20px}
+.h5-quiz .h5-dot-options:before{content:"";position:absolute;z-index:-1;left:10%;right:10%;top:30px;height:1px;background:var(--line);pointer-events:none}
+.h5-quiz .h5-dot-options label{min-width:44px;min-height:84px;padding:8px 0;gap:10px;touch-action:manipulation}
+.h5-quiz .h5-choice-dot{width:44px;height:44px;flex:0 0 44px;border-color:var(--silver);color:var(--ink-soft);background:var(--white);font-size:16px;font-weight:500;box-shadow:0 2px 0 rgba(31,27,26,.06);transition:background 160ms ease-out,border-color 160ms ease-out,color 160ms ease-out,box-shadow 160ms ease-out}
+.h5-quiz .h5-dot-options small{font-size:12px;line-height:1.5;color:var(--muted)}
+.h5-quiz .h5-dot-options .selected .h5-choice-dot{background:var(--primary);border-color:var(--primary);color:var(--white);box-shadow:0 3px 8px rgba(155,0,0,.18)}
+.h5-quiz .h5-dot-options .selected small{font-weight:600;color:var(--primary)}
+.h5-quiz .h5-dot-options input:focus-visible+.h5-choice-dot{outline:2px solid var(--primary);outline-offset:3px}
+.h5-quiz .h5-compact-question:disabled .h5-dot-options label{cursor:not-allowed;opacity:.65}
+.h5-quiz .h5-page-control{flex-wrap:nowrap;margin-top:24px}
+.h5-quiz .h5-page-control button{min-height:44px;margin-top:0}
+.h5-quiz .h5-page-control label{color:var(--muted)}
+.h5-quiz .h5-resume-note{padding-top:16px;margin-top:20px;border-top:1px solid var(--line)}
+@media(hover:hover){.h5-quiz .h5-compact-question:not(:disabled) .h5-dot-options label:hover .h5-choice-dot{border-color:var(--primary);color:var(--primary)}.h5-quiz .h5-compact-question:not(:disabled) .h5-dot-options label.selected:hover .h5-choice-dot{background:var(--primary-dark);color:var(--white)}}
+@media(max-width:520px){
+ .h5-reference .h5-quiz{padding:0 16px 24px}
+ .h5-quiz .h5-quiz-heading{margin:0 -16px;padding:20px 16px}
+ .h5-quiz .section-heading h1{font-size:28px}
+ .h5-quiz .h5-quiz-kicker{font-size:10px;letter-spacing:1.6px}
+ .h5-quiz .h5-quiz-heading>p{font-size:13px}
+ .h5-quiz .h5-statements{gap:12px}
+ .h5-quiz .h5-statements .h5-statement{flex-direction:column;gap:10px;padding:12px;font-size:16px}
+ .h5-quiz .h5-statement>b{flex:0 0 auto;width:28px}
+ .h5-quiz .h5-statement-b>b{align-self:flex-end}
+ .h5-quiz .h5-answer-guide{font-size:13px}
+ .h5-quiz .h5-page-control button{padding:9px 12px;font-size:12px}
+}
+@media(max-width:380px){.h5-quiz .h5-statements{gap:8px}.h5-quiz .h5-statements .h5-statement{padding:10px}.h5-quiz .h5-dot-options small{font-size:11px}.h5-quiz .h5-page-control button{padding:9px 10px}}
+@media(prefers-reduced-motion:reduce){.h5-quiz .h5-choice-dot{transition:none}}

@@ -1,0 +1,233 @@
+{
+  "version": "evidence-v3-20260922",
+  "source_files": [
+    "20260922-yuzeli-achievement-calibration-v3-top5-clean.csv",
+    "20260922-yuzeli-achievement-candidates-v3-top5-clean.csv",
+    "20260922-yuzeli-achievement-clean-calibration-top5-clean.csv",
+    "20260922-yuzeli-achievement-clean-candidates-v3-top5-clean.csv",
+    "20260922-yuzeli-achievement-full-sweep-v3-top5-clean.csv",
+    "20260922-yuzeli-achievement-suppress-search-top5-clean.csv",
+    "20260922-yuzeli-achievement-suppress-search2-top5-clean.csv",
+    "20260922-yuzeli-achievement-suppress-search3-top5-clean.csv",
+    "20260922-yuzeli-all-middle-baseline-top5-clean.csv",
+    "20260922-yuzeli-carrier-calibration-v1-top5-clean.csv",
+    "20260922-yuzeli-carrier-calibration-v2-top5-clean.csv",
+    "20260922-yuzeli-carrier-calibration-v3-top5-clean.csv",
+    "20260922-yuzeli-carrier-calibration-v4-top5-clean.csv",
+    "20260922-yuzeli-collection-clean-control-top5-clean.csv",
+    "20260922-yuzeli-collection-multi-carrier-top5-clean.csv",
+    "20260922-yuzeli-collection-refined-ladder-top5-clean.csv",
+    "20260922-yuzeli-full-positive-probe-top5-clean.csv",
+    "20260922-yuzeli-inclusion-final-sweep-top5-clean.csv",
+    "20260922-yuzeli-inclusion-q145a-refined-top5-clean.csv",
+    "20260922-yuzeli-inferred-boundary-dampened-pairs-top5-clean.csv",
+    "20260922-yuzeli-inferred-boundary-moderate-neutral-top5-clean.csv",
+    "20260922-yuzeli-inferred-boundary-moderate-probe-top5-clean.csv",
+    "20260922-yuzeli-inferred-boundary-neutral-ladder-top5-clean.csv",
+    "20260922-yuzeli-missing-theme-threshold-search-top5-clean.csv",
+    "20260922-yuzeli-moderate-singletons-top5-clean.csv",
+    "20260922-yuzeli-observed-all-carriers-top5-clean.csv",
+    "20260922-yuzeli-one-at-a-time-q1-q180-top5-clean.csv",
+    "20260922-yuzeli-positive-followup-top5-clean.csv",
+    "20260922-yuzeli-q133-candidate-v3-top5-clean.csv",
+    "20260922-yuzeli-q133-fine-ladder-top5-clean.csv",
+    "20260922-yuzeli-q133-marginal-ladder-top5-clean.csv",
+    "20260922-yuzeli-q133-opposite-ladder-top5-clean.csv",
+    "20260922-yuzeli-q133-pursuit-reduction-top5-clean.csv",
+    "20260922-yuzeli-q133-pursuit-soft-top5-clean.csv",
+    "20260922-yuzeli-q133-pursuit-top5-clean.csv",
+    "20260922-yuzeli-remaining-five-refined-pairs-top5-clean.csv",
+    "20260922-yuzeli-remaining-five-targeted-top5-clean.csv",
+    "20260922-yuzeli-remaining-positive-control-top5-clean.csv",
+    "20260922-yuzeli-suppress-search-top5-clean.csv",
+    "20260922-yuzeli-suppressed-all-carriers-top5-clean.csv",
+    "20260922-yuzeli-suppressed-flips-top5-clean.csv",
+    "20260922-yuzeli-suppressed-threshold-carriers-top5-clean.csv",
+    "20260922-yuzeli-threshold-carriers-top5-clean.csv"
+  ],
+  "unique_answer_vectors": 9196,
+  "same_answers_with_different_top5": 0,
+  "invalid_rows_excluded": 360,
+  "profiles": {
+    "book118": {
+      "observations": 9196,
+      "exact_top5_set": 7036,
+      "compatible_top5_set": 7211,
+      "compatible_top5_order": 4784,
+      "counterexamples": [
+        {
+          "file": "20260922-yuzeli-achievement-candidates-v3-top5-clean.csv",
+          "run_id": "achieve-v3-q134B-positive",
+          "observed": [
+            "前瞻",
+            "成就",
+            "个别",
+            "体谅",
+            "关联"
+          ],
+          "calculated": [
+            "前瞻",
+            "成就",
+            "个别",
+            "体谅",
+            "搜集"
+          ],
+          "scores": {
+            "前瞻": "7/4",
+            "成就": "31/19",
+            "个别": "13/8",
+            "体谅": "8/5",
+            "关联": "14/9",
+            "搜集": "27/17"
+          },
+          "answer_hash": "836ef7bb6e50bcddf8b9770693d32150290afc436484bff4f2070adbac726fcb"
+        },
+        {
+          "file": "20260922-yuzeli-achievement-full-sweep-v3-top5-clean.csv",
+          "run_id": "achieve-sweep-v3-q077A-positive",
+          "observed": [
+            "前瞻",
+            "个别",
+            "关联",
+            "体谅",
+            "纪律"
+          ],
+          "calculated": [
+            "前瞻",
+            "个别",
+            "关联",
+            "体谅",
+            "搜集"
+          ],
+          "scores": {
+            "前瞻": "7/4",
+            "个别": "13/8",
+            "关联": "29/18",
+            "体谅": "8/5",
+            "纪律": "26/17",
+            "搜集": "27/17"
+          },
+          "answer_hash": "d4cc3702bbddbdf1a141a3f6aefba2d03c3670572b249c5fd67508865e1fbbde"
+        },
+        {
+          "file": "20260922-yuzeli-achievement-full-sweep-v3-top5-clean.csv",
+          "run_id": "achieve-sweep-v3-q079A-positive",
+          "observed": [
+            "前瞻",
+            "个别",
+            "关联",
+            "体谅",
+            "纪律"
+          ],
+          "calculated": [
+            "前瞻",
+            "个别",
+            "关联",
+            "体谅",
+            "搜集"
+          ],
+          "scores": {
+            "前瞻": "7/4",
+            "个别": "13/8",
+            "关联": "29/18",
+            "体谅": "8/5",
+            "纪律": "26/17",
+            "搜集": "27/17"
+          },
+          "answer_hash": "df197be89263b977983035365e573179f9085cd6dc45e92401c6930c1a1fe560"
+        }
+      ]
+    },
+    "observed_links": {
+      "observations": 9196,
+      "exact_top5_set": 7056,
+      "compatible_top5_set": 7385,
+      "compatible_top5_order": 4839,
+      "counterexamples": [
+        {
+          "file": "20260922-yuzeli-achievement-candidates-v3-top5-clean.csv",
+          "run_id": "achieve-v3-q134B-positive",
+          "observed": [
+            "前瞻",
+            "成就",
+            "个别",
+            "体谅",
+            "关联"
+          ],
+          "calculated": [
+            "前瞻",
+            "成就",
+            "个别",
+            "体谅",
+            "搜集"
+          ],
+          "scores": {
+            "前瞻": "7/4",
+            "成就": "31/19",
+            "个别": "13/8",
+            "体谅": "8/5",
+            "关联": "14/9",
+            "搜集": "27/17"
+          },
+          "answer_hash": "836ef7bb6e50bcddf8b9770693d32150290afc436484bff4f2070adbac726fcb"
+        },
+        {
+          "file": "20260922-yuzeli-achievement-full-sweep-v3-top5-clean.csv",
+          "run_id": "achieve-sweep-v3-q077A-positive",
+          "observed": [
+            "前瞻",
+            "个别",
+            "关联",
+            "体谅",
+            "纪律"
+          ],
+          "calculated": [
+            "前瞻",
+            "个别",
+            "关联",
+            "体谅",
+            "搜集"
+          ],
+          "scores": {
+            "前瞻": "7/4",
+            "个别": "13/8",
+            "关联": "29/18",
+            "体谅": "8/5",
+            "纪律": "26/17",
+            "搜集": "27/17"
+          },
+          "answer_hash": "d4cc3702bbddbdf1a141a3f6aefba2d03c3670572b249c5fd67508865e1fbbde"
+        },
+        {
+          "file": "20260922-yuzeli-achievement-full-sweep-v3-top5-clean.csv",
+          "run_id": "achieve-sweep-v3-q079A-positive",
+          "observed": [
+            "前瞻",
+            "个别",
+            "关联",
+            "体谅",
+            "纪律"
+          ],
+          "calculated": [
+            "前瞻",
+            "个别",
+            "关联",
+            "体谅",
+            "搜集"
+          ],
+          "scores": {
+            "前瞻": "7/4",
+            "个别": "13/8",
+            "关联": "29/18",
+            "体谅": "8/5",
+            "纪律": "26/17",
+            "搜集": "27/17"
+          },
+          "answer_hash": "df197be89263b977983035365e573179f9085cd6dc45e92401c6930c1a1fe560"
+        }
+      ]
+    }
+  },
+  "scope": "Archived synthetic yuzeli observations; not ghrczx answers/results or held-out validation.",
+  "tie_policy": "exact_top5_set uses Book118 column order only for display ties; compatible metrics do not invent a tie-break."
+}

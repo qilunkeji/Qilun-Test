@@ -1,0 +1,212 @@
+/* Qilun AI web design system V1.1 - product implementation. */
+:root{
+  --primary:#9b0000;
+  --primary-dark:#7d1316;
+  --primary-bright:#fd8770;
+  --warm:#fd8770;
+  --ink:#1f1b1a;
+  --ink-soft:#3c3735;
+  --muted:#706b69;
+  --silver:#969595;
+  --line:#e5e5e5;
+  --paper:#f7f7f7;
+  --white:#fff;
+  color:#1f1b1a;
+  background:var(--paper);
+  font-family:"Source Han Sans CN","Noto Sans CJK SC","PingFang SC","Microsoft YaHei",Arial,sans-serif;
+  font-size:16px;
+}
+
+body{background:var(--paper);line-height:1.7}
+button{min-height:40px;border-radius:8px;border-color:#d9d2cf;color:var(--ink-soft);font-weight:600;transition:background 160ms ease-out,border-color 160ms ease-out,color 160ms ease-out,transform 160ms ease-out}
+button:hover{background:#f4efed;border-color:#c9bdb8}
+button:active{transform:translateY(1px)}
+button.primary{background:var(--primary);border-color:var(--primary);color:#fff;box-shadow:none}
+button.primary:hover{background:var(--primary-dark);border-color:var(--primary-dark);box-shadow:none}
+button.text-button{color:var(--primary)}
+input,select,textarea{min-height:44px;border-color:#dcd5d2;border-radius:8px;color:var(--ink);background:#fff}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid var(--primary);outline-offset:2px;border-color:var(--primary)}
+h1,h2,h3{color:var(--ink);letter-spacing:-.45px}
+p{color:var(--muted)}
+
+.top-shell{display:block;min-height:100vh;background:var(--paper)}
+.top-shell .workspace{margin:0;width:100%;display:block}
+.top-shell .content{max-width:1280px;padding:0 24px 64px}
+.top-shell footer{max-width:1280px;margin:auto;border-top:1px solid var(--line);color:#847e7b;padding:18px 24px;letter-spacing:.4px}
+
+.top-header{height:72px;position:sticky;top:0;z-index:30;padding:0 max(24px,calc((100vw - 1280px)/2));display:grid;grid-template-columns:190px 1fr auto;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);box-shadow:none}
+.top-header:after{content:"";position:absolute;left:max(24px,calc((100vw - 1280px)/2));bottom:-1px;width:44px;height:2px;background:var(--primary)}
+.top-brand{height:100%;border:0;background:none!important;padding:10px 0;text-align:left;display:flex;align-items:center;gap:10px}
+.top-brand img{width:132px;height:48px;object-fit:contain;object-position:left center}
+.top-brand small{display:none;font-size:8px;line-height:1.3;letter-spacing:2px;color:#9e9794}
+.top-header nav{height:100%;display:flex;align-items:stretch;justify-content:center;gap:0}
+.shell .top-header nav button{border:0;border-radius:0;background:none;color:#5f5957;padding:0 15px;position:relative;white-space:nowrap;font-weight:500}
+.shell .top-header nav button:hover{background:#faf7f6;color:var(--ink)}
+.shell .top-header nav button.active{background:none;color:var(--primary);font-weight:700}
+.top-header nav button.active:after{content:"";height:2px;background:var(--primary);position:absolute;left:18px;right:18px;bottom:0}
+.top-header .account{color:#6f6966}
+.top-header .account>span{color:#a09a97}
+.top-header .account button{padding:6px 11px;border-color:#e2dcda;background:#fff;color:#706966}
+.mobile-nav-toggle{display:none}
+
+.home-hero{min-height:420px;margin:24px 0 64px;padding:56px 58px;position:relative;overflow:hidden;display:flex;align-items:center;color:#fff;background-color:#0b0b0b;background-image:linear-gradient(90deg,#0b0b0b 0%,#0b0b0b 47%,rgba(11,11,11,.92) 58%,rgba(11,11,11,.1) 100%),url('/brand/qilun-ribbon-dark.jpg');background-repeat:no-repeat;background-size:auto 100%;background-position:right center;border-radius:12px;box-shadow:none}
+.hero-copy{position:relative;z-index:3;max-width:670px}
+.hero-copy>span,.eyebrow{display:inline-flex;align-items:center;gap:12px;color:var(--primary);font-size:12px;font-weight:700;letter-spacing:2.4px;text-transform:uppercase}
+.hero-copy>span{color:var(--warm)}
+.hero-copy>span:after,.eyebrow:after{content:"";width:34px;height:1px;background:currentColor}
+.home-hero h1{color:#fff;font-size:44px;line-height:1.3;font-weight:700;margin:18px 0 17px;letter-spacing:-1.2px}
+.home-hero h1 span{color:var(--warm)}
+.home-hero p{color:#c8c0bd;max-width:630px;font-size:14px;margin:0;line-height:1.95}
+.hero-actions{display:flex;gap:12px;margin-top:30px}
+.hero-actions button{padding:13px 20px;background:transparent;color:#eee6e3;border-color:#5f5552}
+.hero-actions button:hover{background:#302826;border-color:#8d7d78}
+.hero-actions button.primary{border-color:var(--primary)}
+.hero-actions b{margin-left:12px}
+.hero-principles{position:absolute;z-index:4;left:58px;right:58px;bottom:19px;display:flex;gap:28px;border-top:1px solid rgba(255,255,255,.12);padding-top:13px;color:#8f8784;font-size:10px;letter-spacing:1.6px}
+
+.home-section{background:transparent;border:0;border-radius:0;padding:0;margin-bottom:64px;box-shadow:none}
+.home-title{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px}
+.home-title h2{font-size:25px;margin:8px 0 3px}
+.home-title p{margin:0;font-size:13px}
+.home-title>button{border:0;background:transparent;color:#77706d;font-size:12px}
+.home-title>button:hover{color:var(--primary)}
+.job-grid{gap:18px}
+.job-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:24px;min-height:252px;position:relative;overflow:hidden;transition:border-color 160ms ease-out,transform 160ms ease-out}
+.job-card:before{content:"";height:3px;position:absolute;left:0;top:0;width:48px;background:var(--primary)}
+.job-card:hover{border-color:#c9b9b5;box-shadow:none;transform:translateY(-2px)}
+.job-card h3{font-size:20px;margin-top:24px}
+.job-card-top span{background:#faeceb;color:#941116;font-size:10px;font-weight:700;letter-spacing:1px;border-radius:20px}
+.job-card>div:last-child{border-top:1px solid #f0ecea;padding-top:18px}
+.job-card>div:last-child button:not(.primary){border:0;background:#f7f4f3}
+.library-links{gap:18px}
+.library-links button{position:relative;overflow:hidden;padding:24px;border-radius:12px;background:#f7f7f7;border-color:transparent;align-items:center}
+.library-links button:after{content:"\2197";position:absolute;right:18px;top:16px;color:#c5bbb8;font-size:16px}
+.library-links button:hover{background:#f3edeb;border-color:#e4d9d6}
+.library-links strong{color:var(--primary);font-family:Georgia,"Times New Roman",serif;font-size:35px;font-weight:400;min-width:58px}
+.library-links span{color:var(--ink)}
+
+.page-heading{padding-top:44px;margin-bottom:30px;position:relative}
+.page-heading:before{content:"";position:absolute;top:30px;left:0;width:32px;height:2px;background:var(--primary)}
+.page-heading h1{font-size:36px;font-weight:700;margin-top:12px}
+.page-heading p{font-size:13px}
+.panel{border:1px solid var(--line);border-radius:12px;padding:24px;box-shadow:none;background:#fff}
+.tabbar{gap:3px;margin-bottom:24px;border-color:var(--line)}
+.tabbar button{padding:13px 20px;color:#807976}
+.tabbar button.active{color:var(--primary);border-bottom:2px solid var(--primary)}
+.toolbar{gap:10px;padding-bottom:22px;border-bottom:1px solid #f0ecea}
+.toolbar input{background:#faf8f7;max-width:360px}
+.table-scroll table{white-space:normal;min-width:680px}
+th{background:#f6f3f2;color:#756e6b;font-size:11px;letter-spacing:.7px;padding:15px 18px}
+td{padding:21px 18px;border-color:#efebe9;font-size:13px}
+tbody tr:hover{background:#fcfaf9}
+td button{border:0;background:#f4efed;color:#6b4442;padding:7px 11px;margin:3px;font-size:11px}
+.badge,.status-pill{display:inline-block;border:0;border-radius:30px;padding:5px 11px;background:#f3ecea;color:#7b4b49;font-size:11px;white-space:nowrap}
+.status-pill.done{background:#f7f7f7;color:#16845b}
+.status-pill.closed{background:#f7f7f7;color:#4a4a4a}
+.assessment-overview{background:#fff;border:1px solid var(--line);border-radius:3px}
+.assessment-overview>div{border-color:var(--line)}
+.assessment-overview strong{color:var(--primary)}
+.empty-mark{background:#f8e9e8;color:var(--primary);border-radius:50%}
+.notice{background:#f8f2f0;border-color:#eadbd7;color:#694c49;border-radius:3px}
+.notice.error{background:#fff1ef;color:#9d1618;border-color:#efcbc8}
+.notice.success{background:#eff6f1;color:#2f6848;border-color:#d5e8db}
+.inset,.material-editor,.model-indicator{background:#f8f5f4;border-color:#e8dedb;border-radius:3px}
+.upload-label{border-color:#c9b7b3;color:#7c3938;border-radius:3px}
+blockquote{border-left-color:var(--primary);background:#faf5f4;color:#665350}
+progress::-webkit-progress-value{background:var(--primary)}
+progress::-moz-progress-bar{background:var(--primary)}
+.material-select input,.h5-options input{accent-color:var(--primary)}
+.interview-question>span{color:var(--primary);font-family:Georgia,serif}
+.interview-score strong{color:var(--primary)}
+
+.login-layout{min-height:100vh;display:grid;grid-template-columns:minmax(500px,1.2fr) minmax(430px,.8fr);background:#fff}
+.login-story{position:relative;overflow:hidden;background-color:#0b0b0b;background-image:linear-gradient(90deg,rgba(11,11,11,.98) 0%,rgba(11,11,11,.9) 48%,rgba(11,11,11,.12) 100%),url('/brand/qilun-ribbon-dark.jpg');background-repeat:no-repeat;background-size:auto 100%;background-position:right center;color:#fff;padding:52px 64px;display:flex;flex-direction:column;justify-content:space-between}
+.login-story .brand{position:relative;z-index:2;padding:0;width:220px}
+.login-story .brand img{width:100%;display:block}
+.login-message{position:relative;z-index:2;max-width:680px;margin:60px 0 100px}
+.login-message>span{font-size:12px;letter-spacing:3px;color:var(--warm)}
+.login-story h1{color:#fff;font-size:44px;line-height:1.45;font-weight:700;margin:18px 0}
+.login-story p{color:#b8aeaa;line-height:2}
+.brand-principles{display:flex;gap:0;margin-top:28px}
+.brand-principles b{padding:0 22px;border-left:1px solid #564946;font-size:12px;letter-spacing:2px;color:#d7cdca}
+.brand-principles b:first-child{padding-left:0;border-left:2px solid var(--primary)}
+.login-story .subtle{position:relative;z-index:2;color:#716663;margin:0;font-size:10px;letter-spacing:2px}
+.login-main{position:relative;display:flex;align-items:center;justify-content:center;background:#fff;padding:56px}
+.login-main:before{content:"";position:absolute;top:44px;right:46px;width:34px;height:2px;background:var(--primary)}
+.login-main form{width:370px}
+.login-main .eyebrow{margin-bottom:18px}
+.login-main h2{font-size:29px;margin-bottom:10px}
+.login-main .field{margin-top:21px}
+.login-main .primary{width:100%;margin-top:30px;padding:13px}
+
+.h5-shell{max-width:900px;padding:28px 18px 64px}
+/* Official logo on a white surface; no blending, filters or asset edits. */
+.h5-shell .h5-brand{display:flex;align-items:center;gap:18px;padding:10px 6px 24px;color:var(--ink);background:#fff}
+.h5-shell .h5-brand img{display:block;flex:0 0 auto;width:132px;height:auto;object-fit:contain;object-position:left center}
+.h5-shell .h5-brand span{font-size:12px;line-height:1.6;color:#7c7775;margin:0;padding:0;border:0;letter-spacing:.6px;font-weight:400}
+.h5-card{border-radius:12px;border-color:var(--line);box-shadow:none;position:relative;overflow:hidden}
+.h5-card:before{content:"";position:absolute;left:0;top:0;width:54px;height:3px;background:var(--primary)}
+.h5-options label{border-radius:3px;border-color:#e0d7d4}
+.h5-options label.selected{border-color:var(--primary);background:#faecea;color:#8b1014}
+
+.report-stage{max-width:1040px;margin:0 auto;padding:24px;background:#ece8e6}
+.gh-report{background:#fff;max-width:960px;margin:auto;color:#302b29;padding:0 40px;box-shadow:0 10px 45px rgba(31,27,26,.08)}
+.gh-report-head{height:90px;padding:0;border-bottom:1px solid #e1d9d6;background:#fff}
+.gh-logo{width:168px;height:62px;object-fit:contain;object-position:left center}
+.gh-version{font-size:10px;color:#847c79;letter-spacing:.6px}
+.gh-report-index{background:#f7f3f1;border:0;border-radius:3px;margin:24px 0}
+.gh-report-index a{color:#847b78;font-size:11px;border-radius:2px}
+.gh-report-index a.ready{background:var(--ink);color:#fff;border-radius:2px;border-top-color:var(--primary)}
+.gh-summary{position:relative;overflow:hidden;background:#1f1b1a;border:0;padding:38px 42px;color:#fff}
+.gh-summary>span{position:relative;z-index:2;color:#d92c31;font-size:9px;letter-spacing:3px}
+.gh-summary h1{position:relative;z-index:2;color:#fff;font-size:34px;font-weight:650;margin:14px 0}
+.gh-summary p,.report-person{position:relative;z-index:2;color:#c5bab7;max-width:650px}
+.report-person{font-size:15px;letter-spacing:1px;margin:18px 0}
+.gh-pending{background:#faf7f5;border:0;border-bottom:1px solid #e9e0dd}
+.gh-pending>div>b{color:#a82325}
+.gh-page{padding:36px 0;border:0}
+.gh-section-title i{background:var(--primary)}
+.gh-section-title h2{font-size:25px}
+.gh-column-scale>span{border-radius:2px 2px 0 0;background:var(--primary)!important;width:42px}
+.gh-column:nth-child(even) .gh-column-scale>span{background:#7d1316!important}
+.gh-range,.gh-quality{background:#f7f4f2}
+.gh-band.front{background:var(--primary)}
+.gh-band.rear{background:#69615e}
+.gh-motive-rows>div{background:#faf6f4;border-color:#eadedb}
+.gh-motive-rows b,.gh-details summary b{color:var(--primary)!important}
+.gh-tendency-tabs{background:var(--ink);border-radius:2px}
+.gh-tendency-tabs span.active:after{border-top-color:var(--ink)}
+.gh-driver{border-color:#d57b70}
+.gh-driver b{background:var(--primary)}
+.gh-driver b:after{border-top-color:var(--primary)}
+.gh-page-footer{color:#847c79}
+
+@media(max-width:1120px){
+  .top-header{grid-template-columns:150px 1fr auto;padding:0 18px}.top-brand img{width:118px}.shell .top-header nav button{padding:0 10px}
+  .top-shell .content{padding-left:24px;padding-right:24px}.hero-copy{max-width:600px}
+  .assessment-overview>div{padding:0 15px}.login-layout{grid-template-columns:1fr 440px}.login-story{padding:45px}
+}
+@media(max-width:800px){
+  .top-header{height:56px;grid-template-columns:1fr auto auto;padding:0 16px}.top-header nav{display:none;position:absolute;left:0;right:0;top:56px;height:auto;margin:0;padding:8px 16px 14px;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 12px 24px rgba(31,27,26,.08);flex-direction:column;align-items:stretch}.top-header nav.open{display:flex}.shell .top-header nav button{min-height:44px;text-align:left;justify-content:flex-start;padding:0 12px}.top-header nav button.active:after{left:0;right:auto;top:10px;bottom:10px;width:2px;height:auto}.mobile-nav-toggle{display:inline-flex;align-items:center;justify-content:center;min-width:52px;padding:6px 10px;border:0;background:transparent;color:var(--ink)}
+  .top-brand{height:56px}.top-brand img{width:108px}.top-header .account>span,.top-header .account strong{display:none}.top-header .account{gap:4px}.top-header .account button{min-height:40px}.top-shell .content{padding:0 16px 40px}
+  .home-hero{min-height:440px;margin:16px 0 48px;padding:40px 24px 90px;align-items:flex-start;background-image:linear-gradient(90deg,rgba(11,11,11,.98) 0%,rgba(11,11,11,.86) 70%,rgba(11,11,11,.25) 100%),url('/brand/qilun-ribbon-dark.jpg');background-position:65% center}.home-hero h1{font-size:32px}.hero-principles{left:24px;right:24px;gap:15px;overflow:auto}.hero-actions{flex-wrap:wrap}.hero-actions button{width:100%}
+  .home-section{padding:23px 18px}.home-title{gap:16px}.home-title h2{font-size:22px}.home-title>button{max-width:115px}.job-grid,.library-links{grid-template-columns:1fr}
+  .page-heading{padding-top:32px}.page-heading:before{top:21px}.page-heading h1{font-size:28px}.panel{padding:18px}.toolbar{flex-wrap:wrap}.toolbar input{max-width:none}
+  .assessment-overview{grid-template-columns:repeat(3,1fr)}.assessment-overview>div:first-child{grid-column:1/-1;border:0;border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:14px}
+  .login-layout{grid-template-columns:1fr}.login-story{min-height:390px;padding:28px}.login-story .brand{width:180px}.login-message{margin:40px 0 55px}.login-story h1{font-size:31px}.login-story p{font-size:12px}.brand-principles{gap:0}.brand-principles b{padding:0 12px}.login-main{padding:50px 24px}
+  .gh-report{padding:0 18px}.gh-summary{padding:30px 24px}.gh-summary h1{font-size:27px}.gh-column-chart{margin-left:0;margin-right:0;gap:5px}.gh-column-scale>span{width:24px}.gh-motive-table{grid-template-columns:65px}.gh-motive-rows>div{padding:10px;grid-template-columns:42px 1fr}.gh-two-cols{grid-template-columns:1fr}.report-stage{padding:12px}.gh-report-index{display:none}.h5-shell{padding:16px 12px 40px}
+  .h5-shell .h5-brand{gap:14px;padding:8px 4px 20px}
+  .h5-shell .h5-brand img{width:114px}
+  .h5-shell .h5-brand span{font-size:11px;letter-spacing:.3px}
+}
+
+@page{size:A4;margin:15mm 14mm}
+@media print{
+  html,body,.top-shell,.workspace,.h5-shell{background:#fff!important;margin:0!important;padding:0!important;width:100%!important;max-width:none!important}
+  .top-header,.top-shell>.workspace>footer,.no-print,.h5-brand{display:none!important}.top-shell .content{padding:0!important;margin:0!important;max-width:none!important}
+  .content:has(.report-stage)>:not(.report-stage){display:none!important}.report-stage{border:0!important;padding:0!important;background:white!important;box-shadow:none!important;max-width:none!important}
+  .report-stage>button,.report-stage>p,.h5-card:has(.gh-report)>p,.h5-card:has(.gh-report)>.field{display:none!important}.h5-card{padding:0!important;border:0!important;box-shadow:none!important}
+  .gh-report{padding:0!important;max-width:none!important;box-shadow:none!important}.gh-report-head{height:18mm}.gh-summary{display:block!important;padding:10mm 8mm 8mm}.gh-summary h1{font-size:25pt}
+  .gh-page{padding:8mm 0!important}.gh-pending,.gh-report-index{display:none!important}.gh-details details{break-inside:avoid}.gh-details details::details-content{content-visibility:visible}.gh-details details>*{display:block}.gh-details summary{display:flex}
+  .gh-column-chart,.gh-motive-table,.gh-summary-table,.gh-two-cols{break-inside:avoid}.gh-column-chart,.gh-band,.gh-tendency-tabs,.gh-driver,.gh-summary{-webkit-print-color-adjust:exact;print-color-adjust:exact}.gh-page-footer{break-inside:avoid}.gh-subtitle{break-after:avoid}.gh-report-actions{display:none!important}
+}

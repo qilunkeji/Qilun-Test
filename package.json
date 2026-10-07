@@ -1,0 +1,32 @@
+{
+  "name": "qilun-talent",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "dev": "node --env-file-if-exists=.env --experimental-strip-types apps/api/main.ts",
+    "init": "node --env-file-if-exists=.env --experimental-strip-types scripts/init.ts",
+    "build": "tsc --noEmit && vite build",
+    "test": "node --experimental-strip-types --test --test-concurrency=1 tests/*.test.ts",
+    "verify:evidence": "node scripts/verify-evidence.mjs"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "0.5.8",
+    "express": "5.2.1",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "zod": "4.6.5"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "pdfjs-dist": "6.3.289",
+    "typescript": "7.0.2",
+    "vite": "8.3.0"
+  }
+}

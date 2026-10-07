@@ -1,0 +1,8751 @@
+{
+  "version": "gh-current-rules-v22",
+  "items": [
+    {
+      "id": 6,
+      "type": 2,
+      "parent": 0,
+      "name": "执行才干",
+      "ename": "zhixing"
+    },
+    {
+      "id": 7,
+      "type": 2,
+      "parent": 6,
+      "name": "公平",
+      "ename": "GP"
+    },
+    {
+      "id": 8,
+      "type": 2,
+      "parent": 6,
+      "name": "专注",
+      "ename": "ZZ"
+    },
+    {
+      "id": 9,
+      "type": 2,
+      "parent": 6,
+      "name": "审慎",
+      "ename": "SS"
+    },
+    {
+      "id": 10,
+      "type": 2,
+      "parent": 6,
+      "name": "成就",
+      "ename": "CJ"
+    },
+    {
+      "id": 11,
+      "type": 2,
+      "parent": 6,
+      "name": "纪律",
+      "ename": "JL"
+    },
+    {
+      "id": 12,
+      "type": 2,
+      "parent": 6,
+      "name": "责任",
+      "ename": "ZR"
+    },
+    {
+      "id": 13,
+      "type": 2,
+      "parent": 6,
+      "name": "排难",
+      "ename": "PN"
+    },
+    {
+      "id": 14,
+      "type": 2,
+      "parent": 6,
+      "name": "统筹",
+      "ename": "TC"
+    },
+    {
+      "id": 15,
+      "type": 2,
+      "parent": 6,
+      "name": "信仰",
+      "ename": "XY"
+    },
+    {
+      "id": 16,
+      "type": 2,
+      "parent": 0,
+      "name": "思维才干",
+      "ename": "siwei"
+    },
+    {
+      "id": 17,
+      "type": 2,
+      "parent": 16,
+      "name": "前瞻",
+      "ename": "QZ"
+    },
+    {
+      "id": 18,
+      "type": 2,
+      "parent": 16,
+      "name": "战略",
+      "ename": "ZL"
+    },
+    {
+      "id": 19,
+      "type": 2,
+      "parent": 16,
+      "name": "回顾",
+      "ename": "HG"
+    },
+    {
+      "id": 20,
+      "type": 2,
+      "parent": 16,
+      "name": "搜集",
+      "ename": "SJ"
+    },
+    {
+      "id": 21,
+      "type": 2,
+      "parent": 16,
+      "name": "理念",
+      "ename": "LN"
+    },
+    {
+      "id": 22,
+      "type": 2,
+      "parent": 16,
+      "name": "学习",
+      "ename": "XX"
+    },
+    {
+      "id": 23,
+      "type": 2,
+      "parent": 16,
+      "name": "思维",
+      "ename": "SW"
+    },
+    {
+      "id": 24,
+      "type": 2,
+      "parent": 16,
+      "name": "分析",
+      "ename": "FX"
+    },
+    {
+      "id": 25,
+      "type": 2,
+      "parent": 0,
+      "name": "关系才干",
+      "ename": "guanxi"
+    },
+    {
+      "id": 26,
+      "type": 2,
+      "parent": 25,
+      "name": "体谅",
+      "ename": "TL"
+    },
+    {
+      "id": 27,
+      "type": 2,
+      "parent": 25,
+      "name": "交往",
+      "ename": "JW"
+    },
+    {
+      "id": 28,
+      "type": 2,
+      "parent": 25,
+      "name": "和谐",
+      "ename": "HX"
+    },
+    {
+      "id": 29,
+      "type": 2,
+      "parent": 25,
+      "name": "适应",
+      "ename": "SY"
+    },
+    {
+      "id": 30,
+      "type": 2,
+      "parent": 25,
+      "name": "伯乐",
+      "ename": "BL"
+    },
+    {
+      "id": 31,
+      "type": 2,
+      "parent": 0,
+      "name": "影响才干",
+      "ename": "yingxiang"
+    },
+    {
+      "id": 32,
+      "type": 2,
+      "parent": 31,
+      "name": "竞争",
+      "ename": "JZ"
+    },
+    {
+      "id": 33,
+      "type": 2,
+      "parent": 31,
+      "name": "完美",
+      "ename": "WM"
+    },
+    {
+      "id": 34,
+      "type": 2,
+      "parent": 31,
+      "name": "追求",
+      "ename": "ZQ"
+    },
+    {
+      "id": 35,
+      "type": 2,
+      "parent": 31,
+      "name": "取悦",
+      "ename": "QY"
+    },
+    {
+      "id": 36,
+      "type": 2,
+      "parent": 31,
+      "name": "行动",
+      "ename": "XD"
+    },
+    {
+      "id": 71,
+      "type": 2,
+      "parent": 25,
+      "name": "个别",
+      "ename": "GB"
+    },
+    {
+      "id": 72,
+      "type": 2,
+      "parent": 25,
+      "name": "包容",
+      "ename": "BR"
+    },
+    {
+      "id": 73,
+      "type": 2,
+      "parent": 25,
+      "name": "积极",
+      "ename": "JJ"
+    },
+    {
+      "id": 74,
+      "type": 2,
+      "parent": 25,
+      "name": "关联",
+      "ename": "GL"
+    },
+    {
+      "id": 75,
+      "type": 2,
+      "parent": 31,
+      "name": "沟通",
+      "ename": "GT"
+    },
+    {
+      "id": 76,
+      "type": 2,
+      "parent": 31,
+      "name": "统率",
+      "ename": "TS"
+    },
+    {
+      "id": 77,
+      "type": 2,
+      "parent": 31,
+      "name": "自信",
+      "ename": "ZX"
+    },
+    {
+      "id": 37,
+      "type": 3,
+      "parent": 0,
+      "name": "外向",
+      "ename": "E"
+    },
+    {
+      "id": 64,
+      "type": 3,
+      "parent": 0,
+      "name": "内向",
+      "ename": "I"
+    },
+    {
+      "id": 65,
+      "type": 3,
+      "parent": 0,
+      "name": "察觉",
+      "ename": "S"
+    },
+    {
+      "id": 66,
+      "type": 3,
+      "parent": 0,
+      "name": "直觉",
+      "ename": "N"
+    },
+    {
+      "id": 67,
+      "type": 3,
+      "parent": 0,
+      "name": "思考",
+      "ename": "T"
+    },
+    {
+      "id": 68,
+      "type": 3,
+      "parent": 0,
+      "name": "情感",
+      "ename": "F"
+    },
+    {
+      "id": 69,
+      "type": 3,
+      "parent": 0,
+      "name": "判断",
+      "ename": "J"
+    },
+    {
+      "id": 70,
+      "type": 3,
+      "parent": 0,
+      "name": "感知",
+      "ename": "P"
+    },
+    {
+      "id": 38,
+      "type": 4,
+      "parent": 0,
+      "name": "财富",
+      "ename": "1"
+    },
+    {
+      "id": 39,
+      "type": 4,
+      "parent": 0,
+      "name": "健康",
+      "ename": "2"
+    },
+    {
+      "id": 40,
+      "type": 4,
+      "parent": 0,
+      "name": "享受",
+      "ename": "3"
+    },
+    {
+      "id": 41,
+      "type": 4,
+      "parent": 0,
+      "name": "工作",
+      "ename": "4"
+    },
+    {
+      "id": 42,
+      "type": 4,
+      "parent": 0,
+      "name": "创新",
+      "ename": "6"
+    },
+    {
+      "id": 43,
+      "type": 4,
+      "parent": 0,
+      "name": "情感",
+      "ename": "7"
+    },
+    {
+      "id": 44,
+      "type": 4,
+      "parent": 0,
+      "name": "荣誉",
+      "ename": "8"
+    },
+    {
+      "id": 45,
+      "type": 4,
+      "parent": 0,
+      "name": "权力",
+      "ename": "5"
+    },
+    {
+      "id": 78,
+      "type": 5,
+      "parent": 0,
+      "name": "博爱型",
+      "ename": "博爱"
+    },
+    {
+      "id": 79,
+      "type": 5,
+      "parent": 0,
+      "name": "仁慈型",
+      "ename": "仁慈"
+    },
+    {
+      "id": 80,
+      "type": 5,
+      "parent": 0,
+      "name": "传统型",
+      "ename": "传统"
+    },
+    {
+      "id": 81,
+      "type": 5,
+      "parent": 0,
+      "name": "安全型",
+      "ename": "安全"
+    },
+    {
+      "id": 82,
+      "type": 5,
+      "parent": 0,
+      "name": "影响型",
+      "ename": "影响"
+    },
+    {
+      "id": 83,
+      "type": 5,
+      "parent": 0,
+      "name": "精彩型",
+      "ename": "精彩"
+    },
+    {
+      "id": 84,
+      "type": 5,
+      "parent": 0,
+      "name": "奋斗型",
+      "ename": "奋斗"
+    },
+    {
+      "id": 85,
+      "type": 5,
+      "parent": 0,
+      "name": "自主型",
+      "ename": "自主"
+    },
+    {
+      "id": 149,
+      "type": 8,
+      "parent": 238,
+      "name": "团队领导能力",
+      "ename": ""
+    },
+    {
+      "id": 150,
+      "type": 8,
+      "parent": 239,
+      "name": "战略规划能力",
+      "ename": ""
+    },
+    {
+      "id": 151,
+      "type": 8,
+      "parent": 241,
+      "name": "结果导向",
+      "ename": ""
+    },
+    {
+      "id": 152,
+      "type": 8,
+      "parent": 239,
+      "name": "决策能力",
+      "ename": ""
+    },
+    {
+      "id": 153,
+      "type": 8,
+      "parent": 238,
+      "name": "辅导培养能力",
+      "ename": ""
+    },
+    {
+      "id": 154,
+      "type": 8,
+      "parent": 238,
+      "name": "影响说服能力",
+      "ename": ""
+    },
+    {
+      "id": 155,
+      "type": 8,
+      "parent": 238,
+      "name": "组织协调能力",
+      "ename": ""
+    },
+    {
+      "id": 156,
+      "type": 8,
+      "parent": 241,
+      "name": "服务意识",
+      "ename": ""
+    },
+    {
+      "id": 157,
+      "type": 8,
+      "parent": 239,
+      "name": "创新能力",
+      "ename": ""
+    },
+    {
+      "id": 158,
+      "type": 8,
+      "parent": 239,
+      "name": "逻辑性",
+      "ename": ""
+    },
+    {
+      "id": 159,
+      "type": 8,
+      "parent": 239,
+      "name": "总结能力",
+      "ename": ""
+    },
+    {
+      "id": 160,
+      "type": 8,
+      "parent": 241,
+      "name": "落地执行力",
+      "ename": ""
+    },
+    {
+      "id": 161,
+      "type": 8,
+      "parent": 239,
+      "name": "领悟能力",
+      "ename": ""
+    },
+    {
+      "id": 162,
+      "type": 8,
+      "parent": 240,
+      "name": "上进心",
+      "ename": ""
+    },
+    {
+      "id": 163,
+      "type": 8,
+      "parent": 238,
+      "name": "沟通能力",
+      "ename": ""
+    },
+    {
+      "id": 164,
+      "type": 8,
+      "parent": 241,
+      "name": "细节处理能力",
+      "ename": ""
+    },
+    {
+      "id": 165,
+      "type": 8,
+      "parent": 240,
+      "name": "抗压性",
+      "ename": ""
+    },
+    {
+      "id": 166,
+      "type": 8,
+      "parent": 240,
+      "name": "坚韧性",
+      "ename": ""
+    },
+    {
+      "id": 167,
+      "type": 8,
+      "parent": 241,
+      "name": "灵活应变能力",
+      "ename": ""
+    },
+    {
+      "id": 168,
+      "type": 8,
+      "parent": 238,
+      "name": "人际关系维系",
+      "ename": ""
+    },
+    {
+      "id": 169,
+      "type": 8,
+      "parent": 240,
+      "name": "自控性",
+      "ename": ""
+    },
+    {
+      "id": 170,
+      "type": 8,
+      "parent": 240,
+      "name": "自信心",
+      "ename": ""
+    },
+    {
+      "id": 172,
+      "type": 8,
+      "parent": 240,
+      "name": "大局观",
+      "ename": ""
+    },
+    {
+      "id": 173,
+      "type": 8,
+      "parent": 238,
+      "name": "团队合作",
+      "ename": ""
+    },
+    {
+      "id": 174,
+      "type": 8,
+      "parent": 241,
+      "name": "尽责性",
+      "ename": ""
+    },
+    {
+      "id": 175,
+      "type": 8,
+      "parent": 240,
+      "name": "好胜性",
+      "ename": ""
+    },
+    {
+      "id": 176,
+      "type": 8,
+      "parent": 241,
+      "name": "原则性",
+      "ename": ""
+    },
+    {
+      "id": 177,
+      "type": 8,
+      "parent": 241,
+      "name": "开拓能力",
+      "ename": ""
+    },
+    {
+      "id": 238,
+      "type": 8,
+      "parent": 0,
+      "name": "社交能力",
+      "ename": "Social"
+    },
+    {
+      "id": 239,
+      "type": 8,
+      "parent": 0,
+      "name": "思维能力",
+      "ename": "Tinking"
+    },
+    {
+      "id": 240,
+      "type": 8,
+      "parent": 0,
+      "name": "自我态度",
+      "ename": "Attitude"
+    },
+    {
+      "id": 241,
+      "type": 8,
+      "parent": 0,
+      "name": "执行能力",
+      "ename": "ResultExecution"
+    },
+    {
+      "id": 242,
+      "type": 16,
+      "parent": 0,
+      "name": "外倾性",
+      "ename": "E"
+    },
+    {
+      "id": 243,
+      "type": 16,
+      "parent": 0,
+      "name": "宜人性",
+      "ename": "A"
+    },
+    {
+      "id": 244,
+      "type": 16,
+      "parent": 0,
+      "name": "尽责性",
+      "ename": "C"
+    },
+    {
+      "id": 245,
+      "type": 16,
+      "parent": 0,
+      "name": "情绪性",
+      "ename": "N"
+    },
+    {
+      "id": 246,
+      "type": 16,
+      "parent": 0,
+      "name": "创新性",
+      "ename": "O"
+    },
+    {
+      "id": 247,
+      "type": 16,
+      "parent": 0,
+      "name": "组织性",
+      "ename": ""
+    },
+    {
+      "id": 248,
+      "type": 16,
+      "parent": 242,
+      "name": "热情",
+      "ename": ""
+    },
+    {
+      "id": 249,
+      "type": 16,
+      "parent": 242,
+      "name": "合群",
+      "ename": ""
+    },
+    {
+      "id": 250,
+      "type": 16,
+      "parent": 242,
+      "name": "魄力",
+      "ename": ""
+    },
+    {
+      "id": 251,
+      "type": 16,
+      "parent": 242,
+      "name": "活跃",
+      "ename": ""
+    },
+    {
+      "id": 252,
+      "type": 16,
+      "parent": 242,
+      "name": "刺激",
+      "ename": ""
+    },
+    {
+      "id": 253,
+      "type": 16,
+      "parent": 242,
+      "name": "乐观",
+      "ename": ""
+    },
+    {
+      "id": 254,
+      "type": 16,
+      "parent": 243,
+      "name": "信任",
+      "ename": ""
+    },
+    {
+      "id": 255,
+      "type": 16,
+      "parent": 243,
+      "name": "坦诚",
+      "ename": ""
+    },
+    {
+      "id": 256,
+      "type": 16,
+      "parent": 243,
+      "name": "助人",
+      "ename": ""
+    },
+    {
+      "id": 257,
+      "type": 16,
+      "parent": 243,
+      "name": "温和",
+      "ename": ""
+    },
+    {
+      "id": 258,
+      "type": 16,
+      "parent": 243,
+      "name": "谦虚",
+      "ename": ""
+    },
+    {
+      "id": 259,
+      "type": 16,
+      "parent": 243,
+      "name": "共情",
+      "ename": ""
+    },
+    {
+      "id": 260,
+      "type": 16,
+      "parent": 244,
+      "name": "高效",
+      "ename": ""
+    },
+    {
+      "id": 261,
+      "type": 16,
+      "parent": 244,
+      "name": "条理",
+      "ename": ""
+    },
+    {
+      "id": 262,
+      "type": 16,
+      "parent": 244,
+      "name": "可靠",
+      "ename": ""
+    },
+    {
+      "id": 263,
+      "type": 16,
+      "parent": 244,
+      "name": "勤奋",
+      "ename": ""
+    },
+    {
+      "id": 264,
+      "type": 16,
+      "parent": 244,
+      "name": "自律",
+      "ename": ""
+    },
+    {
+      "id": 265,
+      "type": 16,
+      "parent": 244,
+      "name": "谨慎",
+      "ename": ""
+    },
+    {
+      "id": 266,
+      "type": 16,
+      "parent": 245,
+      "name": "焦虑",
+      "ename": ""
+    },
+    {
+      "id": 267,
+      "type": 16,
+      "parent": 245,
+      "name": "愤怒",
+      "ename": ""
+    },
+    {
+      "id": 268,
+      "type": 16,
+      "parent": 245,
+      "name": "抑郁",
+      "ename": ""
+    },
+    {
+      "id": 269,
+      "type": 16,
+      "parent": 245,
+      "name": "腼腆",
+      "ename": ""
+    },
+    {
+      "id": 270,
+      "type": 16,
+      "parent": 245,
+      "name": "冲动",
+      "ename": ""
+    },
+    {
+      "id": 271,
+      "type": 16,
+      "parent": 245,
+      "name": "脆弱",
+      "ename": ""
+    },
+    {
+      "id": 272,
+      "type": 16,
+      "parent": 246,
+      "name": "尝新",
+      "ename": ""
+    },
+    {
+      "id": 273,
+      "type": 16,
+      "parent": 246,
+      "name": "美感",
+      "ename": ""
+    },
+    {
+      "id": 274,
+      "type": 16,
+      "parent": 246,
+      "name": "想象",
+      "ename": ""
+    },
+    {
+      "id": 275,
+      "type": 16,
+      "parent": 246,
+      "name": "敏锐",
+      "ename": ""
+    },
+    {
+      "id": 276,
+      "type": 16,
+      "parent": 246,
+      "name": "思辨",
+      "ename": ""
+    },
+    {
+      "id": 277,
+      "type": 16,
+      "parent": 246,
+      "name": "开明",
+      "ename": ""
+    },
+    {
+      "id": 278,
+      "type": 16,
+      "parent": 247,
+      "name": "识才",
+      "ename": ""
+    },
+    {
+      "id": 279,
+      "type": 16,
+      "parent": 247,
+      "name": "说服",
+      "ename": ""
+    },
+    {
+      "id": 280,
+      "type": 16,
+      "parent": 247,
+      "name": "洒脱",
+      "ename": ""
+    },
+    {
+      "id": 281,
+      "type": 16,
+      "parent": 247,
+      "name": "格局",
+      "ename": ""
+    },
+    {
+      "id": 282,
+      "type": 16,
+      "parent": 247,
+      "name": "有梦",
+      "ename": ""
+    },
+    {
+      "id": 283,
+      "type": 16,
+      "parent": 247,
+      "name": "情怀",
+      "ename": ""
+    },
+    {
+      "id": 351,
+      "type": 28,
+      "parent": 0,
+      "name": "人文型",
+      "ename": "IFP"
+    },
+    {
+      "id": 352,
+      "type": 28,
+      "parent": 0,
+      "name": "关系型",
+      "ename": "EFJ"
+    },
+    {
+      "id": 353,
+      "type": 28,
+      "parent": 0,
+      "name": "策划型",
+      "ename": "INJ"
+    },
+    {
+      "id": 354,
+      "type": 28,
+      "parent": 0,
+      "name": "探索型",
+      "ename": "ENP"
+    },
+    {
+      "id": 355,
+      "type": 28,
+      "parent": 0,
+      "name": "分析型",
+      "ename": "ITP"
+    },
+    {
+      "id": 356,
+      "type": 28,
+      "parent": 0,
+      "name": "监控型",
+      "ename": "ETJ"
+    },
+    {
+      "id": 357,
+      "type": 28,
+      "parent": 0,
+      "name": "执行型",
+      "ename": "ISJ"
+    },
+    {
+      "id": 358,
+      "type": 28,
+      "parent": 0,
+      "name": "开拓型",
+      "ename": "ESP"
+    }
+  ],
+  "trait_map": {
+    "248-b": {
+      "levels": [
+        "培育力",
+        "服务力",
+        "凝聚力",
+        "感召力",
+        "管控力",
+        "推行力",
+        "决断力",
+        "创造力"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "248-b-rate": {
+      "levels": [
+        "取悦，积极",
+        "沟通,交往",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {
+        "T2A": 1.5,
+        "T1B": 1.1,
+        "T1A": 1.3,
+        "T2B": 1.3,
+        "L2A": 0.4,
+        "L1B": 0.8,
+        "L1A": 0.5,
+        "L2B": 0.7
+      }
+    },
+    "248-c8": {
+      "levels": [
+        "ENP",
+        "ESP",
+        "EFJ",
+        "IFP",
+        "ETJ",
+        "INJ",
+        "ITP",
+        "ISJ"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        20.0,
+        10.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "248-d": {
+      "levels": [
+        "情感",
+        "权力",
+        "荣誉",
+        "工作",
+        "创新",
+        "享受",
+        "财富",
+        "健康"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "248-d-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        0.9,
+        1.1,
+        1.2,
+        1.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "248-notion": {
+      "levels": [
+        "博爱",
+        "精彩",
+        "影响",
+        "仁慈",
+        "奋斗",
+        "自主",
+        "传统",
+        "安全"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "248-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        20.0,
+        5.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "249-b": {
+      "levels": [
+        "凝聚力",
+        "培育力",
+        "服务力",
+        "管控力",
+        "推行力",
+        "决断力",
+        "创造力",
+        "感召力"
+      ],
+      "scores": [
+        35.0,
+        35.0,
+        15.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "249-b-rate": {
+      "levels": [
+        "和谐,包容,体谅",
+        "交往,适应,取悦,沟通",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {
+        "T2A": 1.4,
+        "T3B": 1.3,
+        "T3A": 1.5,
+        "T4B": 1.3,
+        "T1B": 1.1,
+        "T1A": 1.3,
+        "T2B": 1.2,
+        "L2A": 0.5,
+        "L3B": 0.7,
+        "L3A": 0.4,
+        "L1B": 0.9,
+        "L1A": 0.6,
+        "L2B": 0.8
+      }
+    },
+    "249-c8": {
+      "levels": [
+        "EFJ",
+        "ENP",
+        "IFP",
+        "ETJ",
+        "ESP",
+        "INJ",
+        "ISJ",
+        "ITP"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        20.0,
+        10.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "249-d": {
+      "levels": [
+        "情感",
+        "荣誉",
+        "工作",
+        "财富",
+        "权力",
+        "创新",
+        "享受",
+        "健康"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "249-d-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        0.9,
+        1.0,
+        1.1,
+        1.2,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "249-notion": {
+      "levels": [
+        "仁慈",
+        "博爱",
+        "传统",
+        "安全",
+        "奋斗",
+        "影响",
+        "自主",
+        "精彩"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "249-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        20.0,
+        5.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "250-b": {
+      "levels": [
+        "感召力",
+        "凝聚力",
+        "培育力",
+        "推行力",
+        "管控力",
+        "决断力",
+        "创造力",
+        "服务力"
+      ],
+      "scores": [
+        40.0,
+        25.0,
+        15.0,
+        10.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "250-b-rate": {
+      "levels": [
+        "统率,自信",
+        "竞争,战略",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {
+        "T2A": 1.5,
+        "T1B": 1.1,
+        "T1A": 1.3,
+        "T2B": 1.3,
+        "L2A": 0.4,
+        "L1B": 0.8,
+        "L1A": 0.5,
+        "L2B": 0.7
+      }
+    },
+    "250-c8": {
+      "levels": [
+        "ETJ",
+        "ESP",
+        "ENP",
+        "EFJ",
+        "ITP",
+        "INJ",
+        "ISJ",
+        "IFP"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        20.0,
+        10.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "250-d": {
+      "levels": [
+        "权力",
+        "财富",
+        "工作",
+        "荣誉",
+        "情感",
+        "创新",
+        "享受",
+        "健康"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "250-d-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        0.9,
+        1.0,
+        1.1,
+        1.2,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "250-notion": {
+      "levels": [
+        "影响",
+        "奋斗",
+        "传统",
+        "精彩",
+        "自主",
+        "安全",
+        "博爱",
+        "仁慈"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "250-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        20.0,
+        5.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "251-b": {
+      "levels": [
+        "培育力",
+        "推行力",
+        "凝聚力",
+        "服务力",
+        "感召力",
+        "决断力",
+        "创造力",
+        "管控力"
+      ],
+      "scores": [
+        35.0,
+        35.0,
+        15.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "251-b-rate": {
+      "levels": [
+        "成就,行动",
+        "取悦,积极",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {
+        "T2A": 1.5,
+        "T1B": 1.1,
+        "T1A": 1.3,
+        "T2B": 1.3,
+        "L2A": 0.4,
+        "L1B": 0.8,
+        "L1A": 0.5,
+        "L2B": 0.7
+      }
+    },
+    "251-c8": {
+      "levels": [
+        "ESP",
+        "ENP",
+        "EFJ",
+        "ETJ",
+        "IFP",
+        "ITP",
+        "INJ",
+        "ISJ"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        20.0,
+        10.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "251-d": {
+      "levels": [
+        "工作",
+        "财富",
+        "权力",
+        "享受",
+        "健康",
+        "荣誉",
+        "创新",
+        "情感"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "251-d-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        0.9,
+        1.0,
+        1.1,
+        1.2,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "251-notion": {
+      "levels": [
+        "精彩",
+        "博爱",
+        "自主",
+        "影响",
+        "奋斗",
+        "仁慈",
+        "传统",
+        "安全"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "251-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        20.0,
+        5.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "252-b": {
+      "levels": [
+        "感召力",
+        "培育力",
+        "推行力",
+        "创造力",
+        "管控力",
+        "决断力",
+        "服务力",
+        "凝聚力"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        25.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "252-b-rate": {
+      "levels": [
+        "竞争,排难",
+        "行动,沟通,理念",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {
+        "T2A": 1.5,
+        "T3B": 1.3,
+        "T1B": 1.1,
+        "T1A": 1.3,
+        "T2B": 1.2,
+        "L2A": 0.4,
+        "L3B": 0.7,
+        "L1B": 0.9,
+        "L1A": 0.5,
+        "L2B": 0.8
+      }
+    },
+    "252-c8": {
+      "levels": [
+        "ESP",
+        "ENP",
+        "ITP",
+        "ETJ",
+        "EFJ",
+        "IFP",
+        "INJ",
+        "ISJ"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        20.0,
+        10.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "252-d": {
+      "levels": [
+        "享受",
+        "财富",
+        "权力",
+        "工作",
+        "情感",
+        "创新",
+        "健康",
+        "荣誉"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "252-d-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        1.0,
+        1.2,
+        1.1,
+        0.9,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "252-notion": {
+      "levels": [
+        "精彩",
+        "自主",
+        "影响",
+        "奋斗",
+        "博爱",
+        "仁慈",
+        "传统",
+        "安全"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "252-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        20.0,
+        5.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "253-b": {
+      "levels": [
+        "服务力",
+        "感召力",
+        "培育力",
+        "凝聚力",
+        "管控力",
+        "推行力",
+        "决断力",
+        "创造力"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        25.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "253-b-rate": {
+      "levels": [
+        "积极,自信",
+        "信仰,前瞻,适应,追求",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {
+        "T2A": 1.5,
+        "T3B": 1.3,
+        "T4B": 1.3,
+        "T1B": 1.1,
+        "T1A": 1.3,
+        "T2B": 1.2,
+        "L2A": 0.4,
+        "L3B": 0.7,
+        "L1B": 0.9,
+        "L1A": 0.5,
+        "L2B": 0.8
+      }
+    },
+    "253-c8": {
+      "levels": [
+        "ENP",
+        "ESP",
+        "EFJ",
+        "ETJ",
+        "IFP",
+        "ITP",
+        "INJ",
+        "ISJ"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        20.0,
+        10.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "253-d": {
+      "levels": [
+        "健康",
+        "享受",
+        "工作",
+        "财富",
+        "权力",
+        "情感",
+        "荣誉",
+        "创新"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "253-d-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        0.8,
+        0.9,
+        1.1,
+        1.2,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "253-notion": {
+      "levels": [
+        "精彩",
+        "博爱",
+        "影响",
+        "奋斗",
+        "自主",
+        "仁慈",
+        "传统",
+        "安全"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "253-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        20.0,
+        5.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "254-b": {
+      "levels": [
+        "服务力",
+        "凝聚力",
+        "创造力",
+        "管控力",
+        "推行力",
+        "培育力",
+        "决断力",
+        "感召力"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        25.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "254-b-rate": {
+      "levels": [
+        "信仰,和谐",
+        "包容",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {
+        "T2A": 1.5,
+        "T1B": 1.2,
+        "T1A": 1.3,
+        "L2A": 0.4,
+        "L1B": 0.9,
+        "L1A": 0.5
+      }
+    },
+    "254-c8": {
+      "levels": [
+        "ISJ",
+        "EFJ",
+        "IFP",
+        "ETJ",
+        "INJ",
+        "ITP",
+        "ESP",
+        "ENP"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        20.0,
+        10.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "254-d": {
+      "levels": [
+        "荣誉",
+        "情感",
+        "工作",
+        "权力",
+        "创新",
+        "享受",
+        "健康",
+        "财富"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "254-d-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        1.0,
+        1.1,
+        1.2,
+        0.9,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "254-notion": {
+      "levels": [
+        "博爱",
+        "自主",
+        "安全",
+        "传统",
+        "仁慈",
+        "影响",
+        "奋斗",
+        "精彩"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "254-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        40.0,
+        40.0,
+        10.0,
+        10.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "255-b": {
+      "levels": [
+        "培育力",
+        "感召力",
+        "凝聚力",
+        "服务力",
+        "管控力",
+        "创造力",
+        "决断力",
+        "推行力"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        25.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "255-b-rate": {
+      "levels": [
+        "交往",
+        "体谅,自信",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {
+        "T1B": 1.1,
+        "T1A": 1.5,
+        "T2B": 1.3,
+        "L1B": 0.8,
+        "L1A": 0.4,
+        "L2B": 0.7
+      }
+    },
+    "255-c8": {
+      "levels": [
+        "EFJ",
+        "ETJ",
+        "ESP",
+        "ENP",
+        "IFP",
+        "ITP",
+        "INJ",
+        "ISJ"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        20.0,
+        10.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "255-d": {
+      "levels": [
+        "情感",
+        "权力",
+        "荣誉",
+        "工作",
+        "创新",
+        "财富",
+        "享受",
+        "健康"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "255-d-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        0.8,
+        0.9,
+        1.1,
+        1.2,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "255-notion": {
+      "levels": [
+        "博爱",
+        "精彩",
+        "自主",
+        "安全",
+        "传统",
+        "仁慈",
+        "奋斗",
+        "影响"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "255-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        40.0,
+        40.0,
+        10.0,
+        10.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "256-b": {
+      "levels": [
+        "服务力",
+        "凝聚力",
+        "培育力",
+        "推行力",
+        "管控力",
+        "创造力",
+        "决断力",
+        "感召力"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        25.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "256-b-rate": {
+      "levels": [
+        "交往,伯乐",
+        "个别,完美",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {
+        "T2A": 1.5,
+        "T1B": 1.1,
+        "T1A": 1.3,
+        "T2B": 1.3,
+        "L2A": 0.4,
+        "L1B": 0.8,
+        "L1A": 0.5,
+        "L2B": 0.7
+      }
+    },
+    "256-c8": {
+      "levels": [
+        "IFP",
+        "ISJ",
+        "EFJ",
+        "ESP",
+        "ITP",
+        "INJ",
+        "ENP",
+        "ETJ"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        20.0,
+        10.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "256-d": {
+      "levels": [
+        "情感",
+        "工作",
+        "荣誉",
+        "权力",
+        "财富",
+        "创新",
+        "健康",
+        "享受"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "256-d-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        0.9,
+        1.0,
+        1.1,
+        1.2,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "256-notion": {
+      "levels": [
+        "仁慈",
+        "奋斗",
+        "传统",
+        "影响",
+        "博爱",
+        "自主",
+        "精彩",
+        "安全"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "256-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        40.0,
+        40.0,
+        10.0,
+        10.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "257-b": {
+      "levels": [
+        "服务力",
+        "凝聚力",
+        "管控力",
+        "培育力",
+        "推行力",
+        "决断力",
+        "创造力",
+        "感召力"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "257-b-rate": {
+      "levels": [
+        "体谅,和谐",
+        "包容,交往",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {
+        "T2A": 1.5,
+        "T1B": 1.1,
+        "T1A": 1.3,
+        "T2B": 1.3,
+        "L2A": 0.4,
+        "L1B": 0.8,
+        "L1A": 0.5,
+        "L2B": 0.7
+      }
+    },
+    "257-c8": {
+      "levels": [
+        "IFP",
+        "EFJ",
+        "ISJ",
+        "ESP",
+        "INJ",
+        "ITP",
+        "ETJ",
+        "ENP"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        20.0,
+        10.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "257-d": {
+      "levels": [
+        "情感",
+        "健康",
+        "荣誉",
+        "工作",
+        "创新",
+        "享受",
+        "财富",
+        "权力"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "257-d-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        1.0,
+        1.2,
+        1.1,
+        0.9,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "257-notion": {
+      "levels": [
+        "仁慈",
+        "博爱",
+        "传统",
+        "安全",
+        "奋斗",
+        "自主",
+        "精彩",
+        "影响"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "257-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        40.0,
+        40.0,
+        10.0,
+        10.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "258-b": {
+      "levels": [
+        "凝聚力",
+        "服务力",
+        "推行力",
+        "管控力",
+        "决断力",
+        "培育力",
+        "创造力",
+        "感召力"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "258-b-rate": {
+      "levels": [
+        "和谐，关联",
+        "包容,体谅",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {
+        "T1B": 1.1,
+        "T1A": 1.5,
+        "T2B": 1.3,
+        "L1B": 0.8,
+        "L1A": 0.4,
+        "L2B": 0.7
+      }
+    },
+    "258-c8": {
+      "levels": [
+        "IFP",
+        "ISJ",
+        "INJ",
+        "ITP",
+        "EFJ",
+        "ESP",
+        "ENP",
+        "ETJ"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        20.0,
+        10.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "258-d": {
+      "levels": [
+        "荣誉",
+        "工作",
+        "情感",
+        "创新",
+        "健康",
+        "享受",
+        "财富",
+        "权力"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "258-d-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        1.0,
+        1.2,
+        1.1,
+        0.9,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "258-notion": {
+      "levels": [
+        "传统",
+        "仁慈",
+        "安全",
+        "博爱",
+        "奋斗",
+        "自主",
+        "精彩",
+        "影响"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "258-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        40.0,
+        40.0,
+        10.0,
+        10.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "259-b": {
+      "levels": [
+        "服务力",
+        "凝聚力",
+        "创造力",
+        "管控力",
+        "推行力",
+        "培育力",
+        "决断力",
+        "感召力"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        25.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "259-b-rate": {
+      "levels": [
+        "体谅",
+        "交往,包容",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {
+        "T1B": 1.1,
+        "T1A": 1.5,
+        "T2B": 1.3,
+        "L1B": 0.8,
+        "L1A": 0.4,
+        "L2B": 0.7
+      }
+    },
+    "259-c8": {
+      "levels": [
+        "IFP",
+        "EFJ",
+        "ESP",
+        "ISJ",
+        "INJ",
+        "ENP",
+        "ITP",
+        "ETJ"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        20.0,
+        10.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "259-d": {
+      "levels": [
+        "情感",
+        "荣誉",
+        "工作",
+        "财富",
+        "权力",
+        "创新",
+        "享受",
+        "健康"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "259-d-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        1.1,
+        1.2,
+        1.0,
+        0.9,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "259-notion": {
+      "levels": [
+        "仁慈",
+        "博爱",
+        "传统",
+        "安全",
+        "自主",
+        "精彩",
+        "影响",
+        "奋斗"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "259-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        40.0,
+        40.0,
+        10.0,
+        10.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "260-b": {
+      "levels": [
+        "推行力",
+        "管控力",
+        "培育力",
+        "凝聚力",
+        "感召力",
+        "决断力",
+        "服务力",
+        "创造力"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "260-b-rate": {
+      "levels": [
+        "成就,统筹,行动",
+        "排难,适应",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {
+        "T2A": 1.4,
+        "T3A": 1.5,
+        "T1B": 1.1,
+        "T1A": 1.3,
+        "T2B": 1.3,
+        "L2A": 0.5,
+        "L3A": 0.4,
+        "L1B": 0.8,
+        "L1A": 0.6,
+        "L2B": 0.7
+      }
+    },
+    "260-c8": {
+      "levels": [
+        "ESP",
+        "ETJ",
+        "ISJ",
+        "ENP",
+        "EFJ",
+        "INJ",
+        "IFP",
+        "ITP"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        20.0,
+        10.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "260-d": {
+      "levels": [
+        "财富",
+        "创新",
+        "工作",
+        "权力",
+        "荣誉",
+        "情感",
+        "健康",
+        "享受"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "260-d-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        0.9,
+        1.1,
+        1.2,
+        1.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "260-notion": {
+      "levels": [
+        "奋斗",
+        "自主",
+        "传统",
+        "影响",
+        "安全",
+        "精彩",
+        "博爱",
+        "仁慈"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "260-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        40.0,
+        30.0,
+        20.0,
+        10.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "261-b": {
+      "levels": [
+        "管控力",
+        "决断力",
+        "推行力",
+        "创造力",
+        "感召力",
+        "培育力",
+        "服务力",
+        "凝聚力"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        25.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "261-b-rate": {
+      "levels": [
+        "分析,统筹，纪律",
+        "战略,专注",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {
+        "T2A": 1.4,
+        "T3A": 1.5,
+        "T1B": 1.1,
+        "T1A": 1.3,
+        "T2B": 1.3,
+        "L2A": 0.5,
+        "L3A": 0.4,
+        "L1B": 0.8,
+        "L1A": 0.6,
+        "L2B": 0.7
+      }
+    },
+    "261-c8": {
+      "levels": [
+        "ETJ",
+        "ISJ",
+        "ITP",
+        "INJ",
+        "EFJ",
+        "ENP",
+        "ESP",
+        "IFP"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        20.0,
+        10.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "261-d": {
+      "levels": [
+        "创新",
+        "工作",
+        "权力",
+        "荣誉",
+        "情感",
+        "享受",
+        "财富",
+        "健康"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "261-d-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        0.9,
+        1.0,
+        1.1,
+        1.2,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "261-notion": {
+      "levels": [
+        "安全",
+        "传统",
+        "奋斗",
+        "自主",
+        "精彩",
+        "仁慈",
+        "博爱",
+        "影响"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "261-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        40.0,
+        30.0,
+        20.0,
+        10.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "262-b": {
+      "levels": [
+        "管控力",
+        "推行力",
+        "培育力",
+        "决断力",
+        "创造力",
+        "服务力",
+        "凝聚力",
+        "感召力"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        25.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "262-b-rate": {
+      "levels": [
+        "责任,专注",
+        "纪律,公平",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {
+        "T2A": 1.5,
+        "T1B": 1.1,
+        "T1A": 1.3,
+        "T2B": 1.3,
+        "L2A": 0.4,
+        "L1B": 0.8,
+        "L1A": 0.5,
+        "L2B": 0.7
+      }
+    },
+    "262-c8": {
+      "levels": [
+        "ISJ",
+        "ETJ",
+        "IFP",
+        "ITP",
+        "INJ",
+        "ENP",
+        "ESP",
+        "EFJ"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        20.0,
+        10.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "262-d": {
+      "levels": [
+        "工作",
+        "荣誉",
+        "情感",
+        "创新",
+        "权力",
+        "健康",
+        "财富",
+        "享受"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "262-d-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        0.9,
+        1.1,
+        1.2,
+        1.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "262-notion": {
+      "levels": [
+        "安全",
+        "传统",
+        "奋斗",
+        "影响",
+        "博爱",
+        "自主",
+        "精彩",
+        "仁慈"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "262-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        40.0,
+        30.0,
+        20.0,
+        10.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "263-b": {
+      "levels": [
+        "推行力",
+        "管控力",
+        "培育力",
+        "决断力",
+        "感召力",
+        "创造力",
+        "服务力",
+        "凝聚力"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        25.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "263-b-rate": {
+      "levels": [
+        "成就,行动",
+        "排难,统筹",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {
+        "T2A": 1.5,
+        "T1B": 1.1,
+        "T1A": 1.3,
+        "T2B": 1.3,
+        "L2A": 0.4,
+        "L1B": 0.8,
+        "L1A": 0.5,
+        "L2B": 0.7
+      }
+    },
+    "263-c8": {
+      "levels": [
+        "ETJ",
+        "EFJ",
+        "ISJ",
+        "ITP",
+        "INJ",
+        "IFP",
+        "ENP",
+        "ESP"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        20.0,
+        10.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "263-d": {
+      "levels": [
+        "工作",
+        "财富",
+        "权力",
+        "荣誉",
+        "创新",
+        "情感",
+        "健康",
+        "享受"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "263-d-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        0.9,
+        1.0,
+        1.1,
+        1.2,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "263-notion": {
+      "levels": [
+        "奋斗",
+        "传统",
+        "安全",
+        "自主",
+        "精彩",
+        "仁慈",
+        "博爱",
+        "影响"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "263-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        40.0,
+        30.0,
+        20.0,
+        10.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "264-b": {
+      "levels": [
+        "管控力",
+        "推行力",
+        "培育力",
+        "决断力",
+        "创造力",
+        "感召力",
+        "服务力",
+        "凝聚力"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        25.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "264-b-rate": {
+      "levels": [
+        "纪律,责任",
+        "专注,审慎",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {
+        "T2A": 1.5,
+        "T1B": 1.1,
+        "T1A": 1.3,
+        "T2B": 1.3,
+        "L2A": 0.4,
+        "L1B": 0.8,
+        "L1A": 0.5,
+        "L2B": 0.7
+      }
+    },
+    "264-c8": {
+      "levels": [
+        "ISJ",
+        "ETJ",
+        "IFP",
+        "ITP",
+        "INJ",
+        "EFJ",
+        "ENP",
+        "ESP"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        20.0,
+        10.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "264-d": {
+      "levels": [
+        "工作",
+        "荣誉",
+        "健康",
+        "权力",
+        "财富",
+        "情感",
+        "创新",
+        "享受"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "264-d-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        0.9,
+        1.0,
+        1.2,
+        1.1,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "264-notion": {
+      "levels": [
+        "安全",
+        "奋斗",
+        "传统",
+        "自主",
+        "精彩",
+        "影响",
+        "博爱",
+        "仁慈"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "264-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        40.0,
+        30.0,
+        20.0,
+        10.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "265-b": {
+      "levels": [
+        "管控力",
+        "推行力",
+        "决断力",
+        "创造力",
+        "服务力",
+        "凝聚力",
+        "培育力",
+        "感召力"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        25.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "265-b-rate": {
+      "levels": [
+        "审慎",
+        "责任,分析,回顾",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {
+        "T3B": 1.3,
+        "T1B": 1.1,
+        "T1A": 1.5,
+        "T2B": 1.2,
+        "L3B": 0.7,
+        "L1B": 0.9,
+        "L1A": 0.4,
+        "L2B": 0.8
+      }
+    },
+    "265-c8": {
+      "levels": [
+        "ISJ",
+        "ETJ",
+        "ITP",
+        "IFP",
+        "INJ",
+        "EFJ",
+        "ENP",
+        "ESP"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        20.0,
+        10.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "265-d": {
+      "levels": [
+        "工作",
+        "荣誉",
+        "权力",
+        "情感",
+        "创新",
+        "享受",
+        "财富",
+        "健康"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "265-d-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        0.9,
+        1.0,
+        1.1,
+        1.2,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "265-notion": {
+      "levels": [
+        "安全",
+        "传统",
+        "仁慈",
+        "博爱",
+        "自主",
+        "精彩",
+        "奋斗",
+        "影响"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "265-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        40.0,
+        30.0,
+        20.0,
+        10.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "266-b": {
+      "levels": [
+        "推行力",
+        "管控力",
+        "培育力",
+        "决断力",
+        "创造力",
+        "凝聚力",
+        "服务力",
+        "感召力"
+      ],
+      "scores": [
+        25.0,
+        25.0,
+        20.0,
+        20.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "266-b-rate": {
+      "levels": [
+        "追求，责任",
+        null,
+        "自信,适应,排难,统率",
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        1.3,
+        1.4,
+        1.5,
+        0.8,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": "combination",
+      "ext": {}
+    },
+    "266-c8": {
+      "levels": [
+        "IFP",
+        "ITP",
+        "ISJ",
+        "INJ",
+        "ETJ",
+        "EFJ",
+        "ENP",
+        "ESP"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        20.0,
+        10.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "266-d": {
+      "levels": [
+        "情感",
+        "健康",
+        "财富",
+        "权力",
+        "荣誉",
+        "工作",
+        "创新",
+        "享受"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "266-d-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        0.9,
+        1.0,
+        1.1,
+        1.2,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "266-notion": {
+      "levels": [
+        "安全",
+        "传统",
+        "奋斗",
+        "影响",
+        "博爱",
+        "仁慈",
+        "自主",
+        "精彩"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "266-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        20.0,
+        50.0,
+        20.0,
+        10.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "267-b": {
+      "levels": [
+        "感召力",
+        "培育力",
+        "创造力",
+        "决断力",
+        "推行力",
+        "管控力",
+        "服务力",
+        "凝聚力"
+      ],
+      "scores": [
+        25.0,
+        25.0,
+        20.0,
+        20.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "267-b-rate": {
+      "levels": [
+        "统率",
+        null,
+        "和谐,体谅",
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        1.3,
+        1.4,
+        1.5,
+        0.8,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": "combination",
+      "ext": {}
+    },
+    "267-c8": {
+      "levels": [
+        "ETJ",
+        "ESP",
+        "ENP",
+        "ITP",
+        "ISJ",
+        "INJ",
+        "EFJ",
+        "IFP"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        20.0,
+        10.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "267-d": {
+      "levels": [
+        "情感",
+        "享受",
+        "财富",
+        "权力",
+        "创新",
+        "荣誉",
+        "健康",
+        "工作"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "267-d-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        0.9,
+        1.0,
+        1.1,
+        1.2,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "267-notion": {
+      "levels": [
+        "影响",
+        "自主",
+        "奋斗",
+        "精彩",
+        "安全",
+        "传统",
+        "博爱",
+        "仁慈"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "267-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        20.0,
+        50.0,
+        20.0,
+        10.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "268-b": {
+      "levels": [
+        "培育力",
+        "决断力",
+        "凝聚力",
+        "创造力",
+        "推行力",
+        "管控力",
+        "感召力",
+        "服务力"
+      ],
+      "scores": [
+        25.0,
+        25.0,
+        20.0,
+        20.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "268-b-rate": {
+      "levels": [
+        "追求,和谐",
+        null,
+        "积极",
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        1.3,
+        1.4,
+        1.5,
+        0.8,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": "combination",
+      "ext": {}
+    },
+    "268-c8": {
+      "levels": [
+        "IFP",
+        "ITP",
+        "ISJ",
+        "INJ",
+        "ENP",
+        "ESP",
+        "EFJ",
+        "ETJ"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        20.0,
+        10.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "268-d": {
+      "levels": [
+        "情感",
+        "享受",
+        "财富",
+        "权力",
+        "创新",
+        "荣誉",
+        "健康",
+        "工作"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "268-d-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        1.2,
+        1.1,
+        1.0,
+        0.9,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "268-notion": {
+      "levels": [
+        "传统",
+        "安全",
+        "仁慈",
+        "自主",
+        "奋斗",
+        "影响",
+        "博爱",
+        "精彩"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "268-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        20.0,
+        50.0,
+        20.0,
+        10.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "269-b": {
+      "levels": [
+        "凝聚力",
+        "推行力",
+        "服务力",
+        "创造力",
+        "决断力",
+        "管控力",
+        "培育力",
+        "感召力"
+      ],
+      "scores": [
+        25.0,
+        25.0,
+        20.0,
+        20.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "269-b-rate": {
+      "levels": [
+        "和谐",
+        null,
+        "自信,取悦,沟通",
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        1.3,
+        1.4,
+        1.5,
+        0.8,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": "combination",
+      "ext": {}
+    },
+    "269-c8": {
+      "levels": [
+        "IFP",
+        "INJ",
+        "ISJ",
+        "ITP",
+        "ETJ",
+        "EFJ",
+        "ENP",
+        "ESP"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        20.0,
+        10.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "269-d": {
+      "levels": [
+        "情感",
+        "享受",
+        "荣誉",
+        "工作",
+        "创新",
+        "财富",
+        "权力",
+        "健康"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "269-d-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        1.2,
+        1.1,
+        1.0,
+        0.9,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "269-notion": {
+      "levels": [
+        "安全",
+        "传统",
+        "仁慈",
+        "精彩",
+        "博爱",
+        "自主",
+        "奋斗",
+        "影响"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "269-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        20.0,
+        50.0,
+        20.0,
+        10.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "270-b": {
+      "levels": [
+        "感召力",
+        "培育力",
+        "推行力",
+        "创造力",
+        "决断力",
+        "凝聚力",
+        "服务力",
+        "管控力"
+      ],
+      "scores": [
+        25.0,
+        25.0,
+        20.0,
+        20.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "270-b-rate": {
+      "levels": [
+        "行动,竞争",
+        null,
+        "和谐",
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        1.3,
+        1.4,
+        1.5,
+        0.8,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": "combination",
+      "ext": {}
+    },
+    "270-c8": {
+      "levels": [
+        "ESP",
+        "ENP",
+        "EFJ",
+        "IFP",
+        "ITP",
+        "ETJ",
+        "INJ",
+        "ISJ"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        20.0,
+        10.0,
+        4.0,
+        3.0,
+        2.0,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "270-d": {
+      "levels": [
+        "情感",
+        "享受",
+        "创新",
+        "权力",
+        "健康",
+        "工作",
+        "财富",
+        "荣誉"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "270-d-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        0.9,
+        1.0,
+        1.1,
+        1.2,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "270-notion": {
+      "levels": [
+        "精彩",
+        "自主",
+        "影响",
+        "奋斗",
+        "博爱",
+        "仁慈",
+        "传统",
+        "安全"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "270-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        20.0,
+        50.0,
+        20.0,
+        10.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "271-b": {
+      "levels": [
+        "凝聚力",
+        "培育力",
+        "创造力",
+        "推行力",
+        "决断力",
+        "管控力",
+        "服务力",
+        "感召力"
+      ],
+      "scores": [
+        25.0,
+        25.0,
+        20.0,
+        20.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "271-b-rate": {
+      "levels": [
+        "和谐",
+        null,
+        "自信,竞争,成就,统率",
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        1.3,
+        1.4,
+        1.5,
+        0.8,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": "combination",
+      "ext": {}
+    },
+    "271-c8": {
+      "levels": [
+        "IFP",
+        "EFJ",
+        "ENP",
+        "ESP",
+        "ETJ",
+        "ISJ",
+        "INJ",
+        "ITP"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        20.0,
+        10.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "271-d": {
+      "levels": [
+        "情感",
+        "享受",
+        "财富",
+        "权力",
+        "创新",
+        "工作",
+        "健康",
+        "荣誉"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "271-d-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        1.1,
+        1.2,
+        1.0,
+        0.9,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "271-notion": {
+      "levels": [
+        "仁慈",
+        "传统",
+        "安全",
+        "精彩",
+        "博爱",
+        "自主",
+        "影响",
+        "奋斗"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "271-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        20.0,
+        50.0,
+        20.0,
+        10.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "272-b": {
+      "levels": [
+        "创造力",
+        "决断力",
+        "推行力",
+        "管控力",
+        "感召力",
+        "培育力",
+        "服务力",
+        "凝聚力"
+      ],
+      "scores": [
+        40.0,
+        25.0,
+        15.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "272-b-rate": {
+      "levels": [
+        "理念,前瞻,搜集",
+        "关联,思维,战略，学习",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {
+        "T4A": 1.5,
+        "T2A": 1.4,
+        "T3B": 1.3,
+        "T3A": 1.5,
+        "T1B": 1.1,
+        "T1A": 1.3,
+        "T2B": 1.2,
+        "L2A": 0.5,
+        "L3B": 0.7,
+        "L3A": 0.4,
+        "L1B": 0.9,
+        "L1A": 0.6,
+        "L2B": 0.8
+      }
+    },
+    "272-c8": {
+      "levels": [
+        "ENP",
+        "ESP",
+        "IFP",
+        "ITP",
+        "INJ",
+        "EFJ",
+        "ETJ",
+        "ISJ"
+      ],
+      "scores": [
+        35.0,
+        30.0,
+        15.0,
+        10.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "272-d": {
+      "levels": [
+        "创新",
+        "享受",
+        "情感",
+        "工作",
+        "荣誉",
+        "权力",
+        "健康",
+        "财富"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "272-d-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        0.9,
+        1.1,
+        1.2,
+        1.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "272-notion": {
+      "levels": [
+        "自主",
+        "精彩",
+        "影响",
+        "奋斗",
+        "博爱",
+        "仁慈",
+        "安全",
+        "传统"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "272-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        40.0,
+        40.0,
+        10.0,
+        10.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "273-b": {
+      "levels": [
+        "培育力",
+        "决断力",
+        "创造力",
+        "管控力",
+        "感召力",
+        "推行力",
+        "服务力",
+        "凝聚力"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        25.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "273-b-rate": {
+      "levels": [
+        "理念",
+        "搜集",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {
+        "T1B": 1.3,
+        "T1A": 1.5,
+        "L1B": 0.8,
+        "L1A": 0.4
+      }
+    },
+    "273-c8": {
+      "levels": [
+        "IFP",
+        "ENP",
+        "ESP",
+        "ITP",
+        "INJ",
+        "EFJ",
+        "ETJ",
+        "ISJ"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        20.0,
+        10.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "273-d": {
+      "levels": [
+        "创新",
+        "权力",
+        "财富",
+        "工作",
+        "荣誉",
+        "情感",
+        "健康",
+        "享受"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "273-d-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        0.9,
+        1.2,
+        1.1,
+        1.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "273-notion": {
+      "levels": [
+        "自主",
+        "传统",
+        "精彩",
+        "安全",
+        "奋斗",
+        "影响",
+        "博爱",
+        "仁慈"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "273-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        40.0,
+        20.0,
+        10.0,
+        30.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "274-b": {
+      "levels": [
+        "创造力",
+        "决断力",
+        "培育力",
+        "感召力",
+        "凝聚力",
+        "服务力",
+        "管控力",
+        "推行力"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        25.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "274-b-rate": {
+      "levels": [
+        "理念,关联",
+        "思维,前瞻",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {
+        "T2A": 1.5,
+        "T1B": 1.1,
+        "T1A": 1.3,
+        "T2B": 1.3,
+        "L2A": 0.4,
+        "L1B": 0.8,
+        "L1A": 0.5,
+        "L2B": 0.7
+      }
+    },
+    "274-c8": {
+      "levels": [
+        "ENP",
+        "INJ",
+        "IFP",
+        "ESP",
+        "ITP",
+        "EFJ",
+        "ETJ",
+        "ISJ"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        20.0,
+        10.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "274-d": {
+      "levels": [
+        "创新",
+        "工作",
+        "荣誉",
+        "享受",
+        "权力",
+        "情感",
+        "健康",
+        "财富"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "274-d-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        0.9,
+        1.1,
+        1.2,
+        1.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "274-notion": {
+      "levels": [
+        "自主",
+        "精彩",
+        "影响",
+        "奋斗",
+        "博爱",
+        "仁慈",
+        "安全",
+        "传统"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "274-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        40.0,
+        40.0,
+        10.0,
+        10.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "275-b": {
+      "levels": [
+        "决断力",
+        "服务力",
+        "创造力",
+        "凝聚力",
+        "推行力",
+        "管控力",
+        "感召力",
+        "培育力"
+      ],
+      "scores": [
+        35.0,
+        30.0,
+        20.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "275-b-rate": {
+      "levels": [
+        "分析,体谅",
+        "个别,关联",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {
+        "T2A": 1.5,
+        "T1B": 1.1,
+        "T1A": 1.3,
+        "T2B": 1.3,
+        "L2A": 0.4,
+        "L1B": 0.8,
+        "L1A": 0.5,
+        "L2B": 0.7
+      }
+    },
+    "275-c8": {
+      "levels": [
+        "ENP",
+        "ESP",
+        "ITP",
+        "INJ",
+        "IFP",
+        "ETJ",
+        "EFJ",
+        "ISJ"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        20.0,
+        10.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "275-d": {
+      "levels": [
+        "创新",
+        "权力",
+        "荣誉",
+        "工作",
+        "情感",
+        "享受",
+        "财富",
+        "健康"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "275-d-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        0.9,
+        1.1,
+        1.2,
+        1.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "275-notion": {
+      "levels": [
+        "自主",
+        "影响",
+        "奋斗",
+        "传统",
+        "安全",
+        "精彩",
+        "博爱",
+        "仁慈"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "275-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        40.0,
+        40.0,
+        10.0,
+        10.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "276-b": {
+      "levels": [
+        "创造力",
+        "决断力",
+        "培育力",
+        "感召力",
+        "推行力",
+        "管控力",
+        "凝聚力",
+        "服务力"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "276-b-rate": {
+      "levels": [
+        "思维,理念,分析",
+        "战略,前瞻",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {
+        "T2A": 1.4,
+        "T3A": 1.5,
+        "T1B": 1.1,
+        "T1A": 1.3,
+        "T2B": 1.3,
+        "L2A": 0.5,
+        "L3A": 0.4,
+        "L1B": 0.8,
+        "L1A": 0.6,
+        "L2B": 0.7
+      }
+    },
+    "276-c8": {
+      "levels": [
+        "ITP",
+        "INJ",
+        "ENP",
+        "ETJ",
+        "ISJ",
+        "ESP",
+        "IFP",
+        "EFJ"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        20.0,
+        10.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "276-d": {
+      "levels": [
+        "创新",
+        "权力",
+        "荣誉",
+        "工作",
+        "情感",
+        "享受",
+        "健康",
+        "财富"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "276-d-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        0.9,
+        1.2,
+        1.1,
+        1.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "276-notion": {
+      "levels": [
+        "自主",
+        "奋斗",
+        "影响",
+        "传统",
+        "安全",
+        "博爱",
+        "仁慈",
+        "精彩"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "276-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        40.0,
+        40.0,
+        10.0,
+        10.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "277-b": {
+      "levels": [
+        "创造力",
+        "决断力",
+        "推行力",
+        "管控力",
+        "感召力",
+        "培育力",
+        "服务力",
+        "凝聚力"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        25.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "277-b-rate": {
+      "levels": [
+        "搜集，学习，理念",
+        "前瞻，思维",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {
+        "T2A": 1.4,
+        "T3A": 1.5,
+        "T1B": 1.1,
+        "T1A": 1.3,
+        "T2B": 1.3,
+        "L2A": 0.5,
+        "L3A": 0.4,
+        "L1B": 0.8,
+        "L1A": 0.6,
+        "L2B": 0.7
+      }
+    },
+    "277-c8": {
+      "levels": [
+        "ENP",
+        "ITP",
+        "INJ",
+        "IFP",
+        "ESP",
+        "ETJ",
+        "ISJ",
+        "ETJ"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        20.0,
+        10.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "277-d": {
+      "levels": [
+        "创新",
+        "情感",
+        "权力",
+        "工作",
+        "荣誉",
+        "享受",
+        "财富",
+        "健康"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "277-d-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        0.9,
+        1.1,
+        1.2,
+        1.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "277-notion": {
+      "levels": [
+        "自主",
+        "精彩",
+        "博爱",
+        "仁慈",
+        "奋斗",
+        "影响",
+        "安全",
+        "传统"
+      ],
+      "scores": [
+        40.0,
+        35.0,
+        10.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "277-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        40.0,
+        20.0,
+        10.0,
+        30.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    }
+  },
+  "role_map": {
+    "EFJ-2-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        30.0,
+        40.0,
+        20.0,
+        10.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "EFJ-b": {
+      "levels": [
+        "推行力",
+        "管控力",
+        "创造力",
+        "决断力",
+        "凝聚力",
+        "服务力",
+        "培育力",
+        "感召力"
+      ],
+      "scores": [
+        5.0,
+        4.0,
+        2.0,
+        3.0,
+        35.0,
+        30.0,
+        20.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "EFJ-b-rate": {
+      "levels": [
+        "交往、体谅、和谐、包容",
+        "取悦、沟通、积极",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {
+        "T4A": 1.5,
+        "T2A": 1.4,
+        "T3B": 1.3,
+        "T3A": 1.5,
+        "T1B": 1.1,
+        "T1A": 1.3,
+        "T2B": 1.2,
+        "L2A": 0.5,
+        "L3B": 0.7,
+        "L3A": 0.4,
+        "L1B": 0.9,
+        "L1A": 0.6,
+        "L2B": 0.8
+      }
+    },
+    "EFJ-c8": {
+      "levels": [
+        "EFJ",
+        "IFP",
+        "ESP",
+        "ENP",
+        "INJ",
+        "ISJ",
+        "ETJ",
+        "ITP"
+      ],
+      "scores": [
+        80.0,
+        10.0,
+        8.0,
+        2.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "EFJ-d": {
+      "levels": [
+        "工作",
+        "权力",
+        "荣誉",
+        "创新",
+        "情感",
+        "享受",
+        "财富",
+        "健康"
+      ],
+      "scores": [
+        15.0,
+        4.0,
+        25.0,
+        3.0,
+        45.0,
+        5.0,
+        1.0,
+        2.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "EFJ-d-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        0.9,
+        1.0,
+        1.2,
+        1.1,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "EFJ-notion": {
+      "levels": [
+        "影响",
+        "奋斗",
+        "传统",
+        "安全",
+        "自主",
+        "精彩",
+        "博爱",
+        "仁慈"
+      ],
+      "scores": [
+        1.0,
+        1.0,
+        5.0,
+        6.0,
+        1.0,
+        1.0,
+        35.0,
+        50.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "EFJ-notion-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        0.5,
+        0.6,
+        0.8,
+        1.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "EFJ-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        50.0,
+        20.0,
+        20.0,
+        10.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "ENP-2-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        30.0,
+        40.0,
+        20.0,
+        10.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "ENP-b": {
+      "levels": [
+        "推行力",
+        "管控力",
+        "创造力",
+        "决断力",
+        "凝聚力",
+        "服务力",
+        "培育力",
+        "感召力"
+      ],
+      "scores": [
+        2.0,
+        1.0,
+        35.0,
+        20.0,
+        5.0,
+        3.0,
+        30.0,
+        4.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "ENP-b-rate": {
+      "levels": [
+        "前瞻、理念、战略",
+        "分析、思维",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {
+        "T2A": 1.4,
+        "T3A": 1.5,
+        "T1B": 1.1,
+        "T1A": 1.3,
+        "T2B": 1.3,
+        "L2A": 0.5,
+        "L3A": 0.4,
+        "L1B": 0.8,
+        "L1A": 0.6,
+        "L2B": 0.7
+      }
+    },
+    "ENP-c8": {
+      "levels": [
+        "ENP",
+        "INJ",
+        "ESP",
+        "IFP",
+        "ITP",
+        "ETJ",
+        "EFJ",
+        "ISJ"
+      ],
+      "scores": [
+        80.0,
+        10.0,
+        8.0,
+        2.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "ENP-d": {
+      "levels": [
+        "工作",
+        "权力",
+        "荣誉",
+        "创新",
+        "情感",
+        "享受",
+        "财富",
+        "健康"
+      ],
+      "scores": [
+        3.0,
+        4.0,
+        25.0,
+        45.0,
+        5.0,
+        15.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "ENP-d-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        0.9,
+        1.1,
+        1.2,
+        1.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "ENP-notion": {
+      "levels": [
+        "影响",
+        "奋斗",
+        "传统",
+        "安全",
+        "自主",
+        "精彩",
+        "博爱",
+        "仁慈"
+      ],
+      "scores": [
+        5.0,
+        6.0,
+        1.0,
+        1.0,
+        45.0,
+        40.0,
+        1.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "ENP-notion-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        0.5,
+        0.6,
+        0.8,
+        1.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "ENP-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        50.0,
+        20.0,
+        20.0,
+        10.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "ESP-2-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        30.0,
+        40.0,
+        20.0,
+        10.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "ESP-b": {
+      "levels": [
+        "推行力",
+        "管控力",
+        "创造力",
+        "决断力",
+        "凝聚力",
+        "服务力",
+        "培育力",
+        "感召力"
+      ],
+      "scores": [
+        4.0,
+        3.0,
+        5.0,
+        1.0,
+        20.0,
+        2.0,
+        30.0,
+        35.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "ESP-b-rate": {
+      "levels": [
+        "竞争、自信、适应",
+        "统率、行动、取悦、沟通",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {
+        "T2A": 1.4,
+        "T3B": 1.3,
+        "T3A": 1.5,
+        "T4B": 1.3,
+        "T1B": 1.1,
+        "T1A": 1.3,
+        "T2B": 1.2,
+        "L2A": 0.5,
+        "L3B": 0.7,
+        "L3A": 0.4,
+        "L1B": 0.9,
+        "L1A": 0.6,
+        "L2B": 0.8
+      }
+    },
+    "ESP-c8": {
+      "levels": [
+        "ESP",
+        "ENP",
+        "ETJ",
+        "EFJ",
+        "ITP",
+        "IFP",
+        "ISJ",
+        "INJ"
+      ],
+      "scores": [
+        80.0,
+        15.0,
+        3.0,
+        2.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "ESP-d": {
+      "levels": [
+        "工作",
+        "权力",
+        "荣誉",
+        "创新",
+        "情感",
+        "享受",
+        "财富",
+        "健康"
+      ],
+      "scores": [
+        25.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        30.0,
+        30.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "ESP-d-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        0.8,
+        0.9,
+        1.1,
+        1.2,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "ESP-notion": {
+      "levels": [
+        "影响",
+        "奋斗",
+        "传统",
+        "安全",
+        "自主",
+        "精彩",
+        "博爱",
+        "仁慈"
+      ],
+      "scores": [
+        6.0,
+        40.0,
+        1.0,
+        1.0,
+        5.0,
+        45.0,
+        1.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "ESP-notion-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        0.5,
+        0.6,
+        0.8,
+        1.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "ESP-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        50.0,
+        20.0,
+        20.0,
+        10.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "ETJ-2-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        30.0,
+        40.0,
+        20.0,
+        10.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "ETJ-b": {
+      "levels": [
+        "推行力",
+        "管控力",
+        "创造力",
+        "决断力",
+        "凝聚力",
+        "服务力",
+        "培育力",
+        "感召力"
+      ],
+      "scores": [
+        20.0,
+        35.0,
+        4.0,
+        5.0,
+        2.0,
+        1.0,
+        3.0,
+        30.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "ETJ-b-rate": {
+      "levels": [
+        "统率、统筹、纪律",
+        "自信、行动、分析、公平、审慎",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {
+        "T5B": 1.3,
+        "T2A": 1.4,
+        "T3B": 1.3,
+        "T3A": 1.5,
+        "T4B": 1.3,
+        "T1B": 1.1,
+        "T1A": 1.3,
+        "T2B": 1.2,
+        "L2A": 0.5,
+        "L3B": 0.7,
+        "L3A": 0.4,
+        "L1B": 0.9,
+        "L1A": 0.6,
+        "L2B": 0.8
+      }
+    },
+    "ETJ-c8": {
+      "levels": [
+        "ETJ",
+        "ISJ",
+        "ITP",
+        "ESP",
+        "EFJ",
+        "INJ",
+        "ENP",
+        "IFP"
+      ],
+      "scores": [
+        80.0,
+        10.0,
+        8.0,
+        2.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "ETJ-d": {
+      "levels": [
+        "权力",
+        "工作",
+        "荣誉",
+        "创新",
+        "情感",
+        "享受",
+        "财富",
+        "健康"
+      ],
+      "scores": [
+        35.0,
+        25.0,
+        25.0,
+        5.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "ETJ-d-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        0.9,
+        1.0,
+        1.1,
+        1.2,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "ETJ-notion": {
+      "levels": [
+        "影响",
+        "奋斗",
+        "传统",
+        "安全",
+        "自主",
+        "精彩",
+        "博爱",
+        "仁慈"
+      ],
+      "scores": [
+        45.0,
+        40.0,
+        6.0,
+        5.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "ETJ-notion-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        0.5,
+        0.6,
+        0.8,
+        1.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "ETJ-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        50.0,
+        20.0,
+        20.0,
+        10.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "IFP-2-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        30.0,
+        40.0,
+        20.0,
+        10.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "IFP-b": {
+      "levels": [
+        "推行力",
+        "管控力",
+        "创造力",
+        "决断力",
+        "凝聚力",
+        "服务力",
+        "培育力",
+        "感召力"
+      ],
+      "scores": [
+        3.0,
+        4.0,
+        30.0,
+        5.0,
+        10.0,
+        45.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "IFP-b-rate": {
+      "levels": [
+        "关联、个别",
+        "伯乐、完美、信仰、追求",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {
+        "T2A": 1.5,
+        "T3B": 1.3,
+        "T4B": 1.3,
+        "T1B": 1.1,
+        "T1A": 1.3,
+        "T2B": 1.2,
+        "L2A": 0.4,
+        "L3B": 0.7,
+        "L1B": 0.9,
+        "L1A": 0.5,
+        "L2B": 0.8
+      }
+    },
+    "IFP-c8": {
+      "levels": [
+        "IFP",
+        "ENP",
+        "INJ",
+        "EFJ",
+        "ESP",
+        "ITP",
+        "ISJ",
+        "ETJ"
+      ],
+      "scores": [
+        80.0,
+        10.0,
+        8.0,
+        2.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "IFP-d": {
+      "levels": [
+        "工作",
+        "权力",
+        "荣誉",
+        "创新",
+        "情感",
+        "享受",
+        "财富",
+        "健康"
+      ],
+      "scores": [
+        4.0,
+        2.0,
+        5.0,
+        3.0,
+        35.0,
+        20.0,
+        1.0,
+        30.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "IFP-d-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        1.0,
+        1.2,
+        1.1,
+        0.9,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "IFP-notion": {
+      "levels": [
+        "影响",
+        "奋斗",
+        "传统",
+        "安全",
+        "自主",
+        "精彩",
+        "博爱",
+        "仁慈"
+      ],
+      "scores": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        6.0,
+        30.0,
+        35.0,
+        25.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "IFP-notion-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        0.5,
+        0.6,
+        0.8,
+        1.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "IFP-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        50.0,
+        20.0,
+        20.0,
+        10.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "INJ-2-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        30.0,
+        40.0,
+        20.0,
+        10.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "INJ-b": {
+      "levels": [
+        "推行力",
+        "管控力",
+        "创造力",
+        "决断力",
+        "凝聚力",
+        "服务力",
+        "培育力",
+        "感召力"
+      ],
+      "scores": [
+        10.0,
+        5.0,
+        45.0,
+        30.0,
+        1.0,
+        3.0,
+        4.0,
+        2.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "INJ-b-rate": {
+      "levels": [
+        "理念、战略、思维",
+        "前瞻、分析",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {
+        "T2A": 1.4,
+        "T3B": 1.0,
+        "T3A": 1.5,
+        "T1B": 1.1,
+        "T1A": 1.3,
+        "T2B": 1.3,
+        "L2A": 0.4,
+        "L3B": 1.0,
+        "L3A": 0.2,
+        "L1B": 0.8,
+        "L1A": 0.6,
+        "L2B": 0.7
+      }
+    },
+    "INJ-c8": {
+      "levels": [
+        "INJ",
+        "ITP",
+        "ENP",
+        "ETJ",
+        "IFP",
+        "ISJ",
+        "EFJ",
+        "ESP"
+      ],
+      "scores": [
+        80.0,
+        10.0,
+        8.0,
+        2.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "INJ-d": {
+      "levels": [
+        "工作",
+        "权力",
+        "荣誉",
+        "创新",
+        "情感",
+        "享受",
+        "财富",
+        "健康"
+      ],
+      "scores": [
+        20.0,
+        5.0,
+        25.0,
+        40.0,
+        4.0,
+        3.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "INJ-d-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        0.9,
+        1.1,
+        1.2,
+        1.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "INJ-notion": {
+      "levels": [
+        "影响",
+        "奋斗",
+        "传统",
+        "安全",
+        "自主",
+        "精彩",
+        "博爱",
+        "仁慈"
+      ],
+      "scores": [
+        5.0,
+        45.0,
+        1.0,
+        1.0,
+        40.0,
+        6.0,
+        1.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "INJ-notion-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        0.5,
+        0.6,
+        0.8,
+        1.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "INJ-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        50.0,
+        20.0,
+        20.0,
+        10.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "ISJ-2-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        30.0,
+        40.0,
+        20.0,
+        10.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "ISJ-b": {
+      "levels": [
+        "推行力",
+        "管控力",
+        "创造力",
+        "决断力",
+        "凝聚力",
+        "服务力",
+        "培育力",
+        "感召力"
+      ],
+      "scores": [
+        45.0,
+        30.0,
+        2.0,
+        10.0,
+        3.0,
+        5.0,
+        4.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "ISJ-b-rate": {
+      "levels": [
+        "责任、专注、成就、排难",
+        "纪律、信仰、行动",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {
+        "T4A": 1.5,
+        "T2A": 1.4,
+        "T3B": 1.3,
+        "T3A": 1.5,
+        "T1B": 1.1,
+        "T1A": 1.3,
+        "T2B": 1.2,
+        "L2A": 0.5,
+        "L3B": 0.7,
+        "L3A": 0.4,
+        "L1B": 0.9,
+        "L1A": 0.6,
+        "L2B": 0.8
+      }
+    },
+    "ISJ-c8": {
+      "levels": [
+        "ISJ",
+        "ETJ",
+        "EFJ",
+        "INJ",
+        "ESP",
+        "ITP",
+        "IFP",
+        "ENP"
+      ],
+      "scores": [
+        80.0,
+        15.0,
+        3.0,
+        2.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "ISJ-d": {
+      "levels": [
+        "工作",
+        "权力",
+        "荣誉",
+        "创新",
+        "情感",
+        "享受",
+        "财富",
+        "健康"
+      ],
+      "scores": [
+        45.0,
+        15.0,
+        25.0,
+        3.0,
+        5.0,
+        4.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "ISJ-d-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        0.9,
+        1.1,
+        1.2,
+        1.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "ISJ-notion": {
+      "levels": [
+        "影响",
+        "奋斗",
+        "传统",
+        "安全",
+        "自主",
+        "精彩",
+        "博爱",
+        "仁慈"
+      ],
+      "scores": [
+        1.0,
+        35.0,
+        35.0,
+        25.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "ISJ-notion-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        0.5,
+        0.6,
+        0.8,
+        1.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "ISJ-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        50.0,
+        20.0,
+        20.0,
+        10.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "ITP-2-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        30.0,
+        40.0,
+        20.0,
+        10.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "ITP-b": {
+      "levels": [
+        "推行力",
+        "管控力",
+        "创造力",
+        "决断力",
+        "凝聚力",
+        "服务力",
+        "培育力",
+        "感召力"
+      ],
+      "scores": [
+        10.0,
+        5.0,
+        30.0,
+        45.0,
+        3.0,
+        4.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "ITP-b-rate": {
+      "levels": [
+        "分析、思维",
+        "战略、理念、审慎、关联",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {
+        "T2A": 1.5,
+        "T3B": 1.3,
+        "T4B": 1.3,
+        "T1B": 1.1,
+        "T1A": 1.3,
+        "T2B": 1.2,
+        "L2A": 0.4,
+        "L3B": 0.7,
+        "L1B": 0.9,
+        "L1A": 0.5,
+        "L2B": 0.8
+      }
+    },
+    "ITP-c8": {
+      "levels": [
+        "ITP",
+        "INJ",
+        "ENP",
+        "ETJ",
+        "IFP",
+        "ISJ",
+        "ESP",
+        "EFJ"
+      ],
+      "scores": [
+        80.0,
+        10.0,
+        8.0,
+        2.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "ITP-d": {
+      "levels": [
+        "工作",
+        "权力",
+        "荣誉",
+        "创新",
+        "情感",
+        "享受",
+        "财富",
+        "健康"
+      ],
+      "scores": [
+        25.0,
+        20.0,
+        3.0,
+        40.0,
+        4.0,
+        5.0,
+        2.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "ITP-d-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        0.9,
+        1.1,
+        1.2,
+        1.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "ITP-notion": {
+      "levels": [
+        "影响",
+        "奋斗",
+        "传统",
+        "安全",
+        "自主",
+        "精彩",
+        "博爱",
+        "仁慈"
+      ],
+      "scores": [
+        1.0,
+        1.0,
+        6.0,
+        5.0,
+        45.0,
+        40.0,
+        1.0,
+        1.0
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "ITP-notion-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        0.5,
+        0.6,
+        0.8,
+        1.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "ITP-total-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        50.0,
+        20.0,
+        20.0,
+        10.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "PD-351-354": {
+      "levels": [
+        "探索类人文类",
+        "社会人文领域",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        515.0,
+        509.0,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "PD-351-358": {
+      "levels": [
+        "人文类开拓类",
+        "静态艺术领域",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        522.0,
+        509.0,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "PD-352-357": {
+      "levels": [
+        "关系类执行类",
+        "情感服务领域",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        519.0,
+        506.0,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "PD-352-358": {
+      "levels": [
+        "关系类开拓类",
+        "人际维系领域",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        520.0,
+        507.0,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "PD-353-355": {
+      "levels": [
+        "策划类分析类",
+        "工程实施领域",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        513.0,
+        503.0,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "PD-353-356": {
+      "levels": [
+        "策划类监控类",
+        "统筹管理领域",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        514.0,
+        504.0,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "PD-354-351": {
+      "levels": [
+        "探索类人文类",
+        "社会研究领域",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        524.0,
+        509.0,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "PD-354-355": {
+      "levels": [
+        "探索类分析类",
+        "应用科学领域",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        511.0,
+        502.0,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "PD-355-353": {
+      "levels": [
+        "分析类策划类",
+        "技术研发领域",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        512.0,
+        503.0,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "PD-355-354": {
+      "levels": [
+        "分析类探索类",
+        "理论科学领域",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        510.0,
+        502.0,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "PD-356-353": {
+      "levels": [
+        "监控类策划类",
+        "监督管理领域",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        515.0,
+        504.0,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "PD-356-357": {
+      "levels": [
+        "监控类执行类",
+        "事务监督领域",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        516.0,
+        505.0,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "PD-357-352": {
+      "levels": [
+        "执行类关系类",
+        "行政服务领域",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        518.0,
+        506.0,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "PD-357-356": {
+      "levels": [
+        "执行类监控类",
+        "事务执行领域",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        517.0,
+        505.0,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "PD-358-351": {
+      "levels": [
+        "开拓类人文类",
+        "动态艺术领域",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        523.0,
+        508.0,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "PD-358-352": {
+      "levels": [
+        "开拓类关系类",
+        "人际拓展领域",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        521.0,
+        507.0,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {}
+    },
+    "PD-rate": {
+      "levels": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "scores": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "action": null,
+      "ext": {
+        "0-1": 0.4,
+        "0-2": 0.35,
+        "0-3": 0.3,
+        "1-2": 0.4,
+        "0-4": 0.25,
+        "1-3": 0.35,
+        "0-5": 0.2,
+        "1-4": 0.3,
+        "0-6": 0.2,
+        "1-5": 0.25,
+        "0-7": 0.2,
+        "1-6": 0.2,
+        "1-7": 0.2
+      }
+    }
+  },
+  "role_standards": [
+    {
+      "itemId": 351,
+      "middleX0": 27.91666616,
+      "middleX1": 22.04661085,
+      "middleX2": 6.901741591,
+      "seniorX0": 26.524099999999997,
+      "seniorX1": 19.921369560887975,
+      "seniorX2": 7.217142363933535
+    },
+    {
+      "itemId": 352,
+      "middleX0": 28.73086112,
+      "middleX1": 22.5663592,
+      "middleX2": 6.955380372,
+      "seniorX0": 28.6642,
+      "seniorX1": 20.78519022856096,
+      "seniorX2": 7.186091113446246
+    },
+    {
+      "itemId": 353,
+      "middleX0": 27.75928405,
+      "middleX1": 22.28463683,
+      "middleX2": 7.065576175,
+      "seniorX0": 28.2556,
+      "seniorX1": 20.705858794467087,
+      "seniorX2": 7.235362904066027
+    },
+    {
+      "itemId": 354,
+      "middleX0": 28.04800521,
+      "middleX1": 22.51785522,
+      "middleX2": 6.617631948,
+      "seniorX0": 27.0665,
+      "seniorX1": 20.269722737582185,
+      "seniorX2": 6.936628716207392
+    },
+    {
+      "itemId": 355,
+      "middleX0": 28.8216684,
+      "middleX1": 22.24298045,
+      "middleX2": 6.886780767,
+      "seniorX0": 29.2791,
+      "seniorX1": 20.60455769475998,
+      "seniorX2": 7.154077085215912
+    },
+    {
+      "itemId": 356,
+      "middleX0": 28.66711161,
+      "middleX1": 22.80141804,
+      "middleX2": 7.159350692,
+      "seniorX0": 26.491500000000002,
+      "seniorX1": 20.105095359538076,
+      "seniorX2": 7.295170693779101
+    },
+    {
+      "itemId": 357,
+      "middleX0": 28.66711161,
+      "middleX1": 22.62138443,
+      "middleX2": 7.594495381,
+      "seniorX0": 30.6275,
+      "seniorX1": 21.69319289647098,
+      "seniorX2": 7.4715406720456965
+    },
+    {
+      "itemId": 358,
+      "middleX0": 26.21897081,
+      "middleX1": 21.19070908,
+      "middleX2": 7.204636093,
+      "seniorX0": 25.1164,
+      "seniorX1": 18.930502214151662,
+      "seniorX2": 7.4292599455386545
+    }
+  ],
+  "displayed_value_ids": [
+    "816",
+    "803",
+    "824",
+    "848",
+    "811",
+    "790",
+    "786",
+    "827",
+    "799",
+    "833",
+    "820",
+    "793",
+    "800",
+    "844",
+    "817",
+    "832",
+    "835",
+    "846",
+    "838",
+    "841",
+    "804",
+    "834",
+    "810",
+    "836",
+    "814",
+    "785",
+    "809",
+    "843",
+    "807",
+    "825",
+    "792",
+    "828"
+  ],
+  "source_hashes": {
+    "C8EvaluateItem.jsonl": "559a0b7f7cd448d7945b7d043f4786f455edc59518de9aaacf5dce354aea39cf",
+    "C8EvaluateProfessionalRoleScoreStandard.jsonl": "9d25472fc90be7d10d6c20e8990ed0aa0ddb3d52204579febfe60a8f93ce9292",
+    "agtypebrand16-map.tsv": "8c999cb13134135cb0a66f71ead3c9649f7090de7fbc45f300ce501e4bfd655a",
+    "agtype28-map.tsv": "e3431fe705f42077d25d45321f3c3899adb68dfc2605b9fc90e4888db8f24713"
+  },
+  "styles": [
+    {
+      "code": "INTJ",
+      "id": 58,
+      "name": "智多星/科学家/专家型",
+      "description": "意志坚定，追求实效，崇尚独立自主，很强的自律性\n专注于工作，忠诚于组织，无意执掌权力，甘居幕后策划\n外表理智冷静，内心浪漫多情，情感不易被人理解\n冷若冰霜，不喜欢交际，渴望独处，喜欢不受人干扰"
+    },
+    {
+      "code": "ENTJ",
+      "id": 59,
+      "name": "统率/调度/陆军统帅型",
+      "description": "果断又坦率直言，擅长统筹协调，有非同寻常的表达能力\n能高效地配置和调动资源，是极具战略天赋的指挥官\n工作专心致志，近乎“疯狂”，享受领导权力带来的乐趣\n对他人能力要求很高，不允许家庭、情感影响职业发展"
+    },
+    {
+      "code": "ENTP",
+      "id": 60,
+      "name": "辩论者/发明家型",
+      "description": "理性而客观，机警而坦率，有杰出的分析能力\n事业心强，眼光独到洞察力强，不断探索以智取胜的方法\n敏捷聪慧，有胆识，拥有远大愿景，有战略眼光和创新精神\n善于调动有效资源来解决新的具有挑战性的问题"
+    },
+    {
+      "code": "INTP",
+      "id": 61,
+      "name": "设计者/学者型",
+      "description": "设计建造系统结构模型，寻找并分析技术原理和自然规律\n敏锐的观察力，语言简洁精确，使用技术术语，是辩论高手\n强烈的好奇心，不断学习，愿意独自工作，绝佳的记忆力\n情感不轻易表露，不易被人理解，与人交流时有些挑剔"
+    },
+    {
+      "code": "INFP",
+      "id": 62,
+      "name": "治疗师/导师/哲学家型",
+      "description": "表面安静随和，内心却不平静，强烈道德感，观点理想化\n善与恶在内心斗争激烈，心中强烈的孤立感，相信直觉\n适应能力强，接受新观点，灵活多变，喜欢独自工作\n喜欢和谐，避免矛盾，能感知他人情绪，却无法放松心情"
+    },
+    {
+      "code": "ENFP",
+      "id": 63,
+      "name": "激发者/倡导者/记者型",
+      "description": "热情活泼，充满朝气，喜欢与他人交流，揭秘社会事件\n喜欢新奇事物，抗拒重复体验，渴望自由，不愿受约束\n敏锐的观察力和直觉感知力，目标明确，率性敢为\n交友广泛，积极乐观，强大的号召力，温柔迷人，善解人意"
+    },
+    {
+      "code": "INFJ",
+      "id": 64,
+      "name": "咨询师/作家型",
+      "description": "为帮助他人而贡献力量，丰富的内心世界，给人以心灵指引\n正直的品质，超常的直觉，强大的情感互动能力，比喻大师\n喜欢和谐的环境，讨厌矛盾，取悦他人，善于一对一交流\n情感深厚而持久，表达隐蔽且微妙，高度的敏感性"
+    },
+    {
+      "code": "ENFJ",
+      "id": 65,
+      "name": "教师/外交家/教育家型",
+      "description": "更胜一筹的号召力，超凡脱俗的领袖气质，无形中影响他人\n从不食言，即兴指挥，含蓄的命令，随和的导师\n人是第一位的，无法拒绝别人，出众的语言天赋，善于表达\n喜欢跟着感觉走，高超的交心能力，准确理解他人意图"
+    },
+    {
+      "code": "ISFJ",
+      "id": 66,
+      "name": "保护者/照顾者型",
+      "description": "友善忠厚，热心低调，不善表达，为他人服务\n真诚负责，一丝不苟，痛恨浪费，亲力亲为，操劳过度\n忠诚敬业，捍卫传统习俗，照章办事，强调规范\n仁爱怀旧，用情至深，照顾他人，富有同情心"
+    },
+    {
+      "code": "ESFJ",
+      "id": 67,
+      "name": "供给者/销售者/主人型",
+      "description": "主动帮助服务他人，随和善交际，热心公益事业，热心肠\n友善忠厚，风度翩翩，表现力强，乐于团队协作，信赖权威\n出众的主动交流技巧，轻松自信，认真热忱，尽职尽责\n十分敏感，注重外表，忠实多情，按部就班，富有同情心"
+    },
+    {
+      "code": "ISTJ",
+      "id": 68,
+      "name": "稽查员/执行型",
+      "description": "认真专注，本性矜持，青睐幕后工作，内敛而不声张\n极度可靠，制度的守卫者，语言简单质朴，没有任何炫耀\n富有耐心，喜欢秩序井然，强调整体性、细节、合法性\n忠诚可靠，一诺千金，诚实正义，面对批评心理脆弱"
+    },
+    {
+      "code": "ESTJ",
+      "id": 69,
+      "name": "督导/管理者型",
+      "description": "推行各项规则和程序，是严肃的裁判员，是指导性的管理者\n坚毅的本性，凡事讲究具体，脚踏实地，不喜欢投机\n具备很强的社会性，热心公益，信赖权威，有合作精神\n喜欢发号施令，不善于聆听，尽忠职守，坦率而意志坚定"
+    },
+    {
+      "code": "ISFP",
+      "id": 70,
+      "name": "创作者/艺术家型",
+      "description": "超群的艺术加工能力，安静而矜持，敏锐地感知和触觉\n用行动来表达自我，用触摸来感受生活，在冲动中忘我\n不善语言表达，没有明确目的的创作，而且非常投入\n无条件的最大限度的友善，对他人痛苦敏感，并无私地关怀"
+    },
+    {
+      "code": "ESFP",
+      "id": 71,
+      "name": "示范者/表演者型",
+      "description": "幽默嬉戏，活泼诙谐，笑料不断，使他人放下忧虑，彻底放松\n精力充沛，无拘无束，任性且放纵，凡是总看好的一面\n大度且友善，喜怒皆形于色，感情丰富，十分坦率\n人缘很好，喜欢娱乐并取悦他人，把兴奋和快乐放在第一位"
+    },
+    {
+      "code": "ISTP",
+      "id": 72,
+      "name": "操作者/演奏者型",
+      "description": "天生驾驭工具的能力和手工操作技巧，性格矜持，喜爱独处\n无计划，无目的，不受任何约束，厌恶等级制度，渴望自由\n性格坚毅，语言温和，言简意赅，甚至少言寡语，缺表现力\n任性且大度，忠于身边的伙伴，为了朋友可以倾其所有"
+    },
+    {
+      "code": "ESTP",
+      "id": 73,
+      "name": "发起者/创设者/挑战者",
+      "description": "聪明、诙谐风趣，洞察先机，圆滑世故，举止优雅，八面玲珑\n善于和人相处，敏锐感知力，坚韧的意志，通过冒险寻求刺激\n精明且讲究实效，谈判高手，问题解决专家，不讲究礼仪\n缺乏耐心，为了朋友赴汤蹈火，精力充沛，无拘无束"
+    }
+  ]
+}

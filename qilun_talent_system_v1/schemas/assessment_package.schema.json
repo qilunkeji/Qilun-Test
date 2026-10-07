@@ -1,0 +1,226 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:qilun:talent:assessment-package:1.0",
+  "title": "测评包导入示例契约；发布仍须服务端语义校验",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "package_id",
+    "version",
+    "display_name",
+    "status",
+    "engine_mode",
+    "authorization",
+    "reported_output_modules",
+    "observed_configuration",
+    "questions",
+    "scoring_rule_set_ref",
+    "interpretation_template_ref",
+    "missing_materials",
+    "source_refs"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "package_id": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "display_name": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "draft",
+        "blocked_missing_rules",
+        "ready_for_validation",
+        "published",
+        "archived"
+      ]
+    },
+    "engine_mode": {
+      "enum": [
+        "authorized_provider",
+        "licensed_compatible",
+        "external_report_import",
+        "demo_only"
+      ]
+    },
+    "authorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "evidence_ref",
+        "permitted_purposes"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "unverified",
+            "verified",
+            "expired",
+            "revoked"
+          ]
+        },
+        "evidence_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "permitted_purposes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "reported_output_modules": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "observed_configuration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "configured_module_name",
+        "configured_question_count",
+        "observed_distinct_question_ids",
+        "full_question_text_imported"
+      ],
+      "properties": {
+        "configured_module_name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "configured_question_count": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "observed_distinct_question_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "full_question_text_imported": {
+          "type": "boolean"
+        }
+      }
+    },
+    "questions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "question_id",
+          "module_id",
+          "type",
+          "text",
+          "options",
+          "scoring_rule_ref"
+        ],
+        "properties": {
+          "question_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "module_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "ab_five_choice",
+              "single_five_choice",
+              "value_selection",
+              "value_ranking",
+              "other_authorized"
+            ]
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "option_id",
+                "text",
+                "answer_code"
+              ],
+              "properties": {
+                "option_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "text": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "answer_code": {
+                  "type": [
+                    "string",
+                    "integer"
+                  ]
+                }
+              }
+            }
+          },
+          "scoring_rule_ref": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "引用已验证规则，不在客户端发送计分键"
+          }
+        }
+      }
+    },
+    "scoring_rule_set_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "interpretation_template_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "missing_materials": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "source_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  }
+}

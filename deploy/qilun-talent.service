@@ -1,0 +1,16 @@
+[Unit]
+Description=Qilun Talent — rc.iqilun.cn (single instance)
+After=docker.service network-online.target
+Requires=docker.service
+
+[Service]
+Type=simple
+TimeoutStartSec=120
+TimeoutStopSec=60
+Restart=on-failure
+RestartSec=10
+ExecStart=/usr/bin/docker run --rm --name qilun-talent-rc --network host --user 1000:1000 --read-only --cap-drop ALL --security-opt no-new-privileges --pids-limit 128 --memory 768m --cpus 0.75 --tmpfs /tmp:rw,noexec,nosuid,size=64m --env-file /opt/qilun-talent/shared/production.env --mount type=bind,src=/opt/qilun-talent/current,dst=/app,readonly --mount type=bind,src=/opt/qilun-talent/shared,dst=/app/.local --workdir /app node:24.19.0-bookworm-slim node --max-old-space-size=256 --experimental-strip-types apps/api/main.ts
+ExecStop=/usr/bin/docker stop --time 45 qilun-talent-rc
+
+[Install]
+WantedBy=multi-user.target

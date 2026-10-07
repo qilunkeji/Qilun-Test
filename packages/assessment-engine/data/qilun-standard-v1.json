@@ -1,0 +1,63 @@
+{
+  "version": "qilun-internal-assessment/1.0.0",
+  "title": "齐论内部性格与发展测评",
+  "model_sha256": "b1488c9922c0ae85cf29c6227f20c9d1aba495c14cc32e41a4c4cbcd6395e19d",
+  "inference_version": "qilun-gh-inverse-v1",
+  "base_version": "gh-report-replay-v22",
+  "gamma": 0.1,
+  "linear_weight": 1,
+  "support_count": 1440,
+  "feature_count": 48,
+  "ability_count": 28,
+  "runtime_training": false,
+  "runtime_ai_generation": false,
+  "aggregates": {
+    "four_layers": {"group_by": "ability.parent", "input": "display_integer", "formula": "HALF_UP(sum/count)", "sort": "value_desc_then_group_id_asc"},
+    "five_powers": {
+      "innovation": [157,170,161,167],
+      "analysis": [164,158,159,161],
+      "will": [162,165,166,169,175,151],
+      "collaboration": [168,173,160,176,174],
+      "connection": [154,162,175,163,177],
+      "formula": "HALF_UP(mean(display_integer)*0.68*1.51)"
+    },
+    "management": {
+      "ordered_by": "parent_id_asc_then_ability_id_asc",
+      "index_base": 1,
+      "work": [14,15,16,17,18,19,20,23,26,27],
+      "people": [1,2,3,4,5,6,7,22],
+      "self": [8,9,10,11,12,13,21,24,25,28],
+      "formula": "HALF_UP(mean(display_integer)*1.19/1.13); if result>=100 then 99"
+    }
+  },
+  "steps": [
+    {"title": "1. 严格校验完整输入", "detail": "277题均按原有五档编码；当前32词分组各选5项，再选10项并排序。缺答、越组、重复、跨版本拒绝计分，不补零。"},
+    {"title": "2. 保留已知基础规则", "detail": "沿用归档v22逐题映射、校准、风格、角色、动机、价值观、优势与短文案规则。推算不替换已有公式。"},
+    {"title": "3. 固定48项能力输入", "detail": "角色351至358各按scoreB、scoreC、scoreD、scoreNotion排列，随后按归档配置顺序放入8项动机与8项价值原始分。共48项；不按页面名次重排，不含姓名、招聘结果或目标能力。"},
+    {"title": "4. 固定能力公式与参数", "detail": "z=(x-mean)/scale。对1440个固定参数节点：d=Σ(s-z)²/48，k=exp(-0.1*d)+Σ(s*z)/48；每项能力y=target_mean+Σ(k*coefficient)。均值、尺度、节点和系数全部锁定，答题时不训练、不调用AI。"},
+    {"title": "5. 固定显示与汇总", "detail": "能力值截断到0至100后HALF_UP取整数。按分数降序、同分按父类ID和能力ID升序排列，取前6项及后3项；四类分层取显示整数均值并HALF_UP，五力及管理分组沿用固定已知分组公式。"},
+    {"title": "6. 锁版本、留依据", "detail": "新邀请必含28项能力，邀请快照固定规则版本、模型SHA256与整套规则指纹。规则或参数改变须新版本；已有邀请/报告不重算。模型缺失、校验不符或版本不支持时明确停止，不降级留白或临时猜测。"}
+  ],
+  "public_note": "结果用于自我理解与发展沟通。能力分数是固定模型推算的参考评分，不等同于实际技能或绩效，不用于自动录用或淘汰。",
+  "limitations": [
+    "这是齐论固定成品规则，不是高禾原版算法全同认证。",
+    "冻结现有已验证模型，不重新使用独立测试集调参；冻结不提高原版数字一致率。",
+    "统计误差只供负责人核验，不作为当前个人的置信区间或测评效度。",
+    "超出已观察邻域仍给出完整画像，但须提示参考性较低；不编造缺失的原版逻辑一致性或十页长文。"
+  ],
+  "artifacts": {
+    "packages/assessment-engine/gh-inference.ts": "6a848733cb6fdab1046ca8b60dbb56ab9c62abc59fe79e486672d429201dbd96",
+    "packages/assessment-engine/gh-derived.ts": "57864fef4223fa4bb988313b4459b623e465bc056cf7ca88dd1df2e7f6960259",
+    "packages/assessment-engine/gh-server-evidence.ts": "3178c3662f727b1e343e352b2e0efcea81decb30094d431a4610a6e8a0ecf960",
+    "packages/assessment-engine/gh-report-text.ts": "472c106aab3560c792251f76995f3c490a235172826c2102a850f86198df58bb",
+    "packages/assessment-engine/gh-rounding.ts": "0e6681f2412a04803dd016a7f6a1ebb3401c191f07a53e22c755655e0a1b58c0",
+    "packages/assessment-engine/gh-invite.ts": "65d2c65c5bc6e5ee093b11618a064aabd3441044c30e52fc77ce6aedab3f868e",
+    "packages/assessment-engine/qilun-standard.ts": "aa05a20335cf090a620ec2d787137fa1fb927cc6dea74f747854d2ec917c8097",
+    "packages/assessment-engine/data/question-bank-277.json": "ed8dd0848af4c2d94a77673775a8956d403ac97063d562d3c43be6ce63674312",
+    "packages/assessment-engine/data/gh-derived-rules-v22.json": "28ecc2655d7da637d221f1c91bfa3dc3ec75268f01fc1760087ad4e0d50df903",
+    "packages/assessment-engine/data/gh-server-rules.json": "b2672ad84cbb9fe79a8cbdf02b4dad0c7057afa735860ec212c64593bd5b529b",
+    "packages/assessment-engine/data/gh-report-text-v1.json": "e6ed2e0009585aeae7b673a5395a2c09801de810de8663962d28a49c1295de60",
+    "packages/assessment-engine/data/gh-v22-audit.json": "7f5df77a4686d8e08f3dd3624a23042ec8f4cc493aff41645a77a0958f42cdc6",
+    "packages/assessment-engine/data/gh-v6-audit.json": "f450130fd8eed09dbe3698d06b9d6d441ee7e642bb0557adc0f274768c17f0bb"
+  }
+}

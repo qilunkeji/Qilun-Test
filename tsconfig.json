@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "target": "ES2023", "module": "NodeNext", "moduleResolution": "NodeNext",
+    "strict": true, "esModuleInterop": true, "skipLibCheck": true, "resolveJsonModule": true,
+    "jsx": "react-jsx", "noEmit": true, "allowImportingTsExtensions": true,
+    "lib": ["ES2023", "DOM"], "types": ["node"]
+  },
+  "include": ["apps", "packages", "tests", "scripts", "vite.config.ts"]
+}

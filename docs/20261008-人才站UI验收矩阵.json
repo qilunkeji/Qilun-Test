@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-08",
+  "scope": "talent-site-only",
+  "production_deployed": true,
+  "deployment": {"url":"https://rc.iqilun.cn/","release":"20261008-ui-unification-v1","server_public_checks":39,"local_public_checks":25,"real_user_sso_tested":false,"real_phone_tested":false},
+  "environment": "loopback Chrome, mocked APIs, synthetic fixtures",
+  "evidence_directory": ".local/ui-unification/",
+  "unit_tests": {"total": 132, "passed": 132, "failed": 0, "skipped": 0},
+  "tickets": [
+    {"id":"RC-01","status":"local_pass","limits":"1001 synthetic records checks display only; backend recent100 scope preserved"},
+    {"id":"RC-02","status":"local_pass","limits":"No real destructive writes"},
+    {"id":"RC-03","status":"local_pass_partial_acceptance","pending":["complex async/scroll cases","real IAM/API permissions"]},
+    {"id":"RC-04","status":"local_pass_partial_acceptance","pending":["file-read cancellation races","system file errors"]},
+    {"id":"RC-05","status":"local_pass","pending":["multi-device duplicate operations"]},
+    {"id":"RC-06","status":"local_pass","pending":["real concurrent revision conflict"]},
+    {"id":"RC-07","status":"local_pass","pending":["real WeChat/phone","gateway expiry boundary"]},
+    {"id":"RC-08","status":"local_pass","pending":["real audit/permission integration"]},
+    {"id":"RC-09","status":"local_pass_partial_acceptance","pending":["cross-site consistency","comprehensive contrast audit"]},
+    {"id":"RC-10","status":"local_pass","pending":["screen reader"]},
+    {"id":"RC-11","status":"local_pass","evidence":"one-page synthetic PDF rendered and checked","pending":["real printer"]},
+    {"id":"RC-12","status":"local_pass","pending":["all historical enums","clipboard failures"]},
+    {"id":"RC-13","status":"local_pass_partial_acceptance","evidence":"11 unchanged SVG files; 97 antialiasing pixel differences","pending":["all ten-page printing"]},
+    {"id":"RC-14","status":"local_pass","pending":["authorized real provider integration"]}
+  ],
+  "common_widths": [1180,1366,1024,768,390],
+  "zoom_200_percent": "equivalent narrow layout only, not actual browser zoom",
+  "other_five_sites": "not_in_scope_not_tested",
+  "shared_matrix_completion": "not_claimed",
+  "details": "20261008-人才站UI统一优化验收.md"
+}

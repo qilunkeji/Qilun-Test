@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0",
+  "job_version_id": "fictional-job-v1",
+  "resume_version_id": "fictional-resume-v1",
+  "criteria": [
+    {
+      "criterion_id": "C01",
+      "status": "partial",
+      "evidence_refs": [
+        {
+          "source_id": "fictional-resume",
+          "source_version_id": "fictional-resume-v1",
+          "source_type": "resume",
+          "locator": "paragraph:3",
+          "quote": "我曾使用AI工具制作一个任务记录页面。",
+          "verification_status": "self_reported",
+          "speaker_role": null,
+          "context_locator": null
+        }
+      ],
+      "explanation": "材料包含制作任务页面的自述；尚未看到作品、测试或实际使用证据。",
+      "clarifying_questions": [
+        "请演示该页面，并说明你亲自完成的部分及如何测试。"
+      ]
+    },
+    {
+      "criterion_id": "C02",
+      "status": "unknown",
+      "evidence_refs": [],
+      "explanation": "当前材料没有提供跨部门任务跟进记录，不能据此认定没有该能力。",
+      "clarifying_questions": [
+        "请选择一次真实的任务协作，说明负责人、节点、卡点与最终交付。"
+      ]
+    }
+  ],
+  "missing_information": [
+    "作品演示或可核验的测试记录",
+    "跨部门任务闭环实例"
+  ],
+  "review_summary": "这是虚构样例。当前资料提供了AI工具实践线索，仍需围绕作品和交付做人工核验；不包含录用决定。"
+}

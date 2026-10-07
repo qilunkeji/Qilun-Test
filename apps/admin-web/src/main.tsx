@@ -1,0 +1,74 @@
+import {Interviews} from './interviews.tsx';
+import {StrictMode,Suspense,lazy,useEffect,useState} from 'react';
+import {createRoot} from 'react-dom/client';
+import {api,setCsrf,statusLabels} from './api.ts';
+import type {Session,Application,Page} from './api.ts';
+import {Field,formValues,Notice,Empty,Badge,Pager,date,Loading,RetryError} from './ui.tsx';
+import {useRoute,navigate,useListState,useRestoreListScroll} from './navigation.ts';
+import type {View} from './navigation.ts';
+import {auditDisplay} from './ui-presentation.ts';
+import {Jobs} from './jobs.tsx';
+import {Talents} from './talents.tsx';
+import {settingsTabs} from './settings-access.ts';
+import {canManageAssessment} from '../../../packages/security/assessment-access.ts';
+const AssessmentAdmin=lazy(()=>import('./assessment-admin.tsx').then(module=>({default:module.AssessmentAdmin})));
+import {AssessmentCenter} from './assessment-center.tsx';
+import {H5App} from './h5.tsx';
+import {Recruiting} from './recruiting.tsx';
+import {AISettings} from './ai-center.tsx';
+import './styles.css';
+import './premium.css';
+import './unified-ui.css';
+import './home-refinement.css';
+type LoginOptions={unified_login:boolean;local_password_login:boolean;login_url:string|null};
+const nav:{id:View;label:string}[]=[{id:'dashboard',label:'首页'},{id:'jobs',label:'岗位管理'},{id:'optimize',label:'招聘优化'},{id:'assessments',label:'测评中心'},{id:'interviews',label:'面试评估'},{id:'talents',label:'人才档案'},{id:'settings',label:'设置'}];
+function App(){
+ const [loginOptions,setLoginOptions]=useState<LoginOptions>();
+ useEffect(()=>{api<LoginOptions>('/auth/options').then(setLoginOptions).catch(()=>setError('登录配置暂不可用，请刷新后重试。'));},[]);
+ const [route]=useRoute(),view=route.view,setView=(view:View)=>navigate({view});
+ const [session,setSession]=useState<Session>(),[ready,setReady]=useState(false),[error,setError]=useState(''),[busy,setBusy]=useState(false),[optimizeText,setOptimizeText]=useState(''),[menuOpen,setMenuOpen]=useState(false);
+ useEffect(()=>{document.title=`${nav.find(n=>n.id===view)?.label??'人才管理'} · 齐论AI人才管理`;},[view]);
+ useEffect(()=>{api<Session>('/auth/me').then(x=>{setSession(x);setCsrf(x.csrf_token);}).catch(()=>{}).finally(()=>setReady(true));},[]);
+ async function login(values:Record<string,string>){setBusy(true);setError('');try{await api('/auth/login',values);const x=await api<Session>('/auth/me');setCsrf(x.csrf_token);setSession(x);setView(['hr','talent_lead'].includes(x.role)?'dashboard':'settings');}catch(e){setError((e as Error).message);}finally{setBusy(false);}}
+ if(!ready)return <main className="loading">正在验证登录状态…</main>;
+ if(!session)return <div className="login-layout"><section className="login-story"><div className="brand brand-dark"><img src="/brand/qilun-logo-dark.png" alt="齐论 AI"/></div><div className="login-message"><span>QILUN TALENT INTELLIGENCE</span><h1>汇聚真实证据，<br/>让人才因 AI 而成事。</h1><p>将岗位、人才、测评与面试织成一条可追溯的决策链路。<br/>保留未知，让人工判断有据可循。</p><div className="brand-principles"><b>汇聚</b><b>共构</b><b>融合</b><b>生长</b></div></div><p className="subtle">人才管理系统 · 齐论 AI 工作空间</p></section><main className="login-main"><form onSubmit={e=>void login(formValues(e))}><span className="eyebrow">SECURE WORKSPACE</span><h2>登录管理后台</h2><p className="muted">内部成员入口 · 候选人无需后台账号</p>{error&&<Notice kind="error">{error}</Notice>}{!loginOptions?<p className="muted">正在读取登录配置…</p>:loginOptions.unified_login?<><button type="button" className="primary" onClick={()=>location.assign('/api/iam/login')}>使用齐论账号登录</button><p className="login-help">账号与权限由齐论统一账号中心管理；仅已获人才系统授权的成员可进入。</p></>:<><Field name="username" label="账号"/><Field name="password" label="密码" type="password"/><button className="primary" disabled={busy}>{busy?'正在登录…':'登录工作台'}</button><p className="login-help">内部授权账号登录，不开放自助注册。</p></>}</form></main></div>;
+ const business=['hr','talent_lead'].includes(session.role);
+ const openJob=(id:string)=>navigate({view:'jobs',id});
+ const optimize=(text='')=>{setOptimizeText(text);setView('optimize');};
+ const denied=route.invalid||(!business&&view!=='settings');
+ return <div className="shell top-shell"><a className="skip-link" href="#main-content">跳到主要内容</a><header className="top-header"><button className="top-brand" aria-label="返回工作台" onClick={()=>{setView(business?'dashboard':'settings');setMenuOpen(false);}}><img src="/brand/qilun-logo-light.png" alt="齐论 AI"/><small>TALENT MANAGEMENT</small></button><nav aria-label="主要导航" className={menuOpen?'open':''}>{nav.filter(n=>business||n.id==='settings').map(n=><button key={n.id} aria-current={view===n.id?'page':undefined} className={view===n.id?'active':''} onClick={()=>{setMenuOpen(false);n.id==='optimize'?optimize():setView(n.id);}}>{n.label}</button>)}</nav><button className="mobile-nav-toggle" aria-expanded={menuOpen} aria-label={menuOpen?'关闭主导航':'打开主导航'} onClick={()=>setMenuOpen(!menuOpen)}>{menuOpen?'关闭':'菜单'}</button><div className="account"><strong>{session.username}</strong><button onClick={()=>void api('/auth/logout',{}).then(()=>{setSession(undefined);setCsrf('');}).catch(e=>setError(e.message))}>退出</button></div></header><div className="workspace"><main id="main-content" className="content" tabIndex={-1}>{error&&<Notice kind="error">{error}</Notice>}{denied?<section className="panel route-unavailable"><h1>页面暂不可访问</h1><p>请确认账号权限或返回工作台。此提示不确认任何档案是否存在。</p><button onClick={()=>setView(business?'dashboard':'settings')}>返回工作台</button></section>:view==='interviews'?<Interviews key={route.id??'list'} initialId={route.id} configure={()=>setView('settings')}/>:view==='assessments'?<AssessmentCenter key={route.id??'list'} role={session.role} initialReportId={route.id}/>:view==='optimize'?<Recruiting key={optimizeText} initialMaterial={optimizeText} configure={()=>setView('settings')}/>:view==='settings'?<Settings role={session.role} section={route.section??'models'}/>:view==='jobs'?<Jobs key={route.id??'list'} initialJobId={route.id}/>:view==='talents'?<Talents key={route.id??'list'} initialId={route.id}/>:view==='applications'?<Applications/>:<Dashboard navigate={setView} openJob={openJob} optimize={optimize}/>}</main><footer><span>齐论 AI · 让每一个人因 AI 而成事</span><span>真实透明 · 开放共享 · 以终为始</span></footer></div></div>;
+}
+function Settings({role,section}:{role:string;section:string}){
+ const tabs=settingsTabs(role),active=section;
+ return <div className="settings-workspace"><div className="page-heading"><div><h1>设置</h1><p>{canManageAssessment(role)?'管理模型接入、系统状态与测评后台':'管理模型接入与系统状态'}</p></div></div><div className="tabbar" aria-label="设置栏目">{tabs.map(({id,label})=><button key={id} aria-pressed={active===id} className={active===id?'active':''} onClick={()=>navigate({view:'settings',section:id})}>{label}</button>)}</div>{!tabs.some(t=>t.id===active)?<Notice kind="error">当前栏目不可访问，请选择有权查看的栏目。</Notice>:active==='models'?<section className="panel">{['hr','talent_lead'].includes(role)?<AISettings canEdit={role==='talent_lead'}/>:<p>模型接入由人才负责人管理。</p>}</section>:active==='assessment-admin'&&canManageAssessment(role)?<Suspense fallback={<Loading>正在加载测评后台…</Loading>}><AssessmentAdmin role={role}/></Suspense>:active==='audit'?<Audit/>:<Readiness/>}</div>;
+}
+const navigateRouteNewJob=()=>navigate({view:'jobs',id:'new'});
+function Dashboard({navigate,openJob,optimize}:{navigate:(v:View)=>void;openJob:(id:string)=>void;optimize:(text:string)=>void}){
+ const [data,setData]=useState<{jobs:number;candidates:number;applications:number;expired:number}>(),[error,setError]=useState('');
+ const [jobs,setJobs]=useState<Page<import('./api.ts').Job>>();
+ useEffect(()=>{Promise.all([api<{jobs:number;candidates:number;applications:number;expired:number}>('/dashboard'),api<Page<import('./api.ts').Job>>('/jobs?page=1&page_size=12')]).then(([d,j])=>{setData(d);setJobs(j);}).catch(e=>setError(e.message));},[]);
+ const active=jobs?.items.filter(j=>j.status==='open')??[],shown=active.length?active:jobs?.items.slice(0,6)??[];
+ return <><section className="home-hero home-hero-refined"><div className="hero-copy"><div className="hero-kicker">齐论 AI · 人才管理</div><h1>人才管理工作台</h1><p>让招聘、测评与人才档案，有序协同。</p><div className="hero-actions"><button className="primary" onClick={()=>navigateRouteNewJob()}>新建招聘岗位</button><button className="hero-secondary" onClick={()=>navigate('assessments')}>进入测评中心 <b aria-hidden="true">→</b></button></div></div></section>{error&&<Notice kind="error">{error}</Notice>}
+ <section className="home-section"><div className="home-title"><div><h2>{active.length?'招聘中的岗位':shown.length?'最近岗位':'招聘岗位'}</h2><p>{active.length?'管理发布与招聘进度':shown.length?'选择岗位，继续编辑或发布':'从一个新岗位开始'}</p></div><button onClick={()=>navigate('jobs')}>全部岗位 →</button></div><div className="job-grid">{shown.map(j=><article className="job-card" key={j.id}><div className="job-card-top"><span>{j.status==='open'?'招聘中':'待发布'}</span><small>V{j.revision}</small></div><h3>{j.title}</h3><p>{j.department} · {j.location}</p><dl><dt>负责人</dt><dd>{j.owner}</dd></dl><div><button className="primary" onClick={()=>openJob(j.id)}>编辑岗位</button><button onClick={()=>optimize(`岗位名称：${j.title}\n部门：${j.department}\n地点：${j.location}\n请招聘优化。`)}>招聘优化</button></div></article>)}{!jobs?(error?<p>岗位列表暂未加载，请稍后重新进入。</p>:<Loading>正在读取岗位…</Loading>):!shown.length&&<button className="job-card empty-job" onClick={navigateRouteNewJob}><b aria-hidden="true">＋</b><span>创建第一个招聘岗位</span></button>}</div></section>
+ <section className="home-section home-library"><div className="home-title"><div><h2>人才与测评</h2><p>档案、申请与测评，一处查看</p></div></div><div className="library-links"><button onClick={()=>navigate('talents')}><strong>{data?.candidates??'—'}</strong><span>人才档案</span><small>查看授权资料</small></button><button onClick={()=>navigate('applications')}><strong>{data?.applications??'—'}</strong><span>招聘申请</span><small>跟进岗位与人员</small></button><button onClick={()=>navigate('assessments')}><strong aria-hidden="true">↗</strong><span>测评中心</span><small>发起邀请 · 查看报告</small></button></div></section></>;
+}
+function Applications(){
+ const [filters,setFilters]=useListState('applications',{page:1,q:'',search:''}),{page,q,search}=filters;
+ const setPage=(page:number)=>setFilters(x=>({...x,page})),setQ=(q:string)=>setFilters(x=>({...x,q})),setSearch=(search:string)=>setFilters(x=>({...x,search,page:1}));
+ const [rows,setRows]=useState<Page<Application>>(),[error,setError]=useState(''),[refresh,setRefresh]=useState(0);
+ useEffect(()=>{let live=true;setRows(undefined);setError('');api<Page<Application>>(`/applications?page=${page}&q=${encodeURIComponent(search)}`).then(x=>{if(live)setRows(x);}).catch(e=>{if(live)setError(e.message);});return()=>{live=false;};},[page,search,refresh]);
+ useRestoreListScroll(!!rows);
+ return <><div className="page-heading"><div><h1>招聘申请</h1><p>每条申请独立关联人员、岗位和材料版本；在人才详情中建立申请。</p></div></div>{error&&<Notice kind="error">{error}</Notice>}<section className="panel"><form className="toolbar" onSubmit={e=>{e.preventDefault();setSearch(q);setPage(1);}}><input value={q} onChange={e=>setQ(e.target.value)} aria-label="搜索岗位或人员" placeholder="搜索岗位或人员"/><button>搜索</button>{(q||search)&&<button type="button" onClick={()=>setFilters({page:1,q:'',search:''})}>清空条件</button>}</form>{error?<RetryError onRetry={()=>setRefresh(x=>x+1)}>{error}</RetryError>:!rows?<Loading>正在读取申请…</Loading>:!rows.items.length?search?<div className="empty"><h3>没有符合条件的申请</h3><p>清空条件可返回完整列表。</p></div>:<Empty>先建立人才档案，再选择招聘岗位与简历版本。</Empty>:<div className="table-scroll"><table><thead><tr><th>候选人</th><th>岗位 / 版本</th><th>简历版本</th><th>申请批次</th><th>状态</th><th>建立时间</th></tr></thead><tbody>{rows.items.map(a=><tr key={a.id}><td><strong>{a.name}</strong></td><td>{a.title}<small>岗位 V{a.job_version}</small></td><td>V{a.resume_version}</td><td>{a.batch}</td><td><Badge>{statusLabels[a.status]}</Badge></td><td>{date(a.created_at)}</td></tr>)}</tbody></table></div>}{rows&&<Pager page={page} total={rows.total} setPage={setPage}/>}</section></>;
+}
+function Readiness(){
+ const [data,setData]=useState<{features:{name:string;status:string;detail:string}[]}>(),[error,setError]=useState('');
+ useEffect(()=>{api<{features:{name:string;status:string;detail:string}[]}>('/readiness').then(setData).catch(e=>setError(e.message));},[]);
+ return <><div className="section-heading"><div><h2>功能与接入状态</h2><p>这里记录本地实现与外部依赖；连接状态未检测时不代表健康。</p></div></div><section className="panel">{error?<RetryError onRetry={()=>{setError('');setData(undefined);api<{features:{name:string;status:string;detail:string}[]}>('/readiness').then(setData).catch(e=>setError(e.message));}}>{error}</RetryError>:!data?<Loading>正在读取系统状态…</Loading>:data.features.map(x=><div className="readiness-row" key={x.name}><div><h3>{x.name}</h3><p>{x.detail}</p><p className="muted">{x.status==='available'?'已实现 · 本地功能':x.status==='requires_model'?'已实现 · 外部模型依赖':x.status==='waiting_for_authorization'?'未接入 · 待外部授权':x.status==='blocked_missing_rules'?'规则范围受限':'未实现'}{x.status==='requires_model'?' · 配置情况见模型与接入；每次材料需另行许可。连接健康未检测，无最近检测时间。':''}</p></div><Badge>{x.status==='available'?'本地已实现':x.status==='requires_model'?'需配置及授权':x.status==='waiting_for_authorization'?'待授权':x.status==='blocked_missing_rules'?'原版规则未齐':'待开发'}</Badge></div>)}</section></>;
+}
+function Audit(){
+ const [items,setItems]=useState<{id:string;action:string;actor_id:string;object_id:string;created_at:string}[]>(),[error,setError]=useState('');
+ const load=()=>{setError('');setItems(undefined);api<{items:NonNullable<typeof items>}>('/audit-events?page_size=100').then(x=>setItems(x.items)).catch(e=>setError(e.message));};
+ useEffect(load,[]);
+ return <><div className="section-heading"><div><h2>操作审计</h2><p>最近100条授权范围内的事件；“已记录”不等于所有业务均成功。</p></div></div><section className="panel">{error?<RetryError onRetry={load}>{error}</RetryError>:!items?<Loading>正在读取审计记录…</Loading>:!items.length?<Empty>当前授权范围内尚无审计记录。</Empty>:<div className="table-scroll"><table><thead><tr><th>时间</th><th>动作</th><th>对象 / 引用</th><th>结果</th><th>追溯信息</th></tr></thead><tbody>{items.map(x=>{const a=auditDisplay(x.action);return <tr key={x.id}><td>{date(x.created_at)}</td><td>{a.label}{!a.known&&<small>事件含义待解释，保留原码</small>}</td><td>{a.object}<small className="mono">{x.object_id?.slice(0,8)??'—'}</small></td><td>{a.result}</td><td><details className="audit-reference"><summary>完整引用</summary><p className="mono">事件：{x.action}<br/>对象：{x.object_id??'未提供'}<br/>操作人：{x.actor_id}</p><button onClick={()=>void navigator.clipboard.writeText(`事件 ${x.id}\n动作 ${x.action}\n对象 ${x.object_id??''}\n操作人 ${x.actor_id}`).catch(()=>setError('复制未获浏览器许可，可选择引用手动复制。'))}>复制引用</button></details></td></tr>;})}</tbody></table></div>}</section></>;
+}
+createRoot(document.getElementById('root')!).render(<StrictMode>{location.pathname.startsWith('/h5')?<H5App/>:<App/>}</StrictMode>);

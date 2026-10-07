@@ -1,0 +1,12 @@
+{
+  "document_scope_only": true,
+  "json_syntax_files_checked": 7,
+  "schemas_validated": 2,
+  "example_schema_pairs_validated": 2,
+  "uploaded_evidence_files_byte_compared": 5,
+  "application_tests_run": false,
+  "original_assessment_scripts_run": false,
+  "external_channel_integration_tested": false,
+  "live_model_calls_tested": false,
+  "note": "这里记录资料包静态检查，不等于产品验收或原测评兼容验证。"
+}

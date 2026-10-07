@@ -1,0 +1,462 @@
+{
+  "version": "original-pdf-layout-20260928",
+  "rendering": "Original vector geometry and glyph outlines; result slots cleared without guessing scores.",
+  "palette": [
+    "#ed8a8a",
+    "#e2b4b3",
+    "#6ac36c",
+    "#b3d9ad",
+    "#73a0fb",
+    "#b0c6f9",
+    "#f7c739",
+    "#f6dd9a"
+  ],
+  "pages": [
+    {
+      "id": "data",
+      "document": "data",
+      "page": 1,
+      "title": "数据报告 · 七模块总览",
+      "width": 1224.0,
+      "height": 1613.0,
+      "src": "/report-layout/data.svg",
+      "slots": [
+        {
+          "id": "style.type",
+          "x": 180,
+          "y": 430,
+          "width": 360,
+          "height": 22
+        },
+        {
+          "id": "style.temperament",
+          "x": 180,
+          "y": 453,
+          "width": 360,
+          "height": 22
+        },
+        {
+          "id": "values.interpretation",
+          "x": 108,
+          "y": 700,
+          "width": 465,
+          "height": 84
+        },
+        {
+          "id": "motivation.interpretation",
+          "x": 730,
+          "y": 701,
+          "width": 390,
+          "height": 110
+        },
+        {
+          "id": "roles.interpretation",
+          "x": 135,
+          "y": 1448,
+          "width": 440,
+          "height": 45
+        },
+        {
+          "id": "strengths.summary",
+          "x": 750,
+          "y": 1237,
+          "width": 360,
+          "height": 205
+        },
+        {
+          "id": "person.name",
+          "x": 249,
+          "y": 73,
+          "width": 120,
+          "height": 24
+        },
+        {
+          "id": "person.phone",
+          "x": 558,
+          "y": 73,
+          "width": 155,
+          "height": 24
+        },
+        {
+          "id": "person.birth_date",
+          "x": 887,
+          "y": 73,
+          "width": 170,
+          "height": 24
+        },
+        {
+          "id": "assessment.date",
+          "x": 256,
+          "y": 119,
+          "width": 180,
+          "height": 24
+        },
+        {
+          "id": "assessment.duration",
+          "x": 572,
+          "y": 119,
+          "width": 160,
+          "height": 24
+        }
+      ],
+      "source_sha256": "ee70efefe1fe15873e204c2044263a09bba5de80f76a962f61b4024dccb49f83"
+    },
+    {
+      "id": "talent-01",
+      "document": "talent",
+      "page": 1,
+      "title": "封面",
+      "width": 1224.0,
+      "height": 1545.0,
+      "src": "/report-layout/talent-01.svg",
+      "slots": [
+        {
+          "id": "person.name",
+          "x": 181,
+          "y": 860,
+          "width": 150,
+          "height": 35
+        },
+        {
+          "id": "person.birth_date",
+          "x": 811,
+          "y": 860,
+          "width": 225,
+          "height": 35
+        },
+        {
+          "id": "person.phone",
+          "x": 811,
+          "y": 918,
+          "width": 250,
+          "height": 35
+        },
+        {
+          "id": "assessment.date",
+          "x": 230,
+          "y": 975,
+          "width": 230,
+          "height": 35
+        },
+        {
+          "id": "assessment.duration",
+          "x": 811,
+          "y": 975,
+          "width": 220,
+          "height": 35
+        }
+      ],
+      "source_sha256": "2f59f2072d2b9765d7e44b28ec73fb7c90328ee6dcbb03bc728a8a5f2342d502"
+    },
+    {
+      "id": "talent-02",
+      "document": "talent",
+      "page": 2,
+      "title": "目录",
+      "width": 1224.0,
+      "height": 1545.0,
+      "src": "/report-layout/talent-02.svg",
+      "slots": [],
+      "source_sha256": "2f59f2072d2b9765d7e44b28ec73fb7c90328ee6dcbb03bc728a8a5f2342d502"
+    },
+    {
+      "id": "talent-03",
+      "document": "talent",
+      "page": 3,
+      "title": "概要与测评情况",
+      "width": 1224.0,
+      "height": 1545.0,
+      "src": "/report-layout/talent-03.svg",
+      "slots": [
+        {
+          "id": "assessment.started_at",
+          "x": 492,
+          "y": 1190,
+          "width": 130,
+          "height": 24
+        },
+        {
+          "id": "assessment.ended_at",
+          "x": 772,
+          "y": 1190,
+          "width": 130,
+          "height": 24
+        },
+        {
+          "id": "quality.interpretation",
+          "x": 387,
+          "y": 1360,
+          "width": 690,
+          "height": 66
+        }
+      ],
+      "source_sha256": "2f59f2072d2b9765d7e44b28ec73fb7c90328ee6dcbb03bc728a8a5f2342d502"
+    },
+    {
+      "id": "talent-04",
+      "document": "talent",
+      "page": 4,
+      "title": "元五人格",
+      "width": 1224.0,
+      "height": 1545.0,
+      "src": "/report-layout/talent-04.svg",
+      "slots": [
+        {
+          "id": "big_five.interpretation",
+          "x": 139,
+          "y": 575,
+          "width": 957,
+          "height": 30
+        },
+        {
+          "id": "big_five.emotion_text",
+          "x": 347,
+          "y": 1023,
+          "width": 700,
+          "height": 28
+        },
+        {
+          "id": "traits.introduction",
+          "x": 145,
+          "y": 1181,
+          "width": 960,
+          "height": 30
+        },
+        {
+          "id": "traits.table",
+          "x": 108,
+          "y": 1235,
+          "width": 1010,
+          "height": 185
+        }
+      ],
+      "source_sha256": "2f59f2072d2b9765d7e44b28ec73fb7c90328ee6dcbb03bc728a8a5f2342d502"
+    },
+    {
+      "id": "talent-05",
+      "document": "talent",
+      "page": 5,
+      "title": "职业角色",
+      "width": 1224.0,
+      "height": 1545.0,
+      "src": "/report-layout/talent-05.svg",
+      "slots": [
+        {
+          "id": "roles.primary",
+          "x": 128,
+          "y": 720,
+          "width": 451,
+          "height": 350
+        },
+        {
+          "id": "roles.secondary",
+          "x": 646,
+          "y": 720,
+          "width": 451,
+          "height": 350
+        },
+        {
+          "id": "roles.preferred_jobs",
+          "x": 151,
+          "y": 1321,
+          "width": 433,
+          "height": 76
+        },
+        {
+          "id": "roles.avoided_jobs",
+          "x": 672,
+          "y": 1340,
+          "width": 430,
+          "height": 61
+        }
+      ],
+      "source_sha256": "2f59f2072d2b9765d7e44b28ec73fb7c90328ee6dcbb03bc728a8a5f2342d502"
+    },
+    {
+      "id": "talent-06",
+      "document": "talent",
+      "page": 6,
+      "title": "职业能力",
+      "width": 1224.0,
+      "height": 1545.0,
+      "src": "/report-layout/talent-06.svg",
+      "slots": [
+        {
+          "id": "abilities.overview",
+          "x": 172,
+          "y": 730,
+          "width": 928,
+          "height": 60
+        },
+        {
+          "id": "abilities.top_six",
+          "x": 199,
+          "y": 892,
+          "width": 500,
+          "height": 279
+        },
+        {
+          "id": "abilities.bottom_three",
+          "x": 199,
+          "y": 1197,
+          "width": 500,
+          "height": 141
+        },
+        {
+          "id": "abilities.layers",
+          "x": 783,
+          "y": 910,
+          "width": 320,
+          "height": 445
+        }
+      ],
+      "source_sha256": "2f59f2072d2b9765d7e44b28ec73fb7c90328ee6dcbb03bc728a8a5f2342d502"
+    },
+    {
+      "id": "talent-07",
+      "document": "talent",
+      "page": 7,
+      "title": "职业动机",
+      "width": 1224.0,
+      "height": 1545.0,
+      "src": "/report-layout/talent-07.svg",
+      "slots": [
+        {
+          "id": "motivation.top_bottom",
+          "x": 258,
+          "y": 577,
+          "width": 850,
+          "height": 170
+        },
+        {
+          "id": "motivation.explanations",
+          "x": 258,
+          "y": 775,
+          "width": 845,
+          "height": 210
+        },
+        {
+          "id": "motivation.tendency",
+          "x": 122,
+          "y": 1100,
+          "width": 477,
+          "height": 83
+        },
+        {
+          "id": "motivation.driver",
+          "x": 637,
+          "y": 1134,
+          "width": 471,
+          "height": 86
+        }
+      ],
+      "source_sha256": "2f59f2072d2b9765d7e44b28ec73fb7c90328ee6dcbb03bc728a8a5f2342d502"
+    },
+    {
+      "id": "talent-08",
+      "document": "talent",
+      "page": 8,
+      "title": "职业价值观与才干棋盘",
+      "width": 1224.0,
+      "height": 1545.0,
+      "src": "/report-layout/talent-08.svg",
+      "slots": [
+        {
+          "id": "values.summary",
+          "x": 140,
+          "y": 556,
+          "width": 960,
+          "height": 35
+        },
+        {
+          "id": "values.anchors",
+          "x": 167,
+          "y": 607,
+          "width": 940,
+          "height": 141
+        },
+        {
+          "id": "strengths.board",
+          "x": 233,
+          "y": 1268,
+          "width": 889,
+          "height": 172
+        }
+      ],
+      "source_sha256": "2f59f2072d2b9765d7e44b28ec73fb7c90328ee6dcbb03bc728a8a5f2342d502"
+    },
+    {
+      "id": "talent-09",
+      "document": "talent",
+      "page": 9,
+      "title": "才干排序与职业风格",
+      "width": 1224.0,
+      "height": 1545.0,
+      "src": "/report-layout/talent-09.svg",
+      "slots": [
+        {
+          "id": "strengths.top_bottom",
+          "x": 138,
+          "y": 230,
+          "width": 974,
+          "height": 172
+        },
+        {
+          "id": "style.temperament",
+          "x": 190,
+          "y": 929,
+          "width": 700,
+          "height": 31
+        },
+        {
+          "id": "style.type",
+          "x": 190,
+          "y": 1016,
+          "width": 700,
+          "height": 31
+        },
+        {
+          "id": "style.interpretation",
+          "x": 142,
+          "y": 1180,
+          "width": 970,
+          "height": 111
+        }
+      ],
+      "source_sha256": "2f59f2072d2b9765d7e44b28ec73fb7c90328ee6dcbb03bc728a8a5f2342d502"
+    },
+    {
+      "id": "talent-10",
+      "document": "talent",
+      "page": 10,
+      "title": "TA的综合建议",
+      "width": 1224.0,
+      "height": 1545.0,
+      "src": "/report-layout/talent-10.svg",
+      "slots": [
+        {
+          "id": "advice.management",
+          "x": 127,
+          "y": 330,
+          "width": 980,
+          "height": 220
+        },
+        {
+          "id": "advice.roles",
+          "x": 127,
+          "y": 640,
+          "width": 980,
+          "height": 190
+        },
+        {
+          "id": "advice.environment",
+          "x": 127,
+          "y": 918,
+          "width": 980,
+          "height": 110
+        }
+      ],
+      "source_sha256": "2f59f2072d2b9765d7e44b28ec73fb7c90328ee6dcbb03bc728a8a5f2342d502"
+    }
+  ]
+}

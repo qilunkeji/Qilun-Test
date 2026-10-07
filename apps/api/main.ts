@@ -1,0 +1,18 @@
+import { resolve } from 'node:path';
+import { openDatabase } from './db.ts';
+import { createApp } from './app.ts';
+import {deploymentConfig} from './deployment.ts';
+import {iamConfig,talentIAM} from './iam.ts';
+const deployment=deploymentConfig(process.env);
+const key=process.env.CONTACT_ENCRYPTION_KEY??'';
+if(!/^[a-f0-9]{64}$/i.test(key))throw new Error('Missing server encryption key. Run npm run init first.');
+const db=await openDatabase(process.env.DATA_DIR??'.local/database');
+const port=deployment.port;
+await db.query("UPDATE ai_runs SET status='interrupted',error_code='PROCESS_INTERRUPTED' WHERE status='running'");
+const defaultTenantId=process.env.DEFAULT_TENANT_ID;
+if(deployment.production&&!defaultTenantId)throw new Error('Production requires an explicit DEFAULT_TENANT_ID');
+if(defaultTenantId&&!(await db.query('SELECT id FROM tenants WHERE id=$1',[defaultTenantId])).rows.length)throw new Error('Configured login scope does not exist');
+const iamOptions=iamConfig(process.env,deployment.origin),iam=iamOptions?talentIAM(db,iamOptions):undefined;
+const app=createApp(db,{origin:deployment.origin,h5Origin:process.env.H5_ORIGIN,production:deployment.production,defaultTenantId,iam,contactKey:Buffer.from(key,'hex'),staticDir:resolve('dist/admin-web')});
+const server=app.listen(port,deployment.host,()=>console.log(`齐论AI ${deployment.origin}；单实例上游 127.0.0.1:${port}`));
+for(const signal of ['SIGINT','SIGTERM']) process.on(signal,()=>server.close(()=>{iam?.close();void db.close().then(()=>process.exit(0));}));

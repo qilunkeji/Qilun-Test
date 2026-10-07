@@ -1,0 +1,53 @@
+{
+ "status": "registered_and_enabled_in_production_2026-10-06",
+ "name": "齐论人才管理系统",
+ "system_key": "talent",
+ "base_url": "https://rc.iqilun.cn",
+ "issuer": "https://zh.iqilun.cn",
+ "login_url": "https://rc.iqilun.cn/api/iam/login",
+ "redirect_uris": ["https://rc.iqilun.cn/api/iam/callback"],
+ "logout_uris": ["https://rc.iqilun.cn/"],
+ "webhook_url": "https://rc.iqilun.cn/api/iam/webhook",
+ "protocol": "OIDC Authorization Code + PKCE S256; client_secret_post; query response mode",
+ "scopes": ["openid", "profile", "offline_access"],
+ "permissions": [
+  {"name": "人才系统访问", "permission_key": "talent.view"},
+  {"name": "人才负责人管理", "permission_key": "talent.manage"},
+  {"name": "招聘业务", "permission_key": "talent.recruit"},
+  {"name": "操作审计", "permission_key": "talent.audit"}
+ ],
+ "roles": [
+  {"name": "人才负责人", "role_key": "talent_lead", "permissions": ["talent.view", "talent.manage"]},
+  {"name": "招聘HR", "role_key": "hr", "permissions": ["talent.view", "talent.recruit"]},
+  {"name": "运维审计", "role_key": "ops", "permissions": ["talent.view", "talent.audit"]},
+  {"name": "面试成员（当前无业务档案读取权限）", "role_key": "interviewer", "permissions": ["talent.view"]}
+ ],
+ "policy": {
+  "one_recognized_role_per_user": true,
+  "no_automatic_admin": true,
+  "no_username_email_phone_auto_binding": true,
+  "legacy_binding": "Only an administrator-confirmed local_user_id (original staff_users.id) may bind an existing account.",
+  "every_request_authorization": "GET issuer/api/v1/me with access token; reject on outage or revoked grants.",
+  "logout": "Local POST /api/iam/logout ends only the talent session. Central logout revokes all system tokens.",
+  "h5": "Candidate invitation links and PINs remain independent of staff SSO."
+ },
+ "private_configuration_to_return": ["IAM_SYSTEM_ID", "IAM_CLIENT_ID", "IAM_CLIENT_SECRET", "IAM_WEBHOOK_SECRET"],
+ "server_configuration": {
+  "IAM_ENABLED": "1 in production; private values remain server-only",
+  "IAM_ISSUER": "https://zh.iqilun.cn",
+  "IAM_SESSION_DB": "/app/.local/iam/sessions.sqlite",
+  "DEFAULT_TENANT_ID": "retain existing private scope; never require users to type it"
+ },
+ "production_acceptance": {
+  "registered_system_key": "talent",
+  "registered_permissions": 4,
+  "registered_roles": 4,
+  "default_role": null,
+  "designated_initial_grant": "huangfeihong:talent_lead",
+  "local_password_login": false,
+  "anonymous_oidc_redirect": "verified to the central login page",
+  "offline_access_consent": "prompt=consent verified in the production authorization request",
+  "webhook_route": "verified; unsigned requests are rejected",
+  "secrets": "stored only in private server configuration"
+ }
+}

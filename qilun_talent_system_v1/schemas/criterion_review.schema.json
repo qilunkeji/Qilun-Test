@@ -1,0 +1,175 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:qilun:talent:criterion-review:1.0",
+  "title": "岗位证据分析草稿，不是录用决定或人格评分",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "job_version_id",
+    "resume_version_id",
+    "criteria",
+    "missing_information",
+    "review_summary"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "job_version_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "resume_version_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "criteria": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "criterion_id",
+          "status",
+          "evidence_refs",
+          "explanation",
+          "clarifying_questions"
+        ],
+        "properties": {
+          "criterion_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "supported",
+              "partial",
+              "unknown",
+              "conflict"
+            ],
+            "description": "supported只说明材料中有相应表述，不等于外部核实"
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "source_id",
+                "source_version_id",
+                "source_type",
+                "locator",
+                "quote",
+                "verification_status"
+              ],
+              "properties": {
+                "source_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "source_version_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "source_type": {
+                  "type": "string",
+                  "enum": [
+                    "resume",
+                    "transcript",
+                    "work_sample",
+                    "reference_document",
+                    "job"
+                  ]
+                },
+                "locator": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "可由后端解析的页/段/行或时间戳；必须存在于当前授权快照"
+                },
+                "quote": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "verification_status": {
+                  "type": "string",
+                  "enum": [
+                    "self_reported",
+                    "document_record",
+                    "interview_reported",
+                    "independently_verified",
+                    "unknown"
+                  ]
+                },
+                "speaker_role": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "enum": [
+                    "candidate",
+                    "interviewer",
+                    "other",
+                    "unknown",
+                    null
+                  ]
+                },
+                "context_locator": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              }
+            }
+          },
+          "explanation": {
+            "type": "string",
+            "minLength": 1
+          },
+          "clarifying_questions": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "status": {
+                  "enum": [
+                    "supported",
+                    "partial",
+                    "conflict"
+                  ]
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "evidence_refs": {
+                  "minItems": 1
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "missing_information": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "review_summary": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

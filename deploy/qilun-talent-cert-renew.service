@@ -1,0 +1,7 @@
+[Unit]
+Description=Renew only rc.iqilun.cn certificate
+After=network-online.target docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/certbot renew --non-interactive --cert-name rc.iqilun.cn --config-dir /opt/qilun-talent/shared/letsencrypt --work-dir /opt/qilun-talent/shared/acme-work --logs-dir /opt/qilun-talent/shared/acme-logs --deploy-hook /opt/qilun-talent/current/deploy/renew-rc.sh

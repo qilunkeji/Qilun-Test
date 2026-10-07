@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0",
+  "package_id": "gaohereference-unverified",
+  "version": "evidence-20260916",
+  "display_name": "原系统材料登记（不能发布正式测评）",
+  "status": "blocked_missing_rules",
+  "engine_mode": "licensed_compatible",
+  "authorization": {
+    "status": "unverified",
+    "evidence_ref": null,
+    "permitted_purposes": []
+  },
+  "reported_output_modules": [
+    "元五人格",
+    "职业风格",
+    "职业角色",
+    "职业能力",
+    "职业动机",
+    "职业价值观",
+    "职业优势"
+  ],
+  "observed_configuration": {
+    "configured_module_name": "职业定位",
+    "configured_question_count": 64,
+    "observed_distinct_question_ids": [
+      "944",
+      "943",
+      "942"
+    ],
+    "full_question_text_imported": false
+  },
+  "questions": [],
+  "scoring_rule_set_ref": null,
+  "interpretation_template_ref": null,
+  "missing_materials": [
+    "使用授权与用途",
+    "完整题库文本及选项",
+    "逐题维度映射与计分键",
+    "标准化和常模规则",
+    "完整解释模板",
+    "兼容测试所需的真实输入输出与版本"
+  ],
+  "source_refs": [
+    "E1 §每题目前究竟知道多少",
+    "E2 §题项怎样编码、提交",
+    "E5 §到底测什么"
+  ]
+}

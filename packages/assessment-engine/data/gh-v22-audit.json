@@ -1,0 +1,155 @@
+{
+  "version": "gh-handoff-v22-20261005",
+  "integrity": {
+    "outer_entries": 13,
+    "recursive_manifest_entries": 4554,
+    "unique_nested_packages": 11,
+    "index_references": 37,
+    "question_mappings_checked": 341,
+    "declared_sanitization_exceptions": [
+      "v7/verify_v7.py: declared credential sanitization; old internal digest differs"
+    ]
+  },
+  "principles": [
+    {
+      "id": "Q_BANK_277_10",
+      "module": "题库与输入结构",
+      "conclusion": "服务端计分输入为 type2 153题、type3 60题、type4 64题、type5 10项；普通题合计277，完整报告输入287；关键341行计分映射在历史快照与当前表一致。",
+      "grade": "SOURCE_AND_DB_PASS",
+      "package_checks": "历史500行均能定位；关键341行映射字段全一致",
+      "boundary": "不声称当前1020行题库之外的历史题面100%恢复。"
+    },
+    {
+      "id": "ITEM_SCORING_TYPE2_3_4_5",
+      "module": "逐题加减分",
+      "conclusion": "type2按3/1/0分给主项或对立项；type3按1/0.75/0.5/0.25/0拆分并乘权重；type4按2.5/1.5/1/0.5/0加分；type5排名1-10按5/4/3/2/1加分。",
+      "grade": "SOURCE_AND_DB_REAL_ANSWER_REPLAY_PASS",
+      "package_checks": "24/24组 SOURCE_AND_DB_PASS；FAIL=0；最大误差约3.55e-15",
+      "boundary": "证明已归档24组答案到第一层输出，不等于全部历史用户全量回归。"
+    },
+    {
+      "id": "TYPE4_TYPE5_CALIBRATION",
+      "module": "第一层校准",
+      "conclusion": "type4使用avg=11.918/maxOld=20/maxNew=20；type5使用avg=10.1749/maxOld=28/maxNew=20；高低分段公式来自服务端源码并复算一致。",
+      "grade": "SOURCE_AND_DB_REAL_ANSWER_REPLAY_PASS",
+      "package_checks": "包含在24/24组逐题闭环内",
+      "boundary": "校准公式只按已验证配置执行，不推测其他历史参数版本。"
+    },
+    {
+      "id": "TYPE16_36_6",
+      "module": "性格分析与36子项/6父项",
+      "conclusion": "第一层分经B/C/D/Notion四来源、固定名次权重和规则表合成36子项；子项>30封顶；父项按6子项和占36子项总和乘100；当前版本278-283无规则故为0。",
+      "grade": "SOURCE_RULE_AND_SINGLE_SAMPLE_PASS",
+      "package_checks": "第一层56/56 PASS；type16 42/42 PASS",
+      "boundary": "单样本闭环，不外推全部历史用户；不声称278-283在其他历史版本也有规则。"
+    },
+    {
+      "id": "ROLE_8",
+      "module": "8个职业角色",
+      "conclusion": "8角色由C/B/D/Notion分项加权合成；baseC/baseB按cTotalSubScoreAbs与bTotalScore动态区间调整；Junior/SeniorNew再按角色折线配置校准。",
+      "grade": "SOURCE_RULE_AND_SINGLE_SAMPLE_PASS",
+      "package_checks": "服务端第一层→8角色56/56；原始答案→第一层→8角色56/56",
+      "boundary": "单样本闭环，不外推全部历史用户。"
+    },
+    {
+      "id": "C4TOP_STYLE",
+      "module": "四字母风格",
+      "conclusion": "60题拆分加权成8父项后，E/I、S/N、T/F、J/P四组按左边严格大于右边取左、否则取右；同分取I/N/F/P；再查resultId。",
+      "grade": "FULL_DB_REPLAY_PASS_WITH_ONE_ISOLATED_FAIL",
+      "package_checks": "464084人有原始答案；445734完整PASS；NO_C4TOP 18300；排除49；FAIL 1",
+      "boundary": "唯一FAIL定性为一孤立2倍累加异常，具体触发路径未恢复。"
+    },
+    {
+      "id": "JUNIOR_REAL_RESPONSE",
+      "module": "junior真实返回",
+      "conclusion": "/aggregateH5/getJuniorReport链路已定位；roleForAll按Senior校准分整数DESC、eiid ASC；roleForAllDetail当前实际8行；大五文字按N阈值和E/A/C/O均值偏离组合触发。",
+      "grade": "REAL_RUNTIME_PARTIAL_PASS",
+      "package_checks": "3样本×8字段=24检查；PASS23；RUNTIME_MISMATCH1；2样本8/8全对",
+      "boundary": "一份样本roleForAll历史分行与当前库不一致，原因未恢复。"
+    },
+    {
+      "id": "SENIOR_FIELDS",
+      "module": "senior字段公式",
+      "conclusion": "4个合法候选可离线复算grade、potential系列、motivation系列和type4Result等9字段；公式和输入来自源码与当前库。",
+      "grade": "SOURCE_AND_DB_COMPUTED_RUNTIME_PENDING",
+      "package_checks": "4候选×9字段可计算；无同次完整真实响应",
+      "boundary": "缺querySeniorReport同次body.datas，不得标REAL_RUNTIME_PASS。"
+    },
+    {
+      "id": "GRADE_STAR",
+      "module": "星级",
+      "conclusion": "typeid=2总分0-99/100-151/152-260/261-356/>=356边界映射1-5星；前端按k<grade点亮；无grade按0。",
+      "grade": "SOURCE_FORMULA_AND_PARTIAL_REPLAY",
+      "package_checks": "4候选离线可算；历史16次querySeniorReport均无datas",
+      "boundary": "缺同次真实星级响应，不能全量标真实运行时PASS。"
+    },
+    {
+      "id": "POSITION_MODEL",
+      "module": "岗位模型生成",
+      "conclusion": "成员28项type=8素质分按名次基础分和分数段倍率聚合；同分eiid升序；保存前10和后3共13行。",
+      "grade": "SOURCE_AND_DB_REPLAY_PARTIAL_PASS",
+      "package_checks": "111模型中106个13行全对；逐字段1379/1443；5个模型直接复算失败",
+      "boundary": "5+12共17个模型历史真实输入未恢复，拟合矩阵不是真输入。"
+    },
+    {
+      "id": "FINAL_MATCH",
+      "module": "最终岗位匹配分",
+      "conclusion": "93条记录路径为/addSomeMatchPeoRecord；四项分升序后乘1.02/1/1/0.98，再乘0.4/0.3/0.2/0.1，HALF_UP取整。",
+      "grade": "SOURCE_AND_DB_REPLAY_PASS_WITH_RAW_INTERVAL_PROOF",
+      "package_checks": "93条中85条整数直算全对；93条误差<=1；93/93落入raw半单位HALF_UP桶",
+      "boundary": "8条差1因库存只剩整数四项分；不能反推唯一raw小数。"
+    },
+    {
+      "id": "REPORT_BRANCHES",
+      "module": "报告文字/标签触发",
+      "conclusion": "报告分支总55条；7条已有真实样本；其余48条缺少历史响应、边界样本、运行时状态、版本响应或差异原因。",
+      "grade": "REAL_SAMPLE_PARTIAL_ONLY",
+      "package_checks": "真实闭环7/55；未闭环48/55",
+      "boundary": "源码推测不得升级为REAL_RUNTIME_PASS。"
+    },
+    {
+      "id": "V21_NONIDENTIFIABILITY",
+      "module": "证据边界",
+      "conclusion": "对5个硬缺口分别构造两个均兼容现有证据但真值不同的历史世界，证明仅凭现有证据不可唯一还原。",
+      "grade": "NOT_IDENTIFIABLE_FROM_RETAINED_EVIDENCE",
+      "package_checks": "5/5缺口均为NOT_IDENTIFIABLE",
+      "boundary": "兼容世界不是历史真值；必须新原始观察才能升级。"
+    },
+    {
+      "id": "FUTURE_CLOSURE_RULES",
+      "module": "未来证据升级",
+      "conclusion": "5个缺口分别定义了唯一可接受的原始证据类型和拒绝项；无决定性观察时状态保持NO_NEW_DECISIVE_OBSERVATION。",
+      "grade": "DECISION_RULE_FIXED",
+      "package_checks": "5/5缺口有升级/拒绝规则",
+      "boundary": "规则本身不关闭实际缺口。"
+    }
+  ],
+  "gaps": [
+    {
+      "gapId": "GAP_SENIOR_COMPLETE_RESPONSE",
+      "status": "REMAINS_NOT_CLOSED",
+      "closureEvidence": "同次非空body.datas响应+人/报告/时间/版本锚点"
+    },
+    {
+      "gapId": "GAP_HISTORICAL_MODEL_TRUE_INPUTS",
+      "status": "REMAINS_NOT_CLOSED",
+      "closureEvidence": "17个模型的创建/编辑请求体、成员、旧分快照或覆盖变更的备份/binlog"
+    },
+    {
+      "gapId": "GAP_REPORT_RUNTIME_BRANCHES",
+      "status": "REMAINS_NOT_CLOSED",
+      "closureEvidence": "48条分支逐条真实响应及边界/状态/版本/异常证据"
+    },
+    {
+      "gapId": "GAP_2025_DEPLOYED_REVISION",
+      "status": "REMAINS_NOT_CLOSED",
+      "closureEvidence": "部署时间→SVN revision→artifact hash不可变链"
+    },
+    {
+      "gapId": "GAP_ROLEFORALL_ANOMALY_CAUSE",
+      "status": "REMAINS_NOT_CLOSED",
+      "closureEvidence": "同事件前后DB/binlog+请求响应/异常证据"
+    }
+  ],
+  "complete_historical_replica": false
+}
