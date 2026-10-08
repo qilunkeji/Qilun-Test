@@ -21,7 +21,7 @@ test ! -e "$root/current.external-agent-next" && test ! -L "$root/current.extern
 test "$(sha256sum "$old/dist/admin-web/index.html" | cut -d ' ' -f1)" = 6389e3e2a9a01bcc0a7a3d16437eafcbcd3ba65a849982cb97e7e22d3a9ff9de
 test "$(sha256sum "$archive" | cut -d ' ' -f1)" = "$2"
 # Reject paths outside approved source/build areas; no private payloads/symlinks.
-tar -tzf "$archive" | awk '/(^\/|(^|\/)\.\.(\/|$)|(^|\/)\.env($|\.)|^\.local\/|^node_modules\/)/{bad=1} !/^(apps\/|packages\/|infra\/|dist\/|deploy\/|tests\/helpers\/|package.json$|package-lock.json$)/{bad=1} END{exit bad}'
+tar -tzf "$archive" | awk '/(^\/|(^|\/)\.\.(\/|$)|(^|\/)\.env($|\.)|^\.local\/|^node_modules\/)/{bad=1} !/^(apps\/|packages\/|infra\/|dist\/|deploy\/|tests\/helpers\/|tests\/project-assessments.test.ts$|package.json$|package-lock.json$)/{bad=1} END{exit bad}'
 test -z "$(tar -tvzf "$archive" | awk 'substr($1,1,1)!="-" && substr($1,1,1)!="d" {print "invalid"}')"
 systemctl is-active --quiet qilun-talent.service
 cp -a "$old" "$new"
@@ -38,6 +38,7 @@ isolated(){ docker run --rm --network none --user 1000:1000 --read-only --cap-dr
 isolated deploy/verify-agent-baseline.mjs
 isolated deploy/verify-agent-startup.mjs
 isolated deploy/verify-external-agent-candidate.mjs
+isolated tests/project-assessments.test.ts
 model_hash=$(sha256sum "$root/shared/gh-inference-v1/model.json" | cut -d ' ' -f1)
 env_mode=$(stat -c %a "$root/shared/production.env")
 env_owner=$(stat -c %u:%g "$root/shared/production.env")

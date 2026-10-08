@@ -10,6 +10,6 @@ try{
   // Fixed identifier allowlist, no dynamic user-controlled SQL.
   counts[table]=(await db.query(`SELECT count(*)::int n FROM ${table}`)).rows[0].n;
  }
- if(mode==='before')await writeFile(snapshot,JSON.stringify(counts),{flag:'wx',mode:0o600});else {assert.deepEqual(counts,JSON.parse(await readFile(snapshot,'utf8')));assert.equal((await db.query('SELECT version FROM schema_migrations WHERE version=10')).rows.length,1);}
- console.log(JSON.stringify({result:'passed',phase:mode,counts_preserved:mode==='after',tables:Object.keys(counts).length}));
+ if(mode==='before')await writeFile(snapshot,JSON.stringify(counts),{flag:'wx',mode:0o600});else {assert.deepEqual(counts,JSON.parse(await readFile(snapshot,'utf8')));for(const version of [10,11])assert.equal((await db.query('SELECT version FROM schema_migrations WHERE version=$1',[version])).rows.length,1);}
+ console.log(JSON.stringify({result:'passed',phase:mode,counts_preserved:mode==='after',tables:Object.keys(counts).length,counts,...(mode==='after'?{migrations:[10,11]}:{})}));
 }finally{await db.close();}

@@ -20,6 +20,6 @@ try{
  assert.equal((await fetch(origin+'/mcp/agent',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id:1,method:'ping'})})).status,401);
  child.kill('SIGTERM');const [code]=await exited;assert.equal(code,0);
  // Only now reopen disk: never two PGlite processes for one directory.
- const db=await openDatabase(temporary);try{assert.equal((await db.query('SELECT max(version)::int n FROM schema_migrations')).rows[0].n,10);assert.equal((await db.query('SELECT count(*)::int n FROM candidates')).rows[0].n,0);}finally{await db.close();}
- console.log(JSON.stringify({result:'passed',main_startup:true,clean_shutdown:true,database:'empty_disposable_disk',migration:10,assessment_ready:true,production_touched:false}));
+ const db=await openDatabase(temporary);try{assert.equal((await db.query('SELECT max(version)::int n FROM schema_migrations')).rows[0].n,11);assert.equal((await db.query('SELECT count(*)::int n FROM candidates')).rows[0].n,0);}finally{await db.close();}
+ console.log(JSON.stringify({result:'passed',main_startup:true,clean_shutdown:true,database:'empty_disposable_disk',migration:11,assessment_ready:true,production_touched:false}));
 }finally{if(child&&child.exitCode===null){child.kill('SIGTERM');await exited;}assert.ok(temporary.startsWith(join(tmpdir(),'qilun-agent-candidate-')));await rm(temporary,{recursive:true});}
