@@ -124,8 +124,8 @@ test('真实OIDC客户端：PKCE、签名、nonce/state、一次性回调、实�
   res.statusCode=404;res.end('{}');
  }).listen(0,'127.0.0.1');issuer=await listen(central);
  const origin='http://127.0.0.1:3100',hook='fictional-webhook-secret',client=createIAM({issuer,origin,clientId:'test-client',clientSecret:'fictional-secret',webhookSecret:hook,systemId:identity.system_id,database:join(directory,'sessions.sqlite'),onIdentity:async()=>({tenant_id:tenant,user_id:legacy,username:identity.username,role:'hr'})});
- const begin=async()=>{const response=await client.handle(new Request(origin+'/api/iam/login'));assert.equal(response.status,302);const target=new URL(response.headers.get('location')!);assert.equal(target.searchParams.get('code_challenge_method'),'S256');assert.equal(target.searchParams.get('redirect_uri'),origin+'/api/iam/callback');assert.equal(target.searchParams.get('scope'),'openid profile offline_access');assert.equal(target.searchParams.get('prompt'),'consent');nonce=target.searchParams.get('nonce')!;challenge=target.searchParams.get('code_challenge')!;return {cookie:response.headers.getSetCookie()[0].split(';')[0],url:origin+'/api/iam/callback?code=fictional-code&state='+target.searchParams.get('state')+'&iss='+encodeURIComponent(issuer)};};
- const finish=async(pending:Awaited<ReturnType<typeof begin>>)=>client.handle(new Request(pending.url,{headers:{Cookie:pending.cookie}}));
+ const begin=async()=>{const response=await client.handle(new Request(origin+'/api/iam/login'));assert.equal(response.status,302);const target=new URL(response.headers.get('location')!);assert.equal(target.searchParams.get('code_challenge_method'),'S256');assert.equal(target.searchParams.get('redirect_uri'),origin+'/api/iam/callback');assert.equal(target.searchParams.get('scope'),'openid profile offline_access');assert.equal(target.searchParams.get('prompt'),'consent');nonce=target.searchParams.get('nonce')!;challenge=target.searchParams.get('code_challenge')!;return {nonce,challenge,cookie:response.headers.getSetCookie()[0].split(';')[0],url:origin+'/api/iam/callback?code=fictional-code&state='+target.searchParams.get('state')+'&iss='+encodeURIComponent(issuer)};};
+ const finish=async(pending:Awaited<ReturnType<typeof begin>>)=>{nonce=pending.nonce;challenge=pending.challenge;return client.handle(new Request(pending.url,{headers:{Cookie:pending.cookie}}));};
  try{
   await assert.rejects(client.handle(new Request(origin+'/api/iam/login?returnTo=https://evil.invalid')));
   await assert.rejects(client.handle(new Request(origin+'/api/iam/login?returnTo=%2F%2Fevil.invalid')));
@@ -133,6 +133,8 @@ test('真实OIDC客户端：PKCE、签名、nonce/state、一次性回调、实�
   const completed=await finish(first);assert.equal(completed.status,302);assert.equal(completed.headers.get('location'),'/');const session=completed.headers.getSetCookie().find(c=>!c.includes('_state='))!.split(';')[0];
   assert.match(completed.headers.getSetCookie()[0],/HttpOnly/);assert.match(completed.headers.getSetCookie()[0],/SameSite=Lax/);
   await assert.rejects(finish(first));
+  const tabA=await begin(),tabB=await begin(),both=tabA.cookie+'; '+tabB.cookie;assert.notEqual(tabA.cookie.split('=')[0],tabB.cookie.split('=')[0]);
+  assert.equal((await finish({...tabA,cookie:both})).status,302);assert.equal((await finish({...tabB,cookie:both})).status,302);await assert.rejects(finish({...tabA,cookie:both}));
   const request=new Request(origin+'/api/v1/jobs',{headers:{Cookie:session}});const me=await client.current(request);assert.ok(me?.csrf);assert.equal(me!.local!==null,true);
   await assert.rejects(client.handle(new Request(origin+'/api/iam/logout',{method:'POST',headers:{Origin:origin,Cookie:session,'X-CSRF-Token':'wrong'}})));
   liveUser=false;await assert.rejects(client.current(request));assert.equal(await client.current(request),null);liveUser=true;

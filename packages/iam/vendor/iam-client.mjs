@@ -1883,6 +1883,7 @@ function createIAM(options) {
   fs.chmodSync(filename, 384);
   db.exec("PRAGMA journal_mode=WAL; CREATE TABLE IF NOT EXISTS iam_sessions(hash TEXT PRIMARY KEY,payload TEXT,expires INTEGER); CREATE TABLE IF NOT EXISTS iam_states(hash TEXT PRIMARY KEY,payload TEXT,expires INTEGER); CREATE TABLE IF NOT EXISTS iam_events(id TEXT PRIMARY KEY,created INTEGER);");
   const name = "iam_" + hash(clientId).slice(0, 12), stateName = name + "_state", secure = origin.startsWith("https:");
+  const stateCookie = (state) => stateName + "_" + hash(state).slice(0, 16);
   const getCookie = (req, key) => (req.headers.get("cookie") || "").split(";").map((s) => s.trim()).find((s) => s.startsWith(key + "="))?.slice(key.length + 1) || "";
   const cookie = (key, value, max = 28800) => `${key}=${value}; Path=/api; HttpOnly; SameSite=Lax; Max-Age=${max}${secure ? "; Secure" : ""}`;
   let configPromise;
@@ -1940,11 +1941,11 @@ function createIAM(options) {
       if (db.prepare("SELECT count(*) n FROM iam_states").get().n >= 1e3) fail(429, "\u767B\u5F55\u8BF7\u6C42\u8FC7\u591A\uFF0C\u8BF7\u7A0D\u540E\u91CD\u8BD5");
       const target = buildAuthorizationUrl(await config(), { redirect_uri: origin + "/api/iam/callback", scope: "openid profile offline_access", response_type: "code", response_mode: "query", prompt: "consent", state, nonce, code_challenge: challenge, code_challenge_method: "S256" });
       db.prepare("INSERT INTO iam_states VALUES(?,?,?)").run(hash(state), JSON.stringify({ state, nonce, verifier, returnTo }), Date.now() + 6e5);
-      return new Response(null, { status: 302, headers: { location: target.href, "set-cookie": cookie(stateName, state, 600) } });
+      return new Response(null, { status: 302, headers: { location: target.href, "set-cookie": cookie(stateCookie(state), state, 600) } });
     }
     if (url.pathname === "/api/iam/callback" && req.method === "GET") {
       const state = url.searchParams.get("state");
-      if (!state || state !== getCookie(req, stateName)) fail(400, "\u767B\u5F55\u72B6\u6001\u6821\u9A8C\u5931\u8D25");
+      if (!state || state !== getCookie(req, stateCookie(state)) && state !== getCookie(req, stateName)) fail(400, "\u767B\u5F55\u72B6\u6001\u6821\u9A8C\u5931\u8D25");
       const row = db.prepare("SELECT payload FROM iam_states WHERE hash=? AND expires>?").get(hash(state), Date.now());
       if (!row) fail(400, "\u767B\u5F55\u8BF7\u6C42\u5DF2\u8FC7\u671F\u6216\u5DF2\u7ECF\u4F7F\u7528");
       db.prepare("DELETE FROM iam_states WHERE hash=?").run(hash(state));
@@ -1957,7 +1958,7 @@ function createIAM(options) {
       const token = random(), headers2 = new Headers({ location: pending.returnTo });
       db.prepare("INSERT INTO iam_sessions VALUES(?,?,?)").run(hash(token), JSON.stringify({ ...tokens, subject, csrf: random(), expires_at: Date.now() + (tokens.expires_in || 600) * 1e3 }), Date.now() + 288e5);
       headers2.append("set-cookie", cookie(name, token));
-      headers2.append("set-cookie", cookie(stateName, "", 0));
+      headers2.append("set-cookie", cookie(stateCookie(state), "", 0));
       return new Response(null, { status: 302, headers: headers2 });
     }
     if (url.pathname === "/api/iam/webhook" && req.method === "POST") {

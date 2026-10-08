@@ -16,6 +16,7 @@ export function createIAM(options){
  const db=new DatabaseSync(filename);fs.chmodSync(filename,0o600);
  db.exec('PRAGMA journal_mode=WAL; CREATE TABLE IF NOT EXISTS iam_sessions(hash TEXT PRIMARY KEY,payload TEXT,expires INTEGER); CREATE TABLE IF NOT EXISTS iam_states(hash TEXT PRIMARY KEY,payload TEXT,expires INTEGER); CREATE TABLE IF NOT EXISTS iam_events(id TEXT PRIMARY KEY,created INTEGER);');
  const name='iam_'+hash(clientId).slice(0,12),stateName=name+'_state',secure=origin.startsWith('https:');
+ const stateCookie=state=>stateName+'_'+hash(state).slice(0,16);
  const getCookie=(req,key)=>(req.headers.get('cookie')||'').split(';').map(s=>s.trim()).find(s=>s.startsWith(key+'='))?.slice(key.length+1)||'';
  const cookie=(key,value,max=28800)=>`${key}=${value}; Path=/api; HttpOnly; SameSite=Lax; Max-Age=${max}${secure?'; Secure':''}`;
  let configPromise;
@@ -63,10 +64,10 @@ export function createIAM(options){
    // server may grant offline_access and issue a refresh token.
    const target=oidc.buildAuthorizationUrl(await config(),{redirect_uri:origin+'/api/iam/callback',scope:'openid profile offline_access',response_type:'code',response_mode:'query',prompt:'consent',state,nonce,code_challenge:challenge,code_challenge_method:'S256'});
    db.prepare('INSERT INTO iam_states VALUES(?,?,?)').run(hash(state),JSON.stringify({state,nonce,verifier,returnTo}),Date.now()+600000);
-   return new Response(null,{status:302,headers:{location:target.href,'set-cookie':cookie(stateName,state,600)}});
+   return new Response(null,{status:302,headers:{location:target.href,'set-cookie':cookie(stateCookie(state),state,600)}});
   }
   if(url.pathname==='/api/iam/callback'&&req.method==='GET'){
-   const state=url.searchParams.get('state');if(!state||state!==getCookie(req,stateName))fail(400,'登录状态校验失败');
+   const state=url.searchParams.get('state');if(!state||(state!==getCookie(req,stateCookie(state))&&state!==getCookie(req,stateName)))fail(400,'登录状态校验失败');
    const row=db.prepare('SELECT payload FROM iam_states WHERE hash=? AND expires>?').get(hash(state),Date.now());if(!row)fail(400,'登录请求已过期或已经使用');
    db.prepare('DELETE FROM iam_states WHERE hash=?').run(hash(state));const pending=JSON.parse(row.payload);
    const tokens=await oidc.authorizationCodeGrant(await config(),url,{pkceCodeVerifier:pending.verifier,expectedState:state,expectedNonce:pending.nonce,idTokenExpected:true});
@@ -74,7 +75,7 @@ export function createIAM(options){
    const user=await liveUser(tokens.access_token);await checkedIdentity(user,subject);
    const token=random(),headers=new Headers({location:pending.returnTo});
    db.prepare('INSERT INTO iam_sessions VALUES(?,?,?)').run(hash(token),JSON.stringify({...tokens,subject,csrf:random(),expires_at:Date.now()+(tokens.expires_in||600)*1000}),Date.now()+28800000);
-   headers.append('set-cookie',cookie(name,token));headers.append('set-cookie',cookie(stateName,'',0));
+   headers.append('set-cookie',cookie(name,token));headers.append('set-cookie',cookie(stateCookie(state),'',0));
    return new Response(null,{status:302,headers});
   }
   if(url.pathname==='/api/iam/webhook'&&req.method==='POST'){
