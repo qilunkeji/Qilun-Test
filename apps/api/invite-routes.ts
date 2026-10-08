@@ -15,6 +15,7 @@ import {loadAssessmentRuntime} from './assessment-product.ts';
 import type {AssessmentRuntime} from './assessment-product.ts';
 import {checkProject} from './project-routes.ts';
 import {profileSchema,reportMetadata,boundedActiveSeconds} from './assessment-metadata.ts';
+import {registerPublicEntryAdmin,registerPublicEntryEnrollment} from './public-entry-routes.ts';
 type Invite={profile_required:boolean;profile_cipher:string|null;active_seconds:number|null;timing_updated_at:string|null;id:string;tenant_id:string;candidate_id:string|null;application_id:string|null;package:SelfPackage|GhInvitePackage;value_draft:GhValueDraft|null;ui_progress:GhProgress|null;package_hash:string;purpose:string;expires_at:string;revoked_at:string|null;answers:Record<string,number>;revision:number;consent_at:string|null;submitted_at:string|null;answer_hash:string|null;report:unknown;created_by:string;name:string};
 function isGh(pkg:Invite['package']):pkg is GhInvitePackage{return 'kind' in pkg&&pkg.kind==='gh_reference_277';}
 const missing=()=>new ServiceError(404,'INVITE_UNAVAILABLE','链接或访问码无效，或邀请已撤销、到期；请联系邀请人。');
@@ -24,6 +25,7 @@ const archiveJoin='LEFT JOIN assessment_archive_bindings b ON b.tenant_id=i.tena
 const retained='((i.candidate_id IS NOT NULL AND c.retention_until>now()) OR (i.candidate_id IS NULL AND i.independent_retention_until>now() AND (b.candidate_id IS NULL OR c.retention_until>now())))';
 const authFields={token:z.string().min(32).max(128),pin:z.string().regex(/^\d{6}$/)};
 export function registerPublicInvites(app:Express,db:Database,runtime:AssessmentRuntime,contactKey:Buffer){
+ registerPublicEntryEnrollment(app,db,contactKey,runtime);
  const inverse=runtime.legacy;
  const failures=new Map<string,{count:number;until:number}>();
  async function lookup(req:Request,tx:Pick<Database,'query'>,input:{token:string;pin:string},lock=false){
@@ -71,6 +73,7 @@ export function registerPublicInvites(app:Express,db:Database,runtime:Assessment
  });
 }
 export function registerInviteAdmin(app:Express,db:Database,h5Origin:string,runtime:AssessmentRuntime,contactKey:Buffer){
+ registerPublicEntryAdmin(app,db,h5Origin,runtime);
  const inverse=runtime.legacy;
  app.post('/api/v1/assessment/people',async(req,res)=>{
   const a=business(res),input=z.object({name:z.string().trim().min(1).max(80),processing_basis:z.string().trim().min(5).max(500)}).strict().parse(req.body),id=randomUUID();

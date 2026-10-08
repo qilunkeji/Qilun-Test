@@ -6,7 +6,7 @@ const base='https://rc.iqilun.cn',checks=[];
 async function request(path,expected,options){const r=await fetch(base+path,{signal:AbortSignal.timeout(15000),...options});assert.equal(r.status,expected,path);checks.push({path,status:r.status});return r;}
 const hash=x=>createHash('sha256').update(x).digest('hex');
 const html=await (await request('/',200)).text();assert.equal(html,await readFile('dist/admin-web/index.html','utf8'));
-for(const path of ['/h5/','/h5/report','/brand/qilun-logo-light.png','/favicon.ico','/report-layout/manifest.json'])await request(path,200);
+for(const path of ['/h5/','/h5/report','/h5/join','/brand/qilun-logo-light.png','/favicon.ico','/report-layout/manifest.json'])await request(path,200);
 for(const file of (await readdir('dist/admin-web/assets')).filter(name=>/\.(js|css)$/.test(name))){const path='/assets/'+file,r=await request(path,200);assert.equal(hash(Buffer.from(await r.arrayBuffer())),hash(await readFile('dist/admin-web'+path)),path);}
 assert.equal(hash(Buffer.from(await (await request('/brand/qilun-logo-light.png',200)).arrayBuffer())),hash(await readFile('apps/admin-web/public/brand/qilun-logo-light.png')));
 const health=(await (await request('/api/v1/health',200)).json()).data;
@@ -21,6 +21,8 @@ const options=(await (await request('/api/v1/auth/options',200)).json()).data;as
 for(const path of ['product-rules','rules','replication','gh-evidence','gh-replay','gh-inference','layout/source/data.svg'])await request('/api/v1/assessment/'+path,401);
 await request('/api/v1/assessment/gh-replay/score',401,{method:'POST',headers:{Origin:base,'Content-Type':'application/json'},body:'{}'});
 await request('/api/v1/public/assessment/open',400,{method:'POST',headers:{Origin:base,'Content-Type':'application/json'},body:'{}'});
+await request('/api/v1/assessment/public-entries',401);
+for(const action of ['open','enroll'])await request('/api/v1/public/assessment/entry/'+action,400,{method:'POST',headers:{Origin:base,'Content-Type':'application/json'},body:'{}'});
 await request('/.local/gh-inference-v1/model.json',404);
 // Unrecognized non-API paths use the SPA shell, not the source filesystem.
 const source=await request('/packages/assessment-engine/data/qilun-standard-v1.json',200);

@@ -28,5 +28,5 @@ try{
  await f.app.locals.agentRuntime.wake.drain();assert.equal(f.modelCalls(),0);assert.equal((await f.db.query('SELECT count(*)::int n FROM candidates')).rows[0].n,before);
  assert.equal((await f.db.query("SELECT id FROM agent_tasks WHERE state<>'succeeded'")).rows.length,0);
  const logs=(await f.db.query('SELECT status FROM agent_wake_log')).rows;assert.ok(logs.every(x=>x.status==='skipped_unconfigured'));
- console.log(JSON.stringify({result:'passed',database:'isolated_memory',fixtures:'fictional_only',migration:10,static_page:200,assessment_ready:true,completed:passed,model_calls:0,wake:'skipped_unconfigured',timing:p.timing},null,2));
+ console.log(JSON.stringify({result:'passed',database:'isolated_memory',fixtures:'fictional_only',migration:12,static_page:200,assessment_ready:true,completed:passed,model_calls:0,wake:'skipped_unconfigured',timing:p.timing},null,2));
 }finally{await f.close();restore();}
