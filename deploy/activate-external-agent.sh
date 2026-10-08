@@ -78,7 +78,10 @@ test "$ready" = 1
 docker exec qilun-talent-rc node deploy/verify-qilun-public.mjs
 # Stop before opening a second PGlite reader. Nothing writes to production during this check.
 systemctl stop qilun-talent.service
-test ! "$(docker inspect qilun-talent-rc 2>/dev/null)"
+if docker inspect qilun-talent-rc >/dev/null 2>&1; then
+ echo 'Container has not exited; no second database reader.' >&2
+ exit 1
+fi
 counts after
 test "$model_hash" = "$(sha256sum "$root/shared/gh-inference-v1/model.json" | cut -d ' ' -f1)"
 isolated deploy/verify-agent-baseline.mjs
