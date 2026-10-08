@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "齐论简历收集助手（本地验收版）",
+  "version": "0.1.0",
+  "description": "人工粘贴或获准下载文本，预览确认后导入齐论；不读取BOSS页面或登录凭据。",
+  "permissions": ["storage", "sidePanel"],
+  "optional_host_permissions": ["http://127.0.0.1/*", "https://rc.iqilun.cn/*"],
+  "action": {"default_title": "打开齐论简历收集助手"},
+  "background": {"service_worker": "background.js"},
+  "side_panel": {"default_path": "panel.html"},
+  "content_security_policy": {"extension_pages": "script-src 'self'; object-src 'none'; connect-src http://127.0.0.1:* https://rc.iqilun.cn"}
+}

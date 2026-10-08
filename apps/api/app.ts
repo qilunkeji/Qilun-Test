@@ -17,6 +17,8 @@ import {canManageAssessment} from '../../packages/security/assessment-access.ts'
 import {AgentRuntime} from './agent-tasks/runtime.ts';
 import {registerAgentMCP} from './agent-tasks/mcp.ts';
 import {externalAgentMode,agentConfigured} from './processing-mode.ts';
+import {importResume} from './resume-import.ts';
+import {registerResumeExtension,registerResumeLibrary} from './resume-library.ts';
 
 type Auth = { tenant_id:string; user_id:string; role:string; username:string; csrf_token:string };
 type Context = { auth:Auth; requestId:string };
@@ -85,6 +87,7 @@ export function createApp(db:Database, config:{origin:string; contactKey:Buffer;
   });
   app.use(express.json({limit:'1mb'}));
   registerAgentMCP(app,agentRuntime,config.defaultTenantId);
+  registerResumeExtension(app,db,config.contactKey);
   app.use('/api',(req,_res,next)=>{
     if(req.get('authorization')?.startsWith('Bearer '))return next(new ApiError(401,'UNAUTHENTICATED','业务接口需要浏览器登录会话'));
     const publicPath=req.path.startsWith('/v1/public/assessment/');
@@ -160,6 +163,7 @@ export function createApp(db:Database, config:{origin:string; contactKey:Buffer;
   registerProjectRoutes(app,db);
   registerInviteAdmin(app,db,config.h5Origin??config.origin,assessmentRuntime,config.contactKey);
   registerAIRoutes(app,db,config.contactKey,config.aiTransport,agentRuntime);
+  registerResumeLibrary(app,db,config.contactKey,agentRuntime);
   app.get('/api/v1/readiness',(_req,res)=>send(res,{
     stage:'P1', features:[
       {name:'岗位、档案与申请',status:'available',detail:'本地持久化业务；人工导入 UTF-8 TXT / 文本'},
@@ -214,28 +218,7 @@ export function createApp(db:Database, config:{origin:string; contactKey:Buffer;
     });send(res,{id:jobId,version_id:versionId,revision:input.expected_revision+1},201);
   });
   app.post('/api/v1/talents/imports',async(req,res)=>{
-    allowBusiness(res);const input=importInput.parse(req.body),a=context(res).auth;const hash=digest(input.text_content);
-    const result=await db.transaction(async tx=>{
-      // Stable source identity only; never match on name, school, inferred personality, or an unverified contact.
-      const source=(await tx.query<{id:string;candidate_id:string}>('SELECT id,candidate_id FROM candidate_sources WHERE tenant_id=$1 AND channel=$2 AND external_id=$3',[a.tenant_id,input.channel,input.external_id])).rows[0];
-      if(source&&input.candidate_id&&source.candidate_id!==input.candidate_id)throw conflict('此来源已绑定其他人员，需人工核验');
-      const candidateId=source?.candidate_id??input.candidate_id??randomUUID();
-      if(source||input.candidate_id){
-        const c=(await tx.query<{id:string;name:string;purpose:string}>('SELECT id,name,purpose FROM candidates WHERE tenant_id=$1 AND id=$2 AND retention_until>now() FOR UPDATE',[a.tenant_id,candidateId])).rows[0];
-        if(!c)throw missing();if(c.name!==input.name||c.purpose!==input.purpose)throw conflict('来源绑定的姓名或用途与主档不一致，请核验，不自动覆盖');
-      }else await tx.query('INSERT INTO candidates(id,tenant_id,name,contact_cipher,purpose,processing_basis,retention_until,created_by) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',[candidateId,a.tenant_id,input.name,input.contact?encryptContact(input.contact,config.contactKey,a.tenant_id):null,input.purpose,input.processing_basis,input.retention_until,a.user_id]);
-      const sourceId=source?.id??randomUUID();
-      if(!source) await tx.query('INSERT INTO candidate_sources(id,tenant_id,candidate_id,channel,external_id,authorization_ref) VALUES($1,$2,$3,$4,$5,$6)',[sourceId,a.tenant_id,candidateId,input.channel,input.external_id,input.authorization_ref]);
-      const duplicate=(await tx.query<{id:string;version:number}>('SELECT id,version FROM resume_versions WHERE tenant_id=$1 AND source_id=$2 AND content_hash=$3',[a.tenant_id,sourceId,hash])).rows[0];
-      if(duplicate)return {candidate_id:candidateId,resume_version_id:duplicate.id,version:duplicate.version,duplicate:true};
-      const version=(await tx.query<{version:number}>('SELECT coalesce(max(version),0)::int+1 AS version FROM resume_versions WHERE tenant_id=$1 AND candidate_id=$2',[a.tenant_id,candidateId])).rows[0].version;
-      const resumeId=randomUUID();
-      await tx.query('INSERT INTO resume_versions(id,tenant_id,candidate_id,source_id,version,filename,content_hash,text_content,completeness,created_by) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)',[resumeId,a.tenant_id,candidateId,sourceId,version,input.filename,hash,input.text_content,input.completeness,a.user_id]);
-      const lines=input.text_content.split(/\r?\n/);
-      for(let n=0;n<lines.length;n++) await tx.query('INSERT INTO document_chunks(id,tenant_id,resume_version_id,line_number,text_content) VALUES($1,$2,$3,$4,$5)',[randomUUID(),a.tenant_id,resumeId,n+1,lines[n]]);
-      await tx.query('INSERT INTO audit_events(id,tenant_id,actor_id,action,object_id) VALUES($1,$2,$3,$4,$5)',[randomUUID(),a.tenant_id,a.user_id,'resume.imported',resumeId]);
-      return {candidate_id:candidateId,resume_version_id:resumeId,version,duplicate:false};
-    });send(res,result,result.duplicate?200:201);
+    allowBusiness(res);const result=await importResume(db,config.contactKey,context(res).auth,req.body);send(res,result,result.duplicate?200:201);
   });
   app.get('/api/v1/talents',async(req,res)=>{
     allowBusiness(res);const {group,...rest}=req.query;const selected=z.union([z.uuid(),z.literal('ungrouped')]).optional().parse(group);if(Object.keys(rest).some(k=>!['page','page_size','q'].includes(k)))throw new ServiceError(400,'INVALID_QUERY','查询条件无效');const {page,page_size,q}=listInput.parse(rest),a=context(res).auth;

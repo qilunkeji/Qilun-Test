@@ -4,9 +4,10 @@ import {createBusinessTaskTypes} from './types.ts';
 import {getTaskType,taskTypes} from './registry.ts';
 import {AgentWake} from './wake.ts';
 import {externalAgentMode,agentConfigured,agentNumber} from '../processing-mode.ts';
+import {screenTaskType} from '../resume-screen.ts';
 export class AgentRuntime{
  db:Database;wake:AgentWake;definitions:ReturnType<typeof createBusinessTaskTypes>;private services=new Map<string,AgentTasks>();
- constructor(db:Database,key:Buffer,wakeTransport?:typeof fetch,now?:()=>number){this.db=db;this.definitions=createBusinessTaskTypes(key);this.wake=new AgentWake(db,wakeTransport,now);}
+ constructor(db:Database,key:Buffer,wakeTransport?:typeof fetch,now?:()=>number){this.db=db;this.definitions=[...createBusinessTaskTypes(key),screenTaskType(key)];this.wake=new AgentWake(db,wakeTransport,now);}
  types(){return [...this.definitions,...taskTypes().filter(d=>!this.definitions.some(x=>x.type===d.type))];}
  service(tenant:string){let svc=this.services.get(tenant);if(!svc){svc=new AgentTasks(this.db,tenant,t=>this.wake.fire(t,t.task_type==='agent_ping'?'test':'created'),type=>this.definitions.find(d=>d.type===type)??getTaskType(type));this.services.set(tenant,svc);}return svc;}
  async sweep(){for(const svc of this.services.values())await svc.sweep();await this.wake.sweep();}

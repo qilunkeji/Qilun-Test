@@ -1,0 +1,85 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {randomUUID} from 'node:crypto';
+import {agentEnvironment,agentFixture} from './helpers/agent-fixture.ts';
+import {readFile} from 'node:fs/promises';
+import {screenTaskType} from '../apps/api/resume-screen.ts';
+import type {Task} from '../apps/api/agent-tasks/registry.ts';
+const extension='a'.repeat(32),origin='chrome-extension://'+extension;
+test('三类建议结构固定、明确不符引用双证据、未知不强制分组',()=>{
+ const def=screenTaskType(Buffer.alloc(32)),context={evidence:[{id:'E1',source:'job',text:'必要条件：独立完成目录清单'},{id:'E2',source:'resume',text:'本人没有独立完成目录清单的经历'}]},gap={text:'原文自述与必要经历条件存在缺口',citations:[{id:'E1',quote:'独立完成目录清单'},{id:'E2',quote:'没有独立完成目录清单的经历'}]};
+ const output={recommendation:'clear_mismatch',summary:'原文自述的经历与本次必要条件存在缺口。',match_points:[],gaps:[gap],unknowns:[],follow_ups:['是否有简历未记载的其他相关经历？']};
+ assert.deepEqual(def.validate(output,{} as Task,context),output);
+ const unknown={recommendation:'needs_confirmation',summary:'简历未写相关经历，需要补充确认。',match_points:[],gaps:[],unknowns:['是否具有目录交付经历'],follow_ups:[]};assert.deepEqual(def.validate(unknown,{} as Task,context),unknown);
+ assert.throws(()=>def.validate({...output,gaps:[{...gap,citations:[{id:'E1',quote:'独立完成目录清单'}]}]},{} as Task,context));
+ assert.throws(()=>def.validate({...output,gaps:[{...gap,citations:[{id:'E1',quote:'完成目录'},{id:'E2',quote:'完全没有任何经历'}]}]},{} as Task,context));
+ assert.equal(def.ui_status({state:'queued'} as Task).label,'已提交，约 15 分钟内处理，可以离开页面');
+});
+const input=(external_id=randomUUID())=>({name:'【虚构】同名简历',purpose:'talent_pool',processing_basis:'仅供隔离验收，本人许可岗位参考',retention_until:new Date(Date.now()+86400000).toISOString(),channel:'boss_manual',external_id,authorization_ref:'虚构授权记录',filename:'虚构.txt',text_content:'【虚构】完成了目录清单并核对所有链接。\n手机13800000000 邮箱fixture@example.invalid',completeness:'full'});
+async function fixture(t:{after:(f:()=>Promise<void>)=>void}){const restore=agentEnvironment(),f=await agentFixture();t.after(async()=>{await f.close();restore();});return f;}
+test('插件临时最小授权、同源去重/新版本、同名不合并、角色与凭证边界',async t=>{
+ const f=await fixture(t);const grant=await f.request('/api/v1/resume-extension/grants',{extension_id:extension});assert.equal(grant.status,201);const token=grant.body.data.token;assert.match(token,/^cr_[A-Za-z0-9_-]{43}$/);
+ const headers={Origin:origin,Authorization:'Bearer '+token},body=input();
+ const first=await f.request('/extension/v1/imports',body,null,headers);assert.equal(first.status,201);const second=await f.request('/extension/v1/imports',body,null,headers);assert.equal(second.status,200);assert.equal(second.body.data.duplicate,true);
+ const next=await f.request('/extension/v1/imports',{...body,text_content:body.text_content+'\n补充新的项目成果'},null,headers);assert.equal(next.status,201);assert.equal(next.body.data.version,2);
+ const sameName=await f.request('/extension/v1/imports',input(),null,headers);assert.equal(sameName.status,201);assert.notEqual(first.body.data.candidate_id,sameName.body.data.candidate_id);
+ for(const h of [{Origin:origin,Authorization:'Bearer '+f.writer},{Origin:'chrome-extension://'+'b'.repeat(32),Authorization:'Bearer '+token},{Origin:origin}] as Record<string,string>[])assert.equal((await f.request('/extension/v1/imports',body,null,h)).status,401);
+ assert.equal((await f.request('/extension/v1/imports',body,null,{...headers,Origin:'https://evil.invalid'})).status,403);
+ assert.equal((await f.request('/api/v1/resume-library',undefined,null,{Authorization:'Bearer '+token})).status,401);
+ assert.equal((await f.request('/extension/v1/imports',{...body,candidate_id:f.candidate},null,headers)).status,400);
+ assert.equal((await f.request('/api/v1/resume-extension/grants',{extension_id:extension},'ops')).status,403);
+ const stored=(await f.db.query<{token_hash:string}>('SELECT token_hash FROM resume_extension_grants WHERE id=$1',[grant.body.data.id])).rows[0];assert.notEqual(stored.token_hash,token);
+ assert.equal((await f.request('/api/v1/resume-extension/grants/'+grant.body.data.id+'/revoke',{})).status,200);assert.equal((await f.request('/extension/v1/imports',body,null,headers)).status,401);
+ const fresh=(await f.request('/api/v1/resume-extension/grants',{extension_id:extension})).body.data;await f.db.query("UPDATE resume_extension_grants SET expires_at=now()-interval '1 second' WHERE id=$1",[fresh.id]);assert.equal((await f.request('/extension/v1/imports',body,null,{Origin:origin,Authorization:'Bearer '+fresh.token})).status,401);
+});
+test('岗位逐份智能体分析、引用验证、重复筛选、人工复核和原申请不变',async t=>{
+ const f=await fixture(t),resume=(await f.request('/api/v1/talents/imports',input())).body.data.resume_version_id,job=(await f.db.query<{id:string}>('SELECT id FROM job_versions LIMIT 1')).rows[0].id;
+ const body={job_version_id:job,requirements:'必要条件：能独立完成目录清单，其他经历可补充确认',resume_ids:[resume],authorized_to_send:true};
+ const created=await f.request('/api/v1/resume-screens',body);assert.equal(created.status,201);const b=(await f.request('/api/v1/resume-screens/'+created.body.data.id)).body.data;assert.equal(b.items.length,1);const run=b.items[0].id,task=(await f.db.query<{id:string}>('SELECT id FROM agent_tasks WHERE subject_id=$1',[run])).rows[0].id;
+ const claim=await f.rpc('claim_task',{task_id:task,request_id:randomUUID()});assert.equal(claim.isError,false);const c=claim.data.context;assert.ok(!JSON.stringify(c).includes('13800000000'));assert.ok(!JSON.stringify(c).includes('fixture@example.invalid'));
+ const ref=c.evidence.find((x:{source:string;text:string})=>x.source==='resume'&&x.text.includes('完成了目录清单')),point={text:'有目录交付经历，建议进一步核对职责',citations:[{id:ref.id,quote:'完成了目录清单'}]},output={recommendation:'priority',summary:point.text,match_points:[point],gaps:[],unknowns:['需核实实际承担的职责'],follow_ups:['请介绍独立完成目录的具体过程。']};
+ const submit=(result:unknown)=>f.rpc('submit_task_result',{task_id:task,lease_token:claim.data.lease_token,request_id:randomUUID(),result});
+ assert.equal((await submit({...output,match_points:[{...point,citations:[{id:'E999',quote:'伪造不存在引用'}]}]})).isError,true);
+ assert.equal((await submit({...output,recommendation:'clear_mismatch'})).isError,true);
+ for(const bad of [{...output,summary:'建议录用该人员'}, {...output,summary:'第一句。第二句。'}, {...output,match_points:Array(7).fill(point)}, {...output,follow_ups:Array(6).fill('请核实项目')}, {...output,bucket:'priority'}, {...output,recommendation:'clarify'}, {...output,match_points:[{...point,citations:[{id:ref.id,quote:'目录清单\n手机'}]}]}, {...output,match_points:[]}])assert.equal((await submit(bad)).isError,true);
+ assert.equal(c.job_version_id,job);assert.equal(c.resume_version_id,resume);assert.ok(c.evidence.every((e:{text:string})=>!/[\r\n]/.test(e.text)));assert.equal((await f.db.query<{task_type:string}>('SELECT task_type FROM agent_tasks WHERE id=$1',[task])).rows[0].task_type,'resume_job_screen');
+ assert.equal((await submit(output)).isError,false);
+ const done=(await f.request('/api/v1/resume-screens/'+created.body.data.id)).body.data;assert.deepEqual(done.items[0].result,output);
+ assert.equal(done.round,1);assert.equal((await f.request('/api/v1/resume-screens/items/'+run+'/review',{review:'clarify',note:'第一轮读完原文，保留待看',expected_revision:0})).status,200);assert.equal((await f.request('/api/v1/resume-screens/'+created.body.data.id+'/round',{round:2})).status,200);assert.equal((await f.request('/api/v1/resume-screens/'+created.body.data.id)).body.data.round,2);
+ const review={review:'contact',note:'已人工阅读原文，安排职责核实',expected_revision:1};assert.equal((await f.request('/api/v1/resume-screens/items/'+run+'/review',review)).status,200);assert.equal((await f.request('/api/v1/resume-screens/items/'+run+'/review',review)).status,409);
+ assert.deepEqual((await f.request('/api/v1/resume-screens/'+created.body.data.id)).body.data.review_history.map((x:{round:number})=>x.round),[1,2]);
+ assert.equal((await f.request('/api/v1/resume-screens',body)).status,201);assert.equal((await f.request('/api/v1/resume-screens')).body.data.items.length,2);assert.equal(f.modelCalls(),0);
+ assert.equal((await f.db.query<{status:string}>('SELECT status FROM applications WHERE id=$1',[f.application])).rows[0].status,'pending_review');
+ const audit=JSON.stringify((await f.db.query('SELECT * FROM agent_audit_events')).rows),wake=JSON.stringify((await f.db.query('SELECT * FROM agent_wake_log')).rows);assert.ok(!audit.includes('完成了目录清单'));assert.ok(!wake.includes('完成了目录清单'));
+});
+test('删除简历取消任务/清理材料，关联版本拒删、到期和跨租户不可分析',async t=>{
+ const f=await fixture(t),created=(await f.request('/api/v1/talents/imports',input())).body.data,job=(await f.db.query<{id:string}>('SELECT id FROM job_versions LIMIT 1')).rows[0].id;
+ const body={job_version_id:job,requirements:'独立完成目录清单并复核链接',resume_ids:[created.resume_version_id],authorized_to_send:true};
+ const batch=(await f.request('/api/v1/resume-screens',body)).body.data,run=(await f.request('/api/v1/resume-screens/'+batch.id)).body.data.items[0].id,task=(await f.db.query<{id:string}>('SELECT id FROM agent_tasks WHERE subject_id=$1',[run])).rows[0].id;
+ const claimed=await f.rpc('claim_task',{task_id:task});assert.equal(claimed.isError,false);
+ assert.equal((await f.request('/api/v1/resume-library/'+f.candidate+'/delete',{confirm:'delete_resume'})).status,404);
+ assert.equal((await f.request('/api/v1/resume-library/'+created.resume_version_id+'/delete',{confirm:'delete_resume'})).status,200);
+ assert.equal((await f.request('/api/v1/resumes/'+created.resume_version_id)).status,404);assert.equal((await f.rpc('get_task_context',{task_id:task,lease_token:claimed.data.lease_token})).isError,true);
+ const wiped=(await f.db.query<{input_cipher:string;result:unknown}>('SELECT input_cipher,result FROM ai_runs WHERE id=$1',[run])).rows[0];assert.equal(wiped.input_cipher,'');assert.equal(wiped.result,null);
+ const linked=(await f.db.query<{resume_version_id:string}>('SELECT resume_version_id FROM applications WHERE id=$1',[f.application])).rows[0].resume_version_id;
+ assert.equal((await f.request('/api/v1/resume-library/'+linked+'/delete',{confirm:'delete_resume'})).status,409);
+ const old=(await f.request('/api/v1/talents/imports',input())).body.data;await f.db.query("UPDATE candidates SET retention_until=now()-interval '1 second' WHERE id=$1",[old.candidate_id]);assert.equal((await f.request('/api/v1/resume-screens',{...body,resume_ids:[old.resume_version_id]})).status,404);
+ assert.equal((await f.request('/api/v1/resume-screens',{...body,resume_ids:[randomUUID()]})).status,404);assert.equal((await f.request('/api/v1/resume-screens',{...body,job_version_id:randomUUID()})).status,404);
+ assert.equal((await f.request('/api/v1/resume-library',undefined,'interviewer')).status,403);
+ assert.equal((await f.request('/api/v1/resume-screens/'+batch.id,undefined,'ops')).status,403);
+});
+test('Chrome包无BOSS主机权限/内容脚本/登录凭据、仅session保存插件授权',async()=>{
+ const manifest=JSON.parse(await readFile('apps/resume-extension/manifest.json','utf8')),js=await readFile('apps/resume-extension/panel.js','utf8');assert.equal(manifest.manifest_version,3);assert.equal(manifest.content_scripts,undefined);assert.equal(manifest.host_permissions,undefined);assert.deepEqual(manifest.permissions,['storage','sidePanel']);assert.ok(!JSON.stringify(manifest).includes('zhipin'));assert.ok(!js.includes('storage.local'));assert.ok(!js.includes('AGENT_WRITE_TOKEN'));assert.ok(js.includes("credentials:'omit'"));assert.ok(js.includes('textContent'));
+});
+test('真实跨租户隔离、角色撤回授权、外传许可与任务额度、到期任务拒收',async t=>{
+ const f=await fixture(t),tenant=randomUUID(),user=randomUUID(),candidate=randomUUID(),source=randomUUID(),resume=randomUUID();
+ await f.db.query('INSERT INTO tenants(id,name) VALUES($1,$2)',[tenant,'【虚构】另一租户']);await f.db.query("INSERT INTO staff_users(id,tenant_id,username,password_hash,role) VALUES($1,$2,'foreign','unusable','hr')",[user,tenant]);
+ await f.db.query("INSERT INTO candidates(id,tenant_id,name,purpose,processing_basis,retention_until,created_by) VALUES($1,$2,'【虚构】另一人','talent_pool','虚构测试',now()+interval '1 day',$3)",[candidate,tenant,user]);await f.db.query("INSERT INTO candidate_sources(id,tenant_id,candidate_id,channel,external_id,authorization_ref) VALUES($1,$2,$3,'manual','other','虚构依据')",[source,tenant,candidate]);await f.db.query("INSERT INTO resume_versions(id,tenant_id,candidate_id,source_id,version,filename,content_hash,text_content,completeness,created_by) VALUES($1,$2,$3,$4,1,'other.txt','other','【虚构】他人目录经历','full',$5)",[resume,tenant,candidate,source,user]);
+ const job=(await f.db.query<{id:string}>('SELECT id FROM job_versions WHERE tenant_id=$1 LIMIT 1',[f.tenant])).rows[0].id,body={job_version_id:job,requirements:'必要条件：目录清单交付',resume_ids:[resume],authorized_to_send:true};
+ assert.equal((await f.request('/api/v1/resume-screens',body)).status,404);assert.equal((await f.request('/api/v1/resume-library/'+resume+'/delete',{confirm:'delete_resume'})).status,404);assert.ok(!(await f.request('/api/v1/resume-library')).body.data.items.some((r:{id:string})=>r.id===resume));
+ const grant=(await f.request('/api/v1/resume-extension/grants',{extension_id:extension},'hr')).body.data;assert.equal((await f.request('/api/v1/resume-extension/grants/'+grant.id+'/revoke',{},'talent_lead')).status,404);await f.db.query("UPDATE staff_users SET role='ops' WHERE id=$1",[f.sessions.hr.user]);assert.equal((await f.request('/extension/v1/imports',input(),null,{Origin:origin,Authorization:'Bearer '+grant.token})).status,401);
+ const own=(await f.request('/api/v1/talents/imports',input())).body.data;assert.equal((await f.request('/api/v1/resume-screens',{...body,resume_ids:[own.resume_version_id],authorized_to_send:false})).status,400);
+ process.env.AGENT_MAX_PENDING_PER_USER='1';assert.equal((await f.request('/api/v1/resume-screens',{...body,resume_ids:[own.resume_version_id,(await f.db.query<{id:string}>('SELECT id FROM resume_versions WHERE tenant_id=$1 AND candidate_id=$2',[f.tenant,f.candidate])).rows[0].id]})).status,429);
+ const batch=(await f.request('/api/v1/resume-screens',{...body,resume_ids:[own.resume_version_id]})).body.data,run=(await f.request('/api/v1/resume-screens/'+batch.id)).body.data.items[0].id,task=(await f.db.query<{id:string}>('SELECT id FROM agent_tasks WHERE subject_id=$1',[run])).rows[0].id,claim=await f.rpc('claim_task',{task_id:task});assert.equal(claim.isError,false);
+ await f.db.query("UPDATE candidates SET retention_until=now()-interval '1 second' WHERE id=$1",[own.candidate_id]);assert.equal((await f.rpc('get_task_context',{task_id:task,lease_token:claim.data.lease_token})).isError,true);assert.equal((await f.request('/api/v1/resume-screens/items/'+run+'/evidence')).status,404);
+});
