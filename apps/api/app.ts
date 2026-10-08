@@ -66,7 +66,16 @@ export function createApp(db:Database, config:{origin:string; contactKey:Buffer;
       for(const [key,value] of result.headers)if(key!=='set-cookie')res.setHeader(key,value);
       const cookies=result.headers.getSetCookie();if(cookies.length)res.setHeader('set-cookie',cookies);
       res.status(result.status).send(await result.text());
-    }catch(error){throw iamError(error);}
+    }catch(error){
+      const failure=iamError(error);
+      if(req.method==='GET'&&req.path==='/api/iam/callback'&&req.get('accept')?.includes('text/html')){
+        // Never reflect callback codes, state, arbitrary upstream errors or credentials.
+        const message=failure.code==='IAM_ROLE_CONFLICT'?'人才系统仅支持一个业务角色。请联系账号中心管理员保留一个人才角色后重新登录。':failure.status===400||failure.status===401?'这次登录链接已失效或已被使用。请从下面的入口重新发起统一登录，不要刷新旧的回调页面。':failure.status===403?'当前账号暂不能进入人才系统。请联系管理员核对人才角色与权限。':'统一登录暂不可用，请稍后重新尝试。';
+        res.status(failure.status).type('html').send(`<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>重新登录 · 齐论人才系统</title><body style="margin:0;background:#f7f8fa;color:#202124;font:16px/1.7 system-ui,sans-serif"><main style="max-width:520px;margin:12vh auto;padding:32px"><p style="color:#b40000">齐论 AI · 人才系统</p><h1 style="font-size:28px">登录尚未完成</h1><p>${message}</p><a href="/api/iam/login" style="display:inline-block;padding:10px 24px;background:#b40000;color:white;text-decoration:none;border-radius:6px">重新统一登录</a><p><a href="/" style="color:#454545">返回人才系统</a></p></main></body></html>`);
+        return;
+      }
+      throw failure;
+    }
   };
   // Only the HMAC-signed webhook bypasses browser Origin/CSRF; raw bytes are essential.
   app.all('/api/iam/{*path}',express.raw({type:()=>true,limit:'256kb'}),async(req,res)=>{

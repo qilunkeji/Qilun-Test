@@ -31,6 +31,14 @@ test('去掉组织输入后由服务端固定范围，同名账号不会跨范�
   assert.equal((await fetch(base+'/api/iam/login')).status,503);
  }finally{await close(s);}
 });
+test('过期回调为浏览器提供新登录入口，API保留错误且不泄露回调凭据',async()=>{
+ const bridge:IAMBridge={close(){},current:async()=>null,handle:async()=>{throw Object.assign(new Error('private-upstream-secret'),{status:400});}};
+ const origin='http://127.0.0.1:3100',s=createApp(db,{origin,defaultTenantId:tenant,contactKey:randomBytes(32),iam:bridge}).listen(0,'127.0.0.1'),base=await listen(s);
+ try{
+  const html=await fetch(base+'/api/iam/callback?code=private-code&state=private-state',{headers:{Accept:'text/html'}});assert.equal(html.status,400);assert.match(html.headers.get('content-type')??'',/text\/html/);const body=await html.text();assert.match(body,/href="\/api\/iam\/login"/);assert.doesNotMatch(body,/private-code|private-state|private-upstream-secret/);
+  const json=await fetch(base+'/api/iam/callback',{headers:{Accept:'application/json'}});assert.equal(json.status,400);assert.equal((await json.json()).error.code,'IAM_UNAVAILABLE');
+ }finally{await close(s);}
+});
 test('没有固定范围且有多个工作区时拒绝猜测；单工作区可不填ID',async()=>{
  const app=createApp(db,{origin:'http://127.0.0.1:3100',contactKey:randomBytes(32)}),s=app.listen(0,'127.0.0.1'),base=await listen(s);
  try{assert.equal((await fetch(base+'/api/v1/auth/login',{method:'POST',headers:{Origin:'http://127.0.0.1:3100','Content-Type':'application/json'},body:JSON.stringify({username:'same-name',password})})).status,503);}finally{await close(s);}

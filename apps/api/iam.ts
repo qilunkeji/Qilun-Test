@@ -19,6 +19,7 @@ export function iamConfig(env:NodeJS.ProcessEnv,origin:string){
 export function selectIAMRole(roles:string[],permissions:string[]){
  const needs:Record<string,string[]>={talent_lead:['talent.view','talent.manage'],hr:['talent.view','talent.recruit'],ops:['talent.view','talent.audit'],interviewer:['talent.view']};
  const matched=roles.filter(r=>Object.hasOwn(needs,r));
+ if(matched.length>1)throw new ServiceError(403,'IAM_ROLE_CONFLICT','人才系统仅支持一个业务角色，请联系账号中心管理员保留一个人才角色');
  if(matched.length!==1||!needs[matched[0]].every(p=>permissions.includes(p)))throw new ServiceError(403,'IAM_FORBIDDEN','当前齐论账号未获人才系统角色授权');
  return matched[0];
 }
