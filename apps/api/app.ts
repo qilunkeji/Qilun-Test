@@ -13,6 +13,9 @@ import {registerAIRoutes} from './ai-routes.ts';
 import {ServiceError} from './http-error.ts';
 import type {IAMBridge,IAMLocal} from './iam.ts';
 import {canManageAssessment} from '../../packages/security/assessment-access.ts';
+import {AgentRuntime} from './agent-tasks/runtime.ts';
+import {registerAgentMCP} from './agent-tasks/mcp.ts';
+import {externalAgentMode,agentConfigured} from './processing-mode.ts';
 
 type Auth = { tenant_id:string; user_id:string; role:string; username:string; csrf_token:string };
 type Context = { auth:Auth; requestId:string };
@@ -30,10 +33,11 @@ const allowBusiness = (res:Response) => {
 const allowedKeys = (req:Request) => {
   for (const key of Object.keys(req.query)) if (!['page','page_size','q'].includes(key)) throw new ApiError(400,'INVALID_INPUT','不支持的查询条件');
 };
-export function createApp(db:Database, config:{origin:string; contactKey:Buffer; staticDir?:string;h5Origin?:string;production?:boolean;defaultTenantId?:string;iam?:IAMBridge;aiTransport?:typeof fetch;localReportPreview?:{directory:string;tenantId:string}}) {
+export function createApp(db:Database, config:{origin:string; contactKey:Buffer; staticDir?:string;h5Origin?:string;production?:boolean;defaultTenantId?:string;iam?:IAMBridge;aiTransport?:typeof fetch;agentWakeTransport?:typeof fetch;localReportPreview?:{directory:string;tenantId:string}}) {
   if(config.contactKey.length!==32) throw new Error('Contact encryption key must be 32 bytes');
   if(config.defaultTenantId)id.parse(config.defaultTenantId);
   const app=express(); app.disable('x-powered-by');
+  const agentRuntime=new AgentRuntime(db,config.contactKey,config.agentWakeTransport);app.locals.agentRuntime=agentRuntime;if(config.defaultTenantId)agentRuntime.service(config.defaultTenantId);
   const assessmentRuntime=loadAssessmentRuntime();
   if(config.production){
     app.set('trust proxy','loopback');
@@ -70,7 +74,9 @@ export function createApp(db:Database, config:{origin:string; contactKey:Buffer;
     await relayIAM(req,res);
   });
   app.use(express.json({limit:'1mb'}));
+  registerAgentMCP(app,agentRuntime,config.defaultTenantId);
   app.use('/api',(req,_res,next)=>{
+    if(req.get('authorization')?.startsWith('Bearer '))return next(new ApiError(401,'UNAUTHENTICATED','业务接口需要浏览器登录会话'));
     const publicPath=req.path.startsWith('/v1/public/assessment/');
     const remote=req.socket.remoteAddress??'';
     if(!publicPath&&!['127.0.0.1','::1','::ffff:127.0.0.1'].includes(remote))return next(new ApiError(403,'LOCAL_ADMIN_ONLY','管理后台只允许本机访问'));
@@ -142,26 +148,29 @@ export function createApp(db:Database, config:{origin:string; contactKey:Buffer;
   });
   registerAssessmentRoutes(app,db,config.localReportPreview,assessmentRuntime);
   registerInviteAdmin(app,db,config.h5Origin??config.origin,assessmentRuntime,config.contactKey);
-  registerAIRoutes(app,db,config.contactKey,config.aiTransport);
+  registerAIRoutes(app,db,config.contactKey,config.aiTransport,agentRuntime);
   app.get('/api/v1/readiness',(_req,res)=>send(res,{
     stage:'P1', features:[
       {name:'岗位、档案与申请',status:'available',detail:'本地持久化业务；人工导入 UTF-8 TXT / 文本'},
       {name:'BOSS 渠道',status:'waiting_for_authorization',detail:'未取得真实平台许可与接口；使用人工导入'},
       ...(canManageAssessment(context(res).auth.role)?[{name:'高禾原版兼容测评',status:'blocked_missing_rules',detail:'测评后台提供依据、已知公式试算和服务端阻塞校验；完整计分与匹配仍缺规则'}]:[]),
       {name:'齐论测评与手机 H5',status:'available',detail:'新邀请使用固定成品V1.0，完整七模块与28项能力参考评分；保留历史邀请版本。链接与访问码、自动保存续答及结果查看已实现；能力不是实际技能或绩效，不作心理诊断或自动录用依据。'},
-      {name:'AI 功能与费用',status:'requires_model',detail:'已实现分功能配置、加密Key、引用校验、预算及调用记录；配置不代表供应商连接健康，真实生成需模型配置与本次材料外传许可。'},
-      {name:'招聘优化与面试评估',status:'requires_model',detail:'本地资料库、需求表单、面试档案及文本保存已实现；提问与证据评估依赖外部模型。测评不参与匹配分，缺证据不按零分，需人工复核；音频转写未实现。'},
+      ...(externalAgentMode()?[
+      {name:'AI 功能',status:agentConfigured()?'available':'waiting_for_configuration',detail:agentConfigured()?'由齐论人才系统接入的 AI 助手（外部智能体）异步处理，通常 1–3 分钟；结果保留引用并需人工复核，无模型费用。':'外部智能体未配置；不会自动使用其他处理方式。'},
+      {name:'招聘优化与面试评估',status:agentConfigured()?'available':'waiting_for_configuration',detail:'提问与证据评估交由 AI 助手异步处理；测评不参与匹配分，缺证据不按零分，需人工复核；音频转写未实现。'}
+      ]:[{name:'AI 功能与费用',status:'requires_model',detail:'已实现分功能配置、加密Key、引用校验、预算及调用记录；配置不代表供应商连接健康，真实生成需模型配置与本次材料外传许可。'},
+      {name:'招聘优化与面试评估',status:'requires_model',detail:'本地资料库、需求表单、面试档案及文本保存已实现；提问与证据评估依赖外部模型。测评不参与匹配分，缺证据不按零分，需人工复核；音频转写未实现。'}]),
       {name:'员工档案与全局物理删除',status:'planned_P4',detail:'尚未完整实现；到期数据当前只限制访问，未声明已完成全局删除'},
-      {name:'任务队列与渠道批量',status:'planned_P5',detail:'尚未实现；没有抓取或处理量承诺'}
+      {name:'任务队列与渠道批量',status:externalAgentMode()?'available':'planned_P5',detail:externalAgentMode()?'AI 任务队列支持租约、引用校验与受限重试；渠道批量尚未实现，没有抓取或处理量承诺。':'尚未实现；没有抓取或处理量承诺'}
     ]
   }));
   app.get('/api/v1/dashboard',async(_req,res)=>{
     allowBusiness(res);const {tenant_id}=context(res).auth;
-    const result=(await db.query(`SELECT
+    const result=(await db.query<Record<string,unknown>>(`SELECT
       (SELECT count(*)::int FROM jobs WHERE tenant_id=$1) AS jobs,
       (SELECT count(*)::int FROM candidates WHERE tenant_id=$1 AND retention_until>now()) AS candidates,
       (SELECT count(*)::int FROM applications a JOIN candidates c ON c.id=a.candidate_id AND c.tenant_id=a.tenant_id WHERE a.tenant_id=$1 AND c.retention_until>now()) AS applications,
-      (SELECT count(*)::int FROM candidates WHERE tenant_id=$1 AND retention_until<=now()) AS expired`,[tenant_id])).rows[0];send(res,result);
+      (SELECT count(*)::int FROM candidates WHERE tenant_id=$1 AND retention_until<=now()) AS expired`,[tenant_id])).rows[0];send(res,{...result,...(externalAgentMode()?{agent_pending:await agentRuntime.queue(tenant_id)}:{})});
   });
   app.get('/api/v1/jobs',async(req,res)=>{
     allowBusiness(res);allowedKeys(req);const {page,page_size,q}=listInput.parse(req.query);const a=context(res).auth;
@@ -269,7 +278,7 @@ export function createApp(db:Database, config:{origin:string; contactKey:Buffer;
   app.get('/api/v1/audit-events',async(req,res)=>{
     const a=context(res).auth;if(!['ops','talent_lead'].includes(a.role))throw new ApiError(403,'FORBIDDEN_SCOPE','需要审计权限');
     allowedKeys(req);const {page,page_size}=listInput.parse(req.query);
-    const rows=(await db.query('SELECT id,actor_id,action,object_id,created_at FROM audit_events WHERE tenant_id=$1 ORDER BY created_at DESC,id LIMIT $2 OFFSET $3',[a.tenant_id,page_size,(page-1)*page_size])).rows;send(res,{items:rows,page,page_size});
+    const rows=(await db.query("SELECT * FROM (SELECT id,actor_id::text,action,object_id,created_at,NULL::text AS actor_label FROM audit_events WHERE tenant_id=$1 UNION ALL SELECT id,actor AS actor_id,action,object_id,created_at,'外部智能体' AS actor_label FROM agent_audit_events WHERE tenant_id=$1) e ORDER BY created_at DESC,id LIMIT $2 OFFSET $3",[a.tenant_id,page_size,(page-1)*page_size])).rows;send(res,{items:rows,page,page_size});
   });
   app.use('/api',(_req,_res,next)=>next(missing()));
   if(config.staticDir){app.use(express.static(config.staticDir));app.get('/{*path}',(_req,res)=>res.sendFile(resolve(config.staticDir!,'index.html')));}

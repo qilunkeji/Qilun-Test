@@ -1,8 +1,8 @@
 import {useEffect,useRef,useState} from 'react';
 
-export type View='dashboard'|'jobs'|'optimize'|'talents'|'applications'|'interviews'|'assessments'|'settings';
+export type View='dashboard'|'jobs'|'optimize'|'talents'|'applications'|'interviews'|'assessments'|'settings'|'assistant';
 export type Route={view:View;id?:string;section?:string;invalid?:boolean};
-const views:View[]=['jobs','optimize','talents','applications','interviews','assessments','settings'];
+const views:View[]=['jobs','optimize','talents','applications','interviews','assessments','settings','assistant'];
 export function parseRoute(path:string):Route{
  const parts=path.split('/').filter(Boolean);
  if(!parts.length)return {view:'dashboard'};

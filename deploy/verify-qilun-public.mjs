@@ -11,6 +11,12 @@ for(const file of (await readdir('dist/admin-web/assets')).filter(name=>/\.(js|c
 assert.equal(hash(Buffer.from(await (await request('/brand/qilun-logo-light.png',200)).arrayBuffer())),hash(await readFile('apps/admin-web/public/brand/qilun-logo-light.png')));
 const health=(await (await request('/api/v1/health',200)).json()).data;
 assert.equal(health.status,'ok');assert.deepEqual(health.assessment,{version:'qilun-internal-assessment/1.0.0',ready:true});
+if(process.env.PROCESSING_MODE==='external_agent'){
+ for(const path of ['/assistant','/optimize','/interviews','/settings/models','/settings/status'])await request(path,200);
+ await request('/api/v1/ai/meta',401);
+ await request('/mcp/agent',401,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id:1,method:'ping'})});
+ await request('/mcp/agent',405);
+}
 const options=(await (await request('/api/v1/auth/options',200)).json()).data;assert.equal(options.unified_login,true);assert.equal(options.local_password_login,false);
 for(const path of ['product-rules','rules','replication','gh-evidence','gh-replay','gh-inference','layout/source/data.svg'])await request('/api/v1/assessment/'+path,401);
 await request('/api/v1/assessment/gh-replay/score',401,{method:'POST',headers:{Origin:base,'Content-Type':'application/json'},body:'{}'});

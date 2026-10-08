@@ -26,7 +26,7 @@ app.use(express.static(resolve('dist/admin-web')));app.get('/{*path}',(_q,r)=>r.
 const server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));const base=`http://127.0.0.1:${server.address().port}`;
 const browser=await chromium.launch({executablePath:process.env.CHROME_BIN??'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true});
 const results=[],screenshots=[];let errors=[];
-const state={role:'talent_lead',count:1,delay:0,fail:'',materials:[],applications:[],expired:false,unauthorized:false,missing:false,emptyJobs:false,publicStatus:'valid',configs:[],writes:[],calls:[]};
+const state={role:'talent_lead',count:1,delay:0,fail:'',materials:[],applications:[],expired:false,unauthorized:false,missing:false,emptyJobs:false,publicStatus:'valid',configs:[],writes:[],calls:[],external:false,agentPhase:'queued',agentRuns:[],ping:false};
 async function setup(viewport={width:1180,height:757}){
  const context=await browser.newContext({viewport});const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
  await context.route('**/*',async route=>{
@@ -51,10 +51,22 @@ async function setup(viewport={width:1180,height:757}){
   if(path==='/applications')return send({items:state.applications,total:state.applications.length});
   if(path==='/interviews'&&!body)return send({items:[]});
   if(path==='/interviews'&&body)return send({id},201);
-  if(path===`/interviews/${id}`)return send({id,name:person.name,title:job.title,application_id:second,assessment_id:null,rubric:[],question_count:10,job_version:1,resume_version:1,revision:0,transcript:'',tasks:version.tasks,criteria:version.criteria,runs:[]});
+  if(path===`/interviews/${id}`)return send({id,name:person.name,title:job.title,application_id:second,assessment_id:null,rubric:[],question_count:10,job_version:1,resume_version:1,revision:0,transcript:'',tasks:version.tasks,criteria:version.criteria,runs:state.external?state.agentRuns.map(r=>({...r,status:state.agentPhase==='completed'?'completed':'awaiting_agent',result:state.agentPhase==='completed'?{type:'interview_questions',questions:[{question:'请介绍虚构目录清单的交付过程？',purpose:'核验虚构过程',follow_up:'说明复核方式',citations:[]}]}:null,cost:0,reserved_cost:0})):[]});
   if(path.startsWith('/interviews/assessments/'))return send({items:[]});
   if(path==='/recruiting/materials'&&!body)return send({items:state.materials});
   if(path==='/recruiting/materials'&&body)return send({id},201);
+  if(path==='/ai/meta')return send({mode:state.external?'external_agent':'model',processing_label:state.external?'齐论 AI 助手（外部智能体）':'已配置模型',consent_text:state.external?'交由齐论人才系统接入的 AI 助手（外部智能体）处理':'发送给已配置的模型供应商进行本次分析',reply_hint:'通常 1–3 分钟内完成',agent_configured:state.external});
+  if(state.external){
+   const output=state.agentRuns[0]?.feature==='interview_outline'?{type:'interview_questions',questions:[{question:'请介绍虚构目录清单的交付过程？',purpose:'核验虚构过程',follow_up:'说明复核方式',citations:[]}]}:{findings:[{kind:'observation',text:'虚构异步处理结果：目录清单与链接复核。',citations:[]}],unknowns:[]};
+   const runs=state.agentRuns.map(r=>({...r,status:state.agentPhase==='completed'?'completed':'awaiting_agent',result:state.agentPhase==='completed'?output:null,cost:0,reserved_cost:0}));
+   if(path==='/ai/settings')return send({mode:'external_agent',features:{job_optimize:'招聘优化',resume_review:'简历材料分析',interview_outline:'面试提纲',transcript_analysis:'面试文稿分析',comprehensive_review:'综合证据评估',report_interpretation:'员工发展沟通'},agent_configured:true,last_agent_activity_at:null,pending_count:runs.filter(r=>r.status==='awaiting_agent').length,oldest_queued_seconds:0,stale_count:0,wake:{configured:false,host:null,label:'未配置，依赖智能体巡检',last_success_at:null,last_failure_at:null,last_failure_status:null,success_rate_24h:null}});
+   if(path==='/ai/pending')return send({items:[]});
+   if(path==='/ai/runs')return send({items:runs.filter(r=>!r.interview_id)});
+   if(path.startsWith('/ai/runs/'))return send({...runs.find(r=>r.id===second),pending:{task_state:state.agentPhase,ui_status:{label:state.agentPhase==='claimed'?'AI 助手正在处理…':'已提交，AI 助手马上处理',stale:false},waiting_seconds:1}});
+   if(path==='/ai/run'){state.agentPhase='queued';state.agentRuns=[{id:second,feature:body.feature,status:'awaiting_agent',result:null,created_at:'2026-10-08',interview_id:body.interview?.id??null,interview_revision:0}];return send({id:second,task_id:second,status:'awaiting_agent'});}
+   if(path==='/ai/agent-test'){state.ping=true;state.agentPhase='queued';return send({task_id:second,status:'awaiting_agent'});}
+   if(path.startsWith('/ai/agent-test/'))return send({task_id:second,status:state.agentPhase==='completed'?'succeeded':state.agentPhase,ui_status:{label:state.agentPhase==='claimed'?'AI 助手正在处理…':'已提交，AI 助手马上处理',stale:false},wake:{status:'skipped_unconfigured',http_status:null},wake_seconds:null,timing:state.agentPhase==='completed'?{created_to_claim_seconds:1,claim_to_submit_seconds:1,total_seconds:2}:null});
+  }
   if(path==='/ai/settings')return send({configs:state.configs});
   if(path==='/ai/runs')return send({items:[]});
   if(path==='/ai/run')return send({result:{findings:[{text:'虚构测试文案，仅供UI验收',citations:[]}],unknowns:[]}});
@@ -159,6 +171,20 @@ try{
  });
  await check('COMMON responsive 1180/1366/1024/768/390 and 200% equivalent layout',async()=>{
   for(const width of [1180,1366,1024,768,390,590]){await page.setViewportSize({width,height:width===1180?757:width===1366?768:844});for(const path of ['/','/jobs/new','/optimize','/assessments','/interviews/new','/talents/'+id,'/settings/models','/settings/status','/settings/audit','/assessments/'+id]){await goto(page,path);await page.waitForTimeout(80);await noOverflow(page);if(width===390&&['/optimize','/assessments','/jobs/new'].includes(path))await shot(page,'mobile-'+path.replaceAll('/','-'));}}
+ });
+ await check('AGENT asynchronous optimize / interviews / assistant, consent and automatic results',async()=>{
+  state.external=true;state.role='talent_lead';state.agentRuns=[];
+  const clean=async()=>assert.doesNotMatch(await page.locator('main').textContent(),/deepseek|openai|fixture-model|模型供应商/i);
+  const advance=async()=>{await page.getByText('已提交，AI 助手马上处理',{exact:false}).first().waitFor();state.agentPhase='claimed';await page.getByText('AI 助手正在处理…',{exact:false}).first().waitFor({timeout:8000});state.agentPhase='completed';};
+  await goto(page,'/optimize');await page.getByLabel('招聘岗位 *').fill('虚构目录整理员');await clean();await page.locator('.check-label input').check();assert.match(await page.locator('main').textContent(),/交由齐论人才系统接入的 AI 助手（外部智能体）处理/);await page.getByRole('button',{name:'生成招聘文案 →'}).click();await advance();await page.getByRole('heading',{name:'招聘文案草稿'}).waitFor({timeout:8000});await page.getByText('虚构异步处理结果',{exact:false}).waitFor();await clean();
+  state.agentRuns=[];await goto(page,'/interviews/'+id);await page.locator('.interview-consent input').check();await page.getByRole('button',{name:'生成 10 个面试问题'}).click();await advance();await page.getByRole('heading',{name:'请介绍虚构目录清单的交付过程？'}).waitFor({timeout:8000});await clean();
+  state.agentRuns=[];await goto(page,'/assistant');await page.getByRole('heading',{name:'AI 助手',exact:true}).waitFor();await page.getByLabel('选择任务').selectOption('resume_review');assert.equal(await page.getByLabel('选择任务').locator('option').count(),6);await page.getByLabel('工作材料').fill('仅用于隔离UI回归的虚构简历，完成了目录清单。');await page.locator('.check-label input').check();await page.getByRole('button',{name:'开始分析'}).click();await advance();await page.getByRole('heading',{name:'分析结果'}).waitFor({timeout:8000});await clean();
+ });
+ await check('AGENT settings readonly HR / lead ping timing / 390px no provider forms',async()=>{
+  state.agentRuns=[];await goto(page,'/settings/models');await page.getByRole('button',{name:'发送测试唤醒'}).waitFor();assert.equal(await page.locator('input[type=password]').count(),0);assert.doesNotMatch(await page.locator('main').textContent(),/deepseek|openai|fixture-model|模型供应商/i);
+  await page.getByRole('button',{name:'发送测试唤醒'}).click();await page.getByRole('status').filter({hasText:'已提交'}).first().waitFor();state.agentPhase='claimed';await page.getByText('已发送 → 已领取 → 处理中',{exact:false}).waitFor({timeout:8000});state.agentPhase='completed';await page.getByText('已发送 → 已领取 → 已完成',{exact:false}).waitFor({timeout:8000});assert.match(await page.locator('main').textContent(),/总计：2.00 秒/);
+  state.role='hr';await goto(page,'/settings/models');await page.getByRole('heading',{name:'模型与接入'}).waitFor();await page.getByText('外部智能体（AI 助手）',{exact:false}).first().waitFor();assert.equal(await page.getByRole('button',{name:'发送测试唤醒'}).count(),0);state.role='talent_lead';
+  await page.setViewportSize({width:390,height:844});for(const path of ['/optimize','/interviews/'+id,'/assistant','/settings/models']){await goto(page,path);await page.waitForTimeout(100);await noOverflow(page);assert.doesNotMatch(await page.locator('main').textContent(),/deepseek|openai|fixture-model|模型供应商/i);await shot(page,'agent-mobile-'+path.replaceAll('/','-'));}await page.setViewportSize({width:1180,height:757});state.external=false;
  });
  await context.close();assert.deepEqual(errors,[]);await writeFile(resolve(out,'browser-results.json'),JSON.stringify({tested_at:new Date().toISOString(),environment:'loopback only, mocked API, headless Chrome',results,screenshots,errors,production_mutated:false,actual_ai_calls:0},null,2));console.log(`DONE ${results.length} groups; no real backend writes`);
 }finally{await browser.close();await new Promise(r=>server.close(r));}

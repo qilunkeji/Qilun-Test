@@ -1,8 +1,8 @@
 # 新电脑 Codex 接手说明
 
-## 2026-10-08 本地开发：外部智能体基础模块（未上线）
+## 2026-10-08 外部智能体：本地完成，等待上线授权
 
-先读 `docs/agent-mode.md`。已建立本地 Git 基线 `8242a07` 和分支 `codex/external-agent`，未添加远程。追加010及任务、凭证、禁止模型调用、打码、六类业务和连通测试定义；原面试校验器提取结构复用，未放宽规则。当前只在独立内存库验证，真实业务入口、MCP、唤醒和异步页面尚未接通；不要启用 external_agent 或把此阶段称为完整交付。151项自动测试及16组原页面隔离浏览器回归通过，类型检查与Vite构建通过；没有更改生产环境、密钥或数据库，也没有生成凭证。线上仍是下方report-profile-v2；外部模式在未完成业务接线前明确拒绝，不会退回模型。旧001–009、IAM、H5和固定计分引擎不改。
+先读docs/agent-mode.md。外部JSON-RPC十工具、唤醒、异步业务与页面、审计/readiness已接通；169项（134＋35）测试、18组隔离浏览器、类型与构建通过。六类＋两种关联面试＋ping在候选隔离库完成领取提交，actual main空库启动/退出通过，模型调用0。Mac token仅在/Users/huangfeihong/.codex/secrets/rc-agent-write.token（0600），不回显。准备本地.local/deploy/20261008-external-agent-v1/及同级包/manifest，新一次性脚本deploy/activate-external-agent.sh；尚未上传/切换，真实Webhook未提供。服务器Docker、实际Grok、公网新接口仍待上线验收。仅本地Git分支codex/external-agent，无远程、不推送。只有本线程新的“上线”才授权部署；001–009/IAM/H5/固定计分/私人原件不改。下方生产历史记录未被本轮更改。
 
 ## 当前基线
 

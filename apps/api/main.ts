@@ -15,4 +15,5 @@ if(defaultTenantId&&!(await db.query('SELECT id FROM tenants WHERE id=$1',[defau
 const iamOptions=iamConfig(process.env,deployment.origin),iam=iamOptions?talentIAM(db,iamOptions):undefined;
 const app=createApp(db,{origin:deployment.origin,h5Origin:process.env.H5_ORIGIN,production:deployment.production,defaultTenantId,iam,contactKey:Buffer.from(key,'hex'),staticDir:resolve('dist/admin-web')});
 const server=app.listen(port,deployment.host,()=>console.log(`齐论AI ${deployment.origin}；单实例上游 127.0.0.1:${port}`));
-for(const signal of ['SIGINT','SIGTERM']) process.on(signal,()=>server.close(()=>{iam?.close();void db.close().then(()=>process.exit(0));}));
+const agentTimer=setInterval(()=>{void app.locals.agentRuntime.sweep().catch(()=>console.error('AGENT_MAINTENANCE_FAILED'));},5000);agentTimer.unref();
+for(const signal of ['SIGINT','SIGTERM']) process.on(signal,()=>{clearInterval(agentTimer);server.close(()=>{iam?.close();void app.locals.agentRuntime.wake.close().then(()=>db.close()).then(()=>process.exit(0));});});
