@@ -13,12 +13,15 @@ import type {GhProgress} from '../../packages/assessment-engine/gh-progress.ts';
 import {qilunStandardVersion} from '../../packages/assessment-engine/qilun-standard.ts';
 import {loadAssessmentRuntime} from './assessment-product.ts';
 import type {AssessmentRuntime} from './assessment-product.ts';
+import {checkProject} from './project-routes.ts';
 import {profileSchema,reportMetadata,boundedActiveSeconds} from './assessment-metadata.ts';
-type Invite={profile_cipher:string|null;active_seconds:number|null;timing_updated_at:string|null;id:string;tenant_id:string;candidate_id:string;application_id:string|null;package:SelfPackage|GhInvitePackage;value_draft:GhValueDraft|null;ui_progress:GhProgress|null;package_hash:string;purpose:string;expires_at:string;revoked_at:string|null;answers:Record<string,number>;revision:number;consent_at:string|null;submitted_at:string|null;answer_hash:string|null;report:unknown;created_by:string;name:string};
+type Invite={profile_required:boolean;profile_cipher:string|null;active_seconds:number|null;timing_updated_at:string|null;id:string;tenant_id:string;candidate_id:string|null;application_id:string|null;package:SelfPackage|GhInvitePackage;value_draft:GhValueDraft|null;ui_progress:GhProgress|null;package_hash:string;purpose:string;expires_at:string;revoked_at:string|null;answers:Record<string,number>;revision:number;consent_at:string|null;submitted_at:string|null;answer_hash:string|null;report:unknown;created_by:string;name:string};
 function isGh(pkg:Invite['package']):pkg is GhInvitePackage{return 'kind' in pkg&&pkg.kind==='gh_reference_277';}
 const missing=()=>new ServiceError(404,'INVITE_UNAVAILABLE','链接或访问码无效，或邀请已撤销、到期；请联系邀请人。');
 const send=(res:Response,data:unknown,status=200)=>res.status(status).json({data,request_id:res.locals.requestId});
 function business(res:Response){const a=res.locals.auth;if(!['hr','talent_lead'].includes(a.role))throw new ServiceError(403,'FORBIDDEN_SCOPE','当前角色无测评管理权限');return a;}
+const archiveJoin='LEFT JOIN assessment_archive_bindings b ON b.tenant_id=i.tenant_id AND b.invite_id=i.id LEFT JOIN candidates c ON c.tenant_id=i.tenant_id AND c.id=coalesce(i.candidate_id,b.candidate_id)';
+const retained='((i.candidate_id IS NOT NULL AND c.retention_until>now()) OR (i.candidate_id IS NULL AND i.independent_retention_until>now() AND (b.candidate_id IS NULL OR c.retention_until>now())))';
 const authFields={token:z.string().min(32).max(128),pin:z.string().regex(/^\d{6}$/)};
 export function registerPublicInvites(app:Express,db:Database,runtime:AssessmentRuntime,contactKey:Buffer){
  const inverse=runtime.legacy;
@@ -28,7 +31,7 @@ export function registerPublicInvites(app:Express,db:Database,runtime:Assessment
   const ip=digest(req.ip??'local');
   if((failures.get(ip)?.count??0)>=10||failures.size>10000)throw new ServiceError(429,'RATE_LIMITED','访问码尝试过多，请10分钟后再试');
   const hash=digest(input.token);
-  const row=(await tx.query<Invite>(`SELECT i.*,c.name FROM assessment_invites i JOIN candidates c ON c.tenant_id=i.tenant_id AND c.id=i.candidate_id WHERE i.token_hash=$1 AND i.pin_hash=$2 AND i.revoked_at IS NULL AND i.expires_at>now() AND c.retention_until>now() ${lock?'FOR UPDATE OF i':''}`,[hash,digest(`${hash}:${input.pin}`)])).rows[0];
+  const row=(await tx.query<Invite>(`SELECT i.*,coalesce(c.name,'独立测评') AS name FROM assessment_invites i ${archiveJoin} WHERE i.token_hash=$1 AND i.pin_hash=$2 AND i.revoked_at IS NULL AND i.expires_at>now() AND ${retained} ${lock?'FOR UPDATE OF i':''}`,[hash,digest(`${hash}:${input.pin}`)])).rows[0];
   if(!row){failures.set(ip,{count:(failures.get(ip)?.count??0)+1,until:Date.now()+600000});throw missing();}
   return row;
  }
@@ -39,6 +42,7 @@ export function registerPublicInvites(app:Express,db:Database,runtime:Assessment
  app.post('/api/v1/public/assessment/consent',async(req,res)=>{
   const input=z.object({...authFields,consent_version:z.string().max(100),accepted:z.literal(true),profile:profileSchema.optional()}).strict().parse(req.body);
   const row=await lookup(req,db,input);
+  if(row.profile_required&&!input.profile?.name)throw new ServiceError(400,'PROFILE_REQUIRED','请填写本人姓名、手机号码和出生日期');
   if(input.consent_version!==row.package.consent_version)throw new ServiceError(400,'INVALID_CONSENT_VERSION','请阅读本次邀请对应的说明后确认');
   const metadata=await db.transaction(async tx=>{const locked=await lookup(req,tx,input,true);if(locked.submitted_at)throw new ServiceError(409,'ALREADY_SUBMITTED','已提交的资料不可修改');const cipher=input.profile?encryptContact(JSON.stringify(input.profile),contactKey,locked.tenant_id):locked.profile_cipher;await tx.query('UPDATE assessment_invites SET consent_at=coalesce(consent_at,now()),profile_cipher=$2,active_seconds=coalesce(active_seconds,0),timing_updated_at=coalesce(timing_updated_at,now()) WHERE id=$1',[locked.id,cipher]);return reportMetadata({...locked,profile_cipher:cipher,active_seconds:locked.active_seconds??0},contactKey);});send(res,{consented:true,metadata});
  });
@@ -46,6 +50,7 @@ export function registerPublicInvites(app:Express,db:Database,runtime:Assessment
   const input=z.object({...authFields,revision:z.number().int().min(0),answers:z.record(z.string(),z.number().int().min(1).max(5)),value_draft:ghValueDraftSchema.optional(),ui_progress:ghProgressSchema.optional(),active_seconds:z.number().int().min(0).max(86400).optional()}).strict().parse(req.body);
   const data=await db.transaction(async tx=>{
    const row=await lookup(req,tx,input,true);
+   if(row.profile_required&&!reportMetadata(row,contactKey).profile_completed)throw new ServiceError(409,'PROFILE_REQUIRED','请先填写本人资料');
    if(!row.consent_at)throw new ServiceError(409,'CONSENT_REQUIRED','请先阅读并同意说明');
    if(input.ui_progress&&!isGh(row.package))throw new ServiceError(400,'INVALID_PROGRESS','此版本不支持此进度格式');
    let answers:Record<string,number>,values:GhValueDraft|null=null;
@@ -75,22 +80,25 @@ export function registerInviteAdmin(app:Express,db:Database,h5Origin:string,runt
   });send(res,{id},201);
  });
  app.get('/api/v1/assessment/invites',async(req,res)=>{
-  const a=business(res);const query=z.object({q:z.string().max(100).optional()}).strict().parse(req.query);
-  const rows=(await db.query(`SELECT i.id,i.candidate_id,i.application_id,c.name,i.package->>'title' AS title,i.package->>'version' AS version,i.purpose,i.expires_at,i.revoked_at,i.submitted_at,i.revision,i.created_at FROM assessment_invites i JOIN candidates c ON c.tenant_id=i.tenant_id AND c.id=i.candidate_id WHERE i.tenant_id=$1 AND c.retention_until>now() AND c.name ILIKE $2 ORDER BY i.created_at DESC LIMIT 100`,[a.tenant_id,`%${query.q??''}%`])).rows;
-  send(res,{items:rows,h5_origin:h5Origin,package:selfReviewPackage,reference_available:true,ability_estimate_available:!!inverse,standard_assessment_available:!!runtime.standard,standard_assessment_version:qilunStandardVersion,limit:100});
+  const a=business(res);const query=z.object({q:z.string().max(100).optional(),group:z.union([z.uuid(),z.literal('ungrouped')]).optional(),kind:z.enum(['internal','external']).optional(),page:z.coerce.number().int().min(1).max(1000000).default(1)}).strict().parse(req.query);
+  const rows=(await db.query<Record<string,unknown>>(`SELECT i.id,i.profile_cipher,i.tenant_id,coalesce(i.candidate_id,b.candidate_id) AS candidate_id,i.application_id,coalesce(c.name,'独立测评') AS name,i.project_group_id,i.participant_kind,i.package->>'title' AS title,i.package->>'version' AS version,i.purpose,i.expires_at,i.revoked_at,i.submitted_at,i.revision,i.created_at FROM assessment_invites i ${archiveJoin} WHERE i.tenant_id=$1 AND ${retained} AND ($2::text IS NULL OR i.project_group_id::text=$2 OR ($2='ungrouped' AND i.project_group_id IS NULL)) AND ($3::text IS NULL OR i.participant_kind=$3) ORDER BY i.created_at DESC`,[a.tenant_id,query.group??null,query.kind??null])).rows.map(row=>{const {profile_cipher,tenant_id,...safe}=row;return {...safe,name:reportMetadata({profile_cipher:profile_cipher as string|null,tenant_id:tenant_id as string},contactKey).participant_name??safe.name};}).filter(row=>String(row.name).toLowerCase().includes((query.q??'').toLowerCase()));
+  send(res,{items:rows.slice((query.page-1)*100,query.page*100),total:rows.length,page:query.page,h5_origin:h5Origin,package:selfReviewPackage,reference_available:true,ability_estimate_available:!!inverse,standard_assessment_available:!!runtime.standard,standard_assessment_version:qilunStandardVersion,limit:100});
  });
  app.post('/api/v1/assessment/invites',async(req,res)=>{
-  const a=business(res),input=z.object({candidate_id:z.uuid(),application_id:z.uuid().optional(),purpose:z.string().trim().min(5).max(200),days:z.number().int().min(1).max(30),package_kind:z.enum(['self_review_24','gh_reference_277']).default('gh_reference_277'),estimate_abilities:z.boolean().optional()}).strict().parse(req.body);
+  const a=business(res),input=z.object({candidate_id:z.uuid().nullable().optional(),participant_kind:z.enum(['internal','external']).default('internal'),project_group_id:z.uuid().nullable().optional(),application_id:z.uuid().optional(),purpose:z.string().trim().min(5).max(200),days:z.number().int().min(1).max(30),package_kind:z.enum(['self_review_24','gh_reference_277']).default('gh_reference_277'),estimate_abilities:z.boolean().optional()}).strict().parse(req.body);
   // Accept the deprecated checkbox field from already-open old clients, but
   // never allow it to disable mandatory abilities in a NEW standard snapshot.
   if(input.package_kind==='self_review_24')throw new ServiceError(409,'STANDARD_ASSESSMENT_REQUIRED','现在统一提供齐论完整测评，请刷新页面后重新发起邀请。已有测评可继续完成。');
   if(input.package_kind==='gh_reference_277'&&!runtime.standard)throw new ServiceError(503,'STANDARD_RULES_UNAVAILABLE','测评服务暂不可用，请稍后重试；未创建不完整的测评邀请。');
-  const candidate=(await db.query<{retention_until:string}>('SELECT retention_until FROM candidates WHERE tenant_id=$1 AND id=$2 AND retention_until>now()',[a.tenant_id,input.candidate_id])).rows[0];if(!candidate)throw missing();
+  if(!input.candidate_id&&input.participant_kind!=='external')throw new ServiceError(400,'CANDIDATE_REQUIRED','内部测评请选择人员，独立测评请选择外部类型');
+  if(!input.candidate_id&&input.application_id)throw new ServiceError(400,'INVALID_APPLICATION','独立测评不可关联招聘申请');
+  await checkProject(db,a.tenant_id,input.project_group_id);
+  const candidate=input.candidate_id?(await db.query<{retention_until:string}>('SELECT retention_until FROM candidates WHERE tenant_id=$1 AND id=$2 AND retention_until>now()',[a.tenant_id,input.candidate_id])).rows[0]:null;if(input.candidate_id&&!candidate)throw missing();
   if(input.application_id&&!(await db.query('SELECT id FROM applications WHERE tenant_id=$1 AND id=$2 AND candidate_id=$3',[a.tenant_id,input.application_id,input.candidate_id])).rows.length)throw missing();
   const id=randomUUID(),token=randomToken(),pin=String(randomInt(100000,1000000)),hash=digest(token),pkg=JSON.stringify(input.package_kind==='gh_reference_277'?qilunStandardInvitePackage(runtime.standard!):selfReviewPackage);
-  const expires=new Date(Math.min(Date.now()+input.days*86400000,new Date(candidate.retention_until).getTime())).toISOString();
+  const expires=new Date(Math.min(Date.now()+input.days*86400000,candidate?new Date(candidate.retention_until).getTime():Infinity)).toISOString();
   await db.transaction(async tx=>{
-   await tx.query('INSERT INTO assessment_invites(id,tenant_id,candidate_id,application_id,token_hash,pin_hash,package,package_hash,purpose,expires_at,created_by) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',[id,a.tenant_id,input.candidate_id,input.application_id??null,hash,digest(`${hash}:${pin}`),pkg,digest(pkg),input.purpose,expires,a.user_id]);
+   await tx.query('INSERT INTO assessment_invites(id,tenant_id,candidate_id,application_id,token_hash,pin_hash,package,package_hash,purpose,expires_at,created_by,participant_kind,project_group_id,profile_required,independent_retention_until) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,true,now()+make_interval(days=>365))',[id,a.tenant_id,input.candidate_id??null,input.application_id??null,hash,digest(`${hash}:${pin}`),pkg,digest(pkg),input.purpose,expires,a.user_id,input.participant_kind,input.project_group_id??null]);
    await tx.query('INSERT INTO audit_events(id,tenant_id,actor_id,action,object_id) VALUES($1,$2,$3,$4,$5)',[randomUUID(),a.tenant_id,a.user_id,'assessment.invited',id]);
   });send(res,{id,url:`${h5Origin}/h5/#${token}`,report_url:`${h5Origin}/h5/report#${token}`,pin,expires_at:expires},201);
  });
@@ -100,7 +108,7 @@ export function registerInviteAdmin(app:Express,db:Database,h5Origin:string,runt
   await db.query('INSERT INTO audit_events(id,tenant_id,actor_id,action,object_id) VALUES($1,$2,$3,$4,$5)',[randomUUID(),a.tenant_id,a.user_id,'assessment.revoked',id]);send(res,{revoked:true});
  });
  app.get('/api/v1/assessment/invites/:id/report',async(req,res)=>{
-  const a=business(res);const row=(await db.query<Invite>(`SELECT i.id,i.tenant_id,i.profile_cipher,i.active_seconds,c.name,i.package_hash,i.report,i.submitted_at FROM assessment_invites i JOIN candidates c ON c.id=i.candidate_id AND c.tenant_id=i.tenant_id WHERE i.tenant_id=$1 AND i.id=$2 AND c.retention_until>now() AND i.submitted_at IS NOT NULL`,[a.tenant_id,z.uuid().parse(req.params.id)])).rows[0];if(!row)throw missing();const {profile_cipher,tenant_id,...publicRow}=row;send(res,{...publicRow,metadata:reportMetadata(row as Invite,contactKey)});
+  const a=business(res);const row=(await db.query<Invite>(`SELECT i.id,i.tenant_id,i.profile_cipher,i.active_seconds,coalesce(c.name,'独立测评') AS name,i.package_hash,i.report,i.submitted_at FROM assessment_invites i ${archiveJoin} WHERE i.tenant_id=$1 AND i.id=$2 AND ${retained} AND i.submitted_at IS NOT NULL`,[a.tenant_id,z.uuid().parse(req.params.id)])).rows[0];if(!row)throw missing();const {profile_cipher,tenant_id,...publicRow}=row;send(res,{...publicRow,metadata:reportMetadata(row as Invite,contactKey)});
  });
  app.post('/api/v1/assessment/invites/:id/delete',async(req,res)=>{
   const a=business(res);if(a.role!=='talent_lead')throw new ServiceError(403,'FORBIDDEN_SCOPE','仅人才负责人可以删除测评数据');

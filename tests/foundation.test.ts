@@ -33,6 +33,10 @@ type Session={cookie:string;csrf:string};
 let a:Session,b:Session,ops:Session,interviewer:Session,hr:Session,otherLead:Session;
 type Result={status:number;data:any;error:any;cookie:string|null}; // HTTP boundary intentionally inspects hostile and partial JSON.
 async function request(path:string,body?:unknown,s?:Session,headers:Record<string,string>={}):Promise<Result>{
+ // New invitations require explicit participant details. Legacy positive-flow
+ // fixtures use this fictional participant; missing-profile rejection is
+ // tested without this helper in project-assessments.test.ts.
+ if(path==='/public/assessment/consent'&&body&&typeof body==='object'&&!('profile' in body))body={...body,profile:{name:'【虚构】本人确认',phone:'13800000000',birth_date:'1990-06-15'}};
  const r=await fetch(`${base}/api/v1${path}`,{method:body===undefined?'GET':'POST',headers:{'Content-Type':'application/json','Origin':origin,...(s?{Cookie:s.cookie,'X-CSRF-Token':s.csrf}:{}),...headers},...(body===undefined?{}:{body:JSON.stringify(body)})});
  const json=await r.json() as {data:unknown;error:unknown};return {status:r.status,...json,cookie:r.headers.get('set-cookie')};
 }
@@ -69,7 +73,7 @@ test('277题H5邀请保存续答、价值观排序、版本同意、幂等提交
  assert.equal((await request('/public/assessment/consent',{...auth,accepted:true,consent_version:selfReviewPackage.consent_version})).status,400);
  assert.equal((await request('/public/assessment/consent',{...auth,accepted:true,consent_version:pkg.consent_version})).status,200);
  assert.equal((await request('/public/assessment/consent',{...auth,accepted:true,consent_version:pkg.consent_version,profile:{phone:'bad',birth_date:'2025-02-31'}})).status,400);
- const profile={phone:'13800000000',birth_date:'1990-06-15'};
+ const profile={name:'【虚构】参与者本人',phone:'13800000000',birth_date:'1990-06-15'};
  const consent=await request('/public/assessment/consent',{...auth,accepted:true,consent_version:pkg.consent_version,profile});assert.equal(consent.status,200);assert.equal(consent.data.metadata.phone,'138****0000');assert.equal(consent.data.metadata.birth_date,profile.birth_date);assert.equal(consent.data.metadata.consistency.label,'未评定');
  const stored=(await db.query<{profile_cipher:string}>('SELECT profile_cipher FROM assessment_invites WHERE id=$1',[created.data.id])).rows[0];assert.ok(stored.profile_cipher);assert.ok(!stored.profile_cipher.includes(profile.phone));
  await db.query("UPDATE assessment_invites SET timing_updated_at=now()-interval '30 seconds' WHERE id=$1",[created.data.id]);

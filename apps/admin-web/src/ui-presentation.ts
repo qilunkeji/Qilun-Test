@@ -7,6 +7,7 @@ const auditActions:Record<string,[string,string]>={
  'job.created':['创建岗位','岗位'],'job.version_created':['保存岗位新版本','岗位'],'resume.imported':['导入简历版本','简历'],'contact.read':['审计查看联系方式','人才'],
  'application.created':['建立岗位申请','申请'],'interview.created':['建立面试','面试'],'recruiting.material_saved':['保存公司资料','资料'],'ai.configured':['保存模型配置','功能配置'],
  'assessment.person_created':['建立测评人员','人才'],'assessment.invited':['发起测评邀请','测评'],'assessment.revoked':['撤销测评邀请','测评'],'assessment.deleted':['删除本次测评数据','测评'],'assessment.public_submitted':['完成测评答卷','测评'],
+ 'project.created':['新建项目组','项目组'],'project.assigned':['调整项目组归类','项目组'],'assessment.archive_bound':['测评关联人才档案','测评'],
  'assessment.synthetic_experiment':['运行合成试验','合成摘要'],'assessment.rule_verification':['核验计分规则','核验摘要'],'access.denied':['拒绝越权访问','访问'],
 };
 export function auditDisplay(action:string){

@@ -1,0 +1,12 @@
+.project-create { margin: 0 0 18px; padding: 16px 20px; border: 1px solid #e7e1df; border-radius: 14px; background: #fff; }
+.project-create>.toolbar { margin-top: 12px; margin-bottom: 0; }
+.project-assignment { display: grid; gap: 6px; min-width: 150px; max-width: 260px; }
+.project-assignment select { width: 100%; min-height: 42px; padding: 8px 12px; font-size: 14px; }
+.project-assignment p, .project-create p[role=alert] { color: #9b0000; font-size: 13px; }
+.toolbar>select { width: auto; min-width: 160px; max-width: 100%; min-height: 44px; }
+.danger-menu+.inset, .inset>select { max-width: 100%; }
+@media(max-width: 600px) {
+ .project-create { padding: 12px 14px; }
+ .toolbar>select { width: 100%; }
+ .project-create .toolbar { flex-wrap: wrap; }
+}

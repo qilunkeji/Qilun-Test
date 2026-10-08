@@ -2,11 +2,12 @@ import express from 'express';
 import type { Request, Response, NextFunction } from 'express';
 import { randomUUID } from 'node:crypto';
 import { resolve } from 'node:path';
-import { ZodError } from 'zod';
+import { z, ZodError } from 'zod';
 import type { Database } from './db.ts';
 import { loginInput, jobInput, versionInput, importInput, applicationInput, listInput, id } from '../../packages/contracts/index.ts';
 import { randomToken, digest, verifyPassword, hashPassword, encryptContact, decryptContact } from '../../packages/security/index.ts';
 import { registerAssessmentRoutes } from './assessment-routes.ts';
+import {registerProjectRoutes} from './project-routes.ts';
 import {registerPublicInvites,registerInviteAdmin} from './invite-routes.ts';
 import {loadAssessmentRuntime} from './assessment-product.ts';
 import {registerAIRoutes} from './ai-routes.ts';
@@ -147,6 +148,7 @@ export function createApp(db:Database, config:{origin:string; contactKey:Buffer;
     await db.query('DELETE FROM sessions WHERE token_hash=$1',[digest(token??'')]);res.clearCookie('qilun_session',{path:'/api'});send(res,{logged_out:true});
   });
   registerAssessmentRoutes(app,db,config.localReportPreview,assessmentRuntime);
+  registerProjectRoutes(app,db);
   registerInviteAdmin(app,db,config.h5Origin??config.origin,assessmentRuntime,config.contactKey);
   registerAIRoutes(app,db,config.contactKey,config.aiTransport,agentRuntime);
   app.get('/api/v1/readiness',(_req,res)=>send(res,{
@@ -227,18 +229,19 @@ export function createApp(db:Database, config:{origin:string; contactKey:Buffer;
     });send(res,result,result.duplicate?200:201);
   });
   app.get('/api/v1/talents',async(req,res)=>{
-    allowBusiness(res);allowedKeys(req);const {page,page_size,q}=listInput.parse(req.query),a=context(res).auth;
-    const base='FROM candidates WHERE tenant_id=$1 AND retention_until>now() AND name ILIKE $2';const params=[a.tenant_id,`%${q}%`];
-    const rows=(await db.query(`SELECT id,name,purpose,retention_until,created_at ${base} ORDER BY created_at DESC,id LIMIT $3 OFFSET $4`,[...params,page_size,(page-1)*page_size])).rows;
-    const count=(await db.query<{count:number}>(`SELECT count(*)::int AS count ${base}`,params)).rows[0].count;send(res,{items:rows,total:count,page,page_size});
+    allowBusiness(res);const {group,...rest}=req.query;const selected=z.union([z.uuid(),z.literal('ungrouped')]).optional().parse(group);if(Object.keys(rest).some(k=>!['page','page_size','q'].includes(k)))throw new ServiceError(400,'INVALID_QUERY','查询条件无效');const {page,page_size,q}=listInput.parse(rest),a=context(res).auth;
+    const base='FROM candidates WHERE tenant_id=$1 AND retention_until>now() AND name ILIKE $2'+(selected==='ungrouped'?' AND project_group_id IS NULL':selected?' AND project_group_id=$5':'');const params=[a.tenant_id,`%${q}%`];
+    const rows=(await db.query(`SELECT id,name,purpose,retention_until,created_at,project_group_id ${base} ORDER BY created_at DESC,id LIMIT $3 OFFSET $4`,[...params,page_size,(page-1)*page_size,...(selected&&selected!=='ungrouped'?[selected]:[])])).rows;
+    const count=(await db.query<{count:number}>(`SELECT count(*)::int AS count ${base.replace('$5','$3')}`,[...params,...(selected&&selected!=='ungrouped'?[selected]:[])])).rows[0].count;send(res,{items:rows,total:count,page,page_size});
   });
   app.get('/api/v1/talents/:id',async(req,res)=>{
     allowBusiness(res);const candidateId=id.parse(req.params.id),a=context(res).auth;
-    const candidate=(await db.query('SELECT id,name,purpose,processing_basis,retention_until,created_at FROM candidates WHERE tenant_id=$1 AND id=$2 AND retention_until>now()',[a.tenant_id,candidateId])).rows[0];if(!candidate)throw missing();
+    const candidate=(await db.query('SELECT id,name,purpose,processing_basis,retention_until,created_at,project_group_id FROM candidates WHERE tenant_id=$1 AND id=$2 AND retention_until>now()',[a.tenant_id,candidateId])).rows[0];if(!candidate)throw missing();
     const sources=(await db.query('SELECT id,channel,external_id,authorization_ref,created_at FROM candidate_sources WHERE tenant_id=$1 AND candidate_id=$2',[a.tenant_id,candidateId])).rows;
     const resumes=(await db.query('SELECT id,source_id,version,filename,content_hash,completeness,created_at FROM resume_versions WHERE tenant_id=$1 AND candidate_id=$2 ORDER BY version DESC',[a.tenant_id,candidateId])).rows;
     const applications=(await db.query('SELECT a.*,v.title,v.version AS job_version FROM applications a JOIN job_versions v ON v.id=a.job_version_id AND v.tenant_id=a.tenant_id WHERE a.tenant_id=$1 AND a.candidate_id=$2 ORDER BY a.created_at DESC',[a.tenant_id,candidateId])).rows;
-    send(res,{...candidate,sources,resumes,applications});
+    const assessments=(await db.query('SELECT i.id,i.submitted_at,i.created_at,i.revoked_at FROM assessment_invites i LEFT JOIN assessment_archive_bindings b ON b.tenant_id=i.tenant_id AND b.invite_id=i.id WHERE i.tenant_id=$1 AND coalesce(i.candidate_id,b.candidate_id)=$2 ORDER BY i.created_at DESC',[a.tenant_id,candidateId])).rows;
+    send(res,{...candidate,sources,resumes,applications,assessments});
   });
   app.post('/api/v1/talents/:id/contact-access',async(req,res)=>{
     allowBusiness(res);const candidateId=id.parse(req.params.id),a=context(res).auth;
