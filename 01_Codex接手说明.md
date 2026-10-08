@@ -1,5 +1,11 @@
 # 新电脑 Codex 接手说明
 
+## 2026-10-08 最新状态：外部智能体已上线；邀请一键分享本地待发布
+
+生产最新为 `/opt/qilun-talent/releases/20261008-external-agent-v3`（7f3fe50），包含分组/独立测评和010/011，Webhook按用户要求留空。详见docs/20261008-最新版上线验收.md；下面“未上线/v1”是历史准备记录，不可重跑旧激活脚本。
+
+本轮 codex/invitation-one-click-share：一键复制邀请链接＋访问码、隐藏额外报告链接，提交自动生成报告和原链接复访保持不变，仅本地未部署。详见docs/20261008-邀请一键分享.md。
+
 ## 2026-10-08 外部智能体：本地完成，等待上线授权
 
 先读docs/agent-mode.md。外部JSON-RPC十工具、唤醒、异步业务与页面、审计/readiness已接通；169项（134＋35）测试、18组隔离浏览器、类型与构建通过。六类＋两种关联面试＋ping在候选隔离库完成领取提交，actual main空库启动/退出通过，模型调用0。Mac token仅在/Users/huangfeihong/.codex/secrets/rc-agent-write.token（0600），不回显。准备本地.local/deploy/20261008-external-agent-v1/及同级包/manifest，新一次性脚本deploy/activate-external-agent.sh；尚未上传/切换，真实Webhook未提供。服务器Docker、实际Grok、公网新接口仍待上线验收。仅本地Git分支codex/external-agent，无远程、不推送。只有本线程新的“上线”才授权部署；001–009/IAM/H5/固定计分/私人原件不改。下方生产历史记录未被本轮更改。
