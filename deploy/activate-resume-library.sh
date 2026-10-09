@@ -21,7 +21,7 @@ test ! -e "$root/current.external-agent-next" && test ! -L "$root/current.extern
 test "$(sha256sum "$old/dist/admin-web/index.html" | cut -d ' ' -f1)" = 06f498b2611c2a0551128319570dd3895e397c2b304540aab91deb6757d4560b
 test "$(sha256sum "$archive" | cut -d ' ' -f1)" = "$2"
 # Reject paths outside approved source/build areas; no private payloads/symlinks.
-tar -tzf "$archive" | awk '/(^\/|(^|\/)\.\.(\/|$)|(^|\/)\.env($|\.)|^\.local\/|^node_modules\/)/{bad=1} !/^(apps\/|packages\/|infra\/|dist\/|deploy\/|tests\/helpers\/|tests\/project-assessments.test.ts$|tests\/resume-library.test.ts$|package.json$|package-lock.json$)/{bad=1} END{exit bad}'
+tar -tzf "$archive" | awk '/(^\/|(^|\/)\.\.(\/|$)|(^|\/)\.env($|\.)|^\.local\/|^node_modules\/)/{bad=1} !/^(apps\/|packages\/|infra\/|dist\/|deploy\/|tests\/helpers\/|tests\/project-assessments.test.ts$|tests\/resume-library.test.ts$|tests\/public-entry.test.ts$|package.json$|package-lock.json$)/{bad=1} END{exit bad}'
 test -z "$(tar -tvzf "$archive" | awk 'substr($1,1,1)!="-" && substr($1,1,1)!="d" {print "invalid"}')"
 systemctl is-active --quiet qilun-talent.service
 cp -a "$old" "$new"
@@ -40,6 +40,7 @@ isolated deploy/verify-agent-startup.mjs
 isolated deploy/verify-external-agent-candidate.mjs
 isolated tests/project-assessments.test.ts
 isolated tests/public-entry.test.ts
+isolated tests/resume-library.test.ts
 model_hash=$(sha256sum "$root/shared/gh-inference-v1/model.json" | cut -d ' ' -f1)
 env_hash=$(sha256sum "$root/shared/production.env")
 stopped=0; switched=0
