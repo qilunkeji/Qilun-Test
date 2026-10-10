@@ -21,7 +21,7 @@ test ! -e "$root/current.external-agent-next" && test ! -L "$root/current.extern
 test "$(sha256sum "$old/dist/admin-web/index.html" | cut -d ' ' -f1)" = d4313a07d2263e44e1b9021dee28f3151c1a291e88ec6988b7fbb5001b5ebb8a
 test "$(sha256sum "$archive" | cut -d ' ' -f1)" = "$2"
 # Reject paths outside approved source/build areas; no private payloads/symlinks.
-tar -tzf "$archive" | awk '/(^\/|(^|\/)\.\.(\/|$)|(^|\/)\.env($|\.)|^\.local\/|^node_modules\/)/{bad=1} !/^(apps\/|packages\/|infra\/|dist\/|deploy\/|tests\/helpers\/|tests\/project-assessments.test.ts$|tests\/resume-library.test.ts$|tests\/public-entry.test.ts$|package.json$|package-lock.json$)/{bad=1} END{exit bad}'
+tar -tzf "$archive" | awk '/(^\/|(^|\/)\.\.(\/|$)|(^|\/)\.env($|\.)|^\.local\/|^node_modules\/)/{bad=1} !/^(apps\/|packages\/|infra\/|dist\/|deploy\/|tests\/helpers\/|tests\/project-assessments.test.ts$|tests\/resume-library.test.ts$|tests\/public-entry.test.ts$|tests\/h5-render.test.ts$|package.json$|package-lock.json$)/{bad=1} END{exit bad}'
 test -z "$(tar -tvzf "$archive" | awk 'substr($1,1,1)!="-" && substr($1,1,1)!="d" {print "invalid"}')"
 systemctl is-active --quiet qilun-talent.service
 cp -a "$old" "$new"
