@@ -7,6 +7,7 @@ import type {GhDisplayReport as GhReportReplay} from '../../../packages/assessme
 import './original-report.css';
 import {ReportHeader} from './report-header.tsx';
 import type {ReportMetadata} from './report-header.tsx';
+import {date as formatDate} from './ui.tsx';
 
 type Slot={id:string;x:number;y:number;width:number;height:number};
 type Sheet={id:string;document:'data'|'talent';page:number;title:string;width:number;height:number;src:string;slots:Slot[]};
@@ -40,7 +41,7 @@ export function OriginalReportStudio({sourceBase='/api/v1/assessment/layout/sour
  function selectPage(value:string){setSheet(value);setSelected('');setError('');}
  return <section className="original-studio" aria-label={standard?'齐论测评数据表':'原版报告版式'}>
   <div className="original-toolbar no-print">
-   <div>{dataOnly?<h1>测评数据报告</h1>:<><h2>原版报告</h2><p>{standard?'齐论测评 V1.0 · 性格与发展数据总览':'一页数据总览 · 十页人才报告'}</p></>}</div>
+   <div>{dataOnly?<><h1>{metadata?.participant_name??personName?`${metadata?.participant_name??personName} · 测评结果`:'测评数据报告'}</h1><p>七模块数据总览{submittedAt?` · 完成于 ${formatDate(submittedAt)}`:''}</p></>:<><h2>原版报告</h2><p>{standard?'性格与发展数据总览':'一页数据总览 · 十页人才报告'}</p></>}</div>
    <div className="original-controls">
     {!dataOnly&&<label>报告页面<select aria-label="原版报告页面" value={sheet} onChange={e=>selectPage(e.target.value)}><optgroup label="数据报告"><option value="data">七模块数据总览</option></optgroup><optgroup label="人才报告 · 10页">{manifest.pages.filter(p=>p.document==='talent').map(p=><option value={p.id} key={p.id}>{p.page}. {p.title}</option>)}</optgroup></select></label>}
     <label>显示比例<select aria-label="显示比例" value={zoom} onChange={e=>setZoom(e.target.value)}><option value="fit">适合窗口</option><option value="native">原稿尺寸</option></select></label>
@@ -68,7 +69,7 @@ export function OriginalReportStudio({sourceBase='/api/v1/assessment/layout/sour
     {footerBrand&&<div className="original-footer-brand" style={{...placement(footerBrand),fontSize:`${14/page.width*100}cqw`}}>{footerBrand.text}</div>}
     {bodyBrand.map((box,i)=><div className="original-body-brand" key={i} style={{...placement(box),fontSize:`${16/page.width*100}cqw`}}>{box.text}</div>)}
     {mode==='computed'&&page.id==='data'&&<ReportHeader name={personName} date={submittedAt} metadata={metadata} width={page.width} height={page.height}/>}
-    {mode==='computed'&&replay&&'abilities' in replay&&<div className="original-inference-label" style={{fontSize:`${12/page.width*100}cqw`}}>{standard?'齐论测评 V1.0 · 能力为模型推算参考评分':'能力为反推估计 · 非原版实算'} · 不作自动录用依据{replay.inference.outside_observed_domain?' · 本次能力画像参考性较低':''}</div>}
+    {mode==='computed'&&replay&&'abilities' in replay&&<div className="original-inference-label" style={{fontSize:`${12/page.width*100}cqw`}}>{standard?'能力为模型推算参考评分':'能力为反推估计 · 非原版实算'} · 不作自动录用依据{replay.inference.outside_observed_domain?' · 本次能力画像参考性较低':''}</div>}
     {mode!=='recorded'&&page.slots.filter(s=>!(mode==='computed'&&page.id==='data'&&svgCopyFields.has(s.id))).map(s=><div key={s.id} className={'original-slot '+(editing&&mode==='blank'?'original-slot-editable':'')} style={{left:`${s.x/page.width*100}%`,top:`${s.y/page.height*100}%`,width:`${s.width/page.width*100}%`,height:`${s.height/page.height*100}%`}}>{editing&&mode==='blank'&&<button className="original-slot-hit no-print" aria-label={`填写 ${s.id}`} onClick={()=>setSelected(s.id)} title={s.id}/>}<div className="original-slot-text" style={{fontSize:`${(page.id==='talent-01'?24:page.document==='data'?12:16)/page.width*100}cqw`}}>{mode==='computed'?computed[s.id]??'':fields[fieldKey(s.id)]??''}</div></div>)}
    </div>
   </div>

@@ -1,6 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
+import {encryptContact} from '../packages/security/index.ts';
 import {agentEnvironment,agentFixture} from './helpers/agent-fixture.ts';
 import {createParticipant} from './helpers/assessment-participant.ts';
 const profile={name:'【虚构】外部本人',phone:'13800000000',birth_date:'1990-06-15'};
@@ -62,6 +63,22 @@ test('外部记录不受100条总量限制；独立保留期到期失效',async 
  for(let i=0;i<104;i++)await f.db.query('INSERT INTO assessment_invites(id,tenant_id,candidate_id,token_hash,pin_hash,package,package_hash,purpose,expires_at,created_by,participant_kind,independent_retention_until) VALUES($1,$2,NULL,$3,$4,$5,$6,$7,$8,$9,$10,$11)',[randomUUID(),f.tenant,'fixture-hash-'+i,row.pin_hash,JSON.stringify(row.package),row.package_hash,row.purpose,row.expires_at,row.created_by,'external',row.independent_retention_until]);
  const first=(await f.request('/api/v1/assessment/invites?kind=external')).body.data,second=(await f.request('/api/v1/assessment/invites?kind=external&page=2')).body.data;assert.equal(first.total,105);assert.equal(first.items.length,100);assert.equal(second.items.length,5);
  assert.equal((await f.request('/api/v1/assessment/invites?page=0')).status,400);
+ // Reports must be filtered before pagination, including when all 100 recent
+ // invitations are unfinished and completed records were created earlier.
+ const completedIds:string[]=[];
+ for(let i=0;i<101;i++){
+  const id=randomUUID();completedIds.push(id);
+  await f.db.query("INSERT INTO assessment_invites(id,tenant_id,candidate_id,token_hash,pin_hash,package,package_hash,purpose,expires_at,created_by,participant_kind,independent_retention_until,profile_cipher,submitted_at,report,created_at) VALUES($1,$2,NULL,$3,$4,$5,$6,$7,$8,$9,'external',$10,$11,now()-interval '2 days'+$12::int*interval '1 minute','{}'::jsonb,now()-interval '10 days')",[id,f.tenant,'completed-fixture-'+i,row.pin_hash,JSON.stringify(row.package),row.package_hash,row.purpose,row.expires_at,row.created_by,row.independent_retention_until,encryptContact(JSON.stringify({...profile,name:'【虚构】已完成'+i}),f.key,f.tenant),i]);
+ }
+ const invites=(await f.request('/api/v1/assessment/invites?view=invites')).body.data;
+ assert.equal(invites.total,206);assert.ok(invites.items.every((x:{submitted_at:string|null})=>!x.submitted_at));
+ const reports=(await f.request('/api/v1/assessment/invites?view=reports')).body.data,reportPage2=(await f.request('/api/v1/assessment/invites?view=reports&page=2')).body.data;
+ assert.equal(reports.total,101);assert.equal(reports.items.length,100);assert.ok(reports.items.every((x:{submitted_at:string|null})=>x.submitted_at));assert.equal(reports.items[0].id,completedIds[100]);assert.equal(reportPage2.items.length,1);assert.equal(reportPage2.items[0].id,completedIds[0]);
+ const searched=(await f.request('/api/v1/assessment/invites?view=reports&q='+encodeURIComponent('已完成100'))).body.data;
+ assert.equal(searched.total,1);assert.equal(searched.items[0].name,'【虚构】已完成100');
+ assert.equal((await f.request('/api/v1/assessment/invites?view=reports&group=ungrouped&kind=internal')).body.data.total,0);
+ assert.equal((await f.request('/api/v1/assessment/invites?view=reports',undefined,'ops')).status,403);
+ assert.equal((await f.request('/api/v1/assessment/invites?view=unknown')).status,400);
  await f.db.query("UPDATE assessment_invites SET independent_retention_until=now()-interval '1 day' WHERE id=$1",[created.id]);assert.equal((await f.request('/api/v1/public/assessment/open',created.auth,null)).status,404);
  assert.equal((await f.request(`/api/v1/assessment/invites/${created.id}/bind`,{candidate_id:f.candidate,confirm:'bind_assessment'})).status,404);
 });

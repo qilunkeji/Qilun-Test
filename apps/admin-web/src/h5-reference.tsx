@@ -21,7 +21,7 @@ export function ReferenceReportView({report,name,submittedAt,metadata}:{report:G
  <section className="h5-result-section" id="module-5"><h2>4.2 职业角色</h2><MetricBars rows={ghReportRoles(r).map(x=>({name:x.name,value:x.scoreTotalCalibrateSeniorNew}))}/>{r.report_text.roles.map(x=><p key={x.item}><b>{x.label}：</b>{x.text}</p>)}</section>
  <section className="h5-result-section" id="module-6"><h2>4.3 职业优势</h2><p>优势星级：{'★'.repeat(r.grade.value)}{'☆'.repeat(5-r.grade.value)}</p>{r.report_text.strengths.groups.map(g=><div key={g.item}><h3>{g.name}</h3>{g.rows.map(x=><p key={x.item}><b>{x.name} · 第{x.rank}位：</b>{x.text}</p>)}</div>)}<p>最后6项：{r.report_text.strengths.bottom_six.map(x=>x.name).join('、')}</p><details><summary>查看全部34项才干顺序</summary><ol>{r.strengths.map(x=><li key={x.item}>{x.name} · 基础分 {x.score}</li>)}</ol></details></section>
 
- <div className="report-usage-note"><p>答题用时为本次已记录的前台活跃时间，暂停、关闭及长时间无操作不计入；历史未记录时间不补算。手机号码以脱敏形式展示。逻辑一致性暂未评定，不默认标为低、吻合或高。</p>{standard?'齐论测评 V1.0 · 结果用于自我理解与发展沟通，不是心理诊断，不用于自动录用或淘汰。':<>这是发展参考结果，不保证与原版完全一致，不用于自动录用或淘汰。{'abilities' in r?'28项能力为历史数据拟合估计；不是原版权重实算。':'尚未确认的28项能力保持留白，不用零分代替。'}</>}{'inference' in r&&r.inference.outside_observed_domain?' 本次能力画像参考性较低，请结合实际经历核对。':''}</div>
+ <div className="report-usage-note"><p>答题用时为本次已记录的前台活跃时间，暂停、关闭及长时间无操作不计入；历史未记录时间不补算。手机号码以脱敏形式展示。逻辑一致性暂未评定，不默认标为低、吻合或高。</p>{standard?'结果用于自我理解与发展沟通，不是心理诊断，不用于自动录用或淘汰。':<>这是发展参考结果，不保证与原版完全一致，不用于自动录用或淘汰。{'abilities' in r?'28项能力为历史数据拟合估计；不是原版权重实算。':'尚未确认的28项能力保持留白，不用零分代替。'}</>}{'inference' in r&&r.inference.outside_observed_domain?' 本次能力画像参考性较低，请结合实际经历核对。':''}</div>
  </div></details>
  </article>;
 }

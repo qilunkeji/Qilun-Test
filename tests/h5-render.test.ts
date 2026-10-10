@@ -40,7 +40,7 @@ test('成品版真实HTML：统一齐论口径、七模块及28能力，不展�
   const pkg=qilunStandardInvitePackage(runtime),answers=Object.fromEntries(pkg.questions.map(q=>[q.id,3])),selected=pkg.value_groups.map(g=>g.slice(0,5)),v={selected,ranked:selected.flat().slice(0,10)},report=scoreGhInvite(pkg,answers,v,runtime.model,runtime);
   const {ReferenceReportView}=await server.ssrLoadModule('/src/h5-reference.tsx');
   const html=renderToStaticMarkup(React.createElement(ReferenceReportView,{report,name:'【虚构】成品验收'}));
-  assert.match(html,/齐论测评 V1.0/);assert.match(html,/固定模型推算的参考评分/);assert.equal((html.match(/class="h5-result-section"/g)??[]).length,7);assert.ok('abilities' in report.result);for(const a of report.result.abilities)assert.ok(html.includes(a.name));
+  assert.doesNotMatch(html,/齐论测评 V1.0/);assert.match(html,/固定模型推算的参考评分/);assert.equal((html.match(/class="h5-result-section"/g)??[]).length,7);assert.ok('abilities' in report.result);for(const a of report.result.abilities)assert.ok(html.includes(a.name));
   assert.doesNotMatch(html,/原版|历史结果反推|反推估计|补出|能力保持留白|独立样本|平均误差|AgType8Map|32词|无规则/);
   const center=await readFile(new URL('../apps/admin-web/src/public-entry.tsx',import.meta.url),'utf8');assert.doesNotMatch(center,/setEstimate|estimate_abilities:|补出28项|value=\{packageKind\}/);assert.match(center,/完整七模块画像，包含28项能力参考评分/);
  }finally{await server.close();}

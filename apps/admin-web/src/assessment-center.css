@@ -1,0 +1,17 @@
+.assessment-link-history>summary{display:flex;align-items:center;justify-content:space-between;gap:16px;cursor:pointer;list-style:none;font-size:16px;font-weight:600;min-height:44px}
+.assessment-link-history>summary::-webkit-details-marker{display:none}
+.assessment-link-history>summary small{display:block;margin-top:5px;font-size:13px;font-weight:400;color:var(--muted)}
+.assessment-link-history>summary::after{content:'展开 ↓';font-size:13px;font-weight:400;color:var(--primary);white-space:nowrap}
+.assessment-link-history[open]>summary::after{content:'收起 ↑'}
+.assessment-link-history>summary:focus-visible{outline:2px solid var(--primary);outline-offset:6px;border-radius:4px}
+.assessment-history-content{border-top:1px solid var(--line);margin-top:20px;padding-top:16px}
+.assessment-history-content .section-heading p,.assessment-participants .section-heading p{margin:6px 0 0;font-size:13px}
+.assessment-row-actions{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.assessment-row-actions .report-action{white-space:nowrap}
+.assessment-purpose{max-width:300px;overflow-wrap:anywhere}
+.assessment-binding-state{font-size:12px;color:var(--muted);white-space:nowrap}
+.assessment-binding-state.linked{color:#347057}
+.assessment-pagination{margin-top:20px;border-top:1px solid var(--line);padding-top:16px}
+.assessment-list-note{font-size:12px;margin-bottom:0}
+.assessment-report-back{display:flex;align-items:center;gap:16px;border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:24px;color:var(--muted);font-size:13px}
+@media(max-width:800px){.assessment-link-history>summary{font-size:15px}.assessment-link-history>summary small{font-size:12px}.assessment-participants .toolbar input{flex:1;min-width:150px}.assessment-pagination{gap:8px}.assessment-pagination span{font-size:12px}.assessment-report-back{flex-wrap:wrap;gap:10px}}

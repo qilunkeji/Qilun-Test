@@ -1,5 +1,6 @@
 .original-studio{color:#333;max-width:1440px;margin:auto;font-family:Arial,"Microsoft YaHei","PingFang SC",sans-serif}
 .original-toolbar{display:flex;justify-content:space-between;align-items:center;gap:24px;background:#fff;padding:22px 24px;border:1px solid #e1e5e9;border-radius:6px}
+.original-toolbar>div:first-child{min-width:0;overflow-wrap:anywhere}
 .original-toolbar h1{font-size:24px;letter-spacing:0;margin:0 0 7px;color:#333}.original-toolbar p{margin:0;color:#888;font-size:12px}
 .original-controls{display:flex;align-items:flex-end;gap:12px}.original-controls label,.original-field-editor label{display:grid;gap:7px;font-size:12px;color:#666}.original-controls select{min-width:125px;max-width:250px;font-size:13px}
 .original-studio button{background:#fff;border:1px solid #d9dfe5;color:#555;border-radius:4px;font-size:13px;white-space:nowrap;box-shadow:none;min-height:36px;padding:8px 14px}

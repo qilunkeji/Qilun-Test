@@ -24,7 +24,7 @@ export function ReportView({report,name}:{report:Report;name?:string}){
  const tendencyText=tendency==='工作型'?'比较注重工作付出及贡献，并从完成与进步中获得满足；也要主动安排恢复节奏。':tendency==='生活型'?'更重视生活体验、关系与恢复空间；清晰的工作边界更有助于持续投入。':'能够兼顾工作和生活，并在两者之间寻求相对稳定、可持续的安排。';
  const driverText:Record<string,string>={安乐:'重视舒适体验与身心节奏，以稳定、愉悦和可持续为主要驱动力。',归属:'重视关系连接与外界认可，以信任、归属和积极反馈为主要驱动力。',权利:'重视资源回报与自主影响，以现实成果、决定空间和掌控感为主要驱动力。',成就:'重视完成、精进与探索，以做成事情、持续学习和创造新解法为主要驱动力。'};
  return <article className="gh-report" ref={root}>
-  <header className="gh-report-head"><img className="gh-logo" src="/brand/qilun-logo-light.png" alt="齐论 AI"/><div className="gh-version">工作偏好自评 · {report.version}</div></header>
+  <header className="gh-report-head"><img className="gh-logo" src="/brand/qilun-logo-light.png" alt="齐论 AI"/><div className="gh-version">工作偏好自评</div></header>
   <nav className="gh-report-index no-print" aria-label="报告章节">{reportSections.map((x,i)=><a className={x==='职业动机'?'ready':''} href={x==='职业动机'?'#career-motivation':`#pending-${i}`} key={x}><b>{i+1}</b>{x}<small>{x==='职业动机'?'分析结果':'待完成'}</small></a>)}</nav>
   <section className="gh-summary"><span>WORK PREFERENCE / DEVELOPMENT</span><h1>工作偏好与发展沟通报告</h1>{name&&<div className="report-person">{name}</div>}<p>基于本次24题自我描述，呈现八项工作偏好及作答依据。采用齐论独立规则，并非高禾原版计分；组合与倾向属于探索性解读，不用于招聘筛选。</p></section>
   <details className="unused-modules no-print"><summary>其他报告模块 · 尚未采集</summary>{reportSections.filter(x=>x!=='职业动机').map(x=><section className="gh-pending" id={`pending-${reportSections.indexOf(x)}`} key={x}><div><b>{reportSections.indexOf(x)+1}</b><h2>{x}</h2></div><p>本次答卷未采集该模块所需数据，暂不生成分数与类型。</p><span>待补测 / 待导入</span></section>)}</details>
