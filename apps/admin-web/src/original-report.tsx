@@ -49,6 +49,7 @@ export function OriginalReportStudio({sourceBase='/api/v1/assessment/layout/sour
     <button onClick={()=>window.print()}>{dataOnly?'打印 / 保存 PDF':'打印当前页'}</button>
    </div>
   </div>
+  {dataOnly&&<p className="report-mobile-hint no-print">左右滑动查看完整数据表，可保存图片或 PDF。</p>}
   {!standard&&<div className="original-modebar no-print">
    {!dataOnly&&<div><button aria-pressed={mode==='blank'} onClick={()=>{setMode('blank');setError('');}}>留白模板</button><button aria-pressed={mode==='recorded'} onClick={()=>{setMode('recorded');setEditing(false);setError('');}}>原稿录入对照</button>{replay&&<button aria-pressed={mode==='computed'} onClick={()=>{setMode('computed');setEditing(false);setError('');}}>本次计算预览</button>}</div>}
    <p>{mode==='recorded'?'原PDF的版式与样例结果录入，仅用于对照；不是本系统重新计分。':mode==='computed'?(replay&&'abilities' in replay?'七模块短文案使用原字典与已知规则；28项能力为反推估计。保留原版版型和颜色，尚不是原版全同结果。':'七模块短文案已按原字典与已知规则匹配；能力区域仍留白。2025历史版本全同待验。'):'保留原稿版型、字体轮廓、颜色和图表坐标；个人结果留空，不补零、不推算。'}</p>
