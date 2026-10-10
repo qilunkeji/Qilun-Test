@@ -169,7 +169,7 @@ export function createApp(db:Database, config:{origin:string; contactKey:Buffer;
       {name:'岗位、档案与申请',status:'available',detail:'本地持久化业务；人工导入 UTF-8 TXT / 文本'},
       {name:'BOSS 渠道',status:'waiting_for_authorization',detail:'未取得真实平台许可与接口；使用人工导入'},
       ...(canManageAssessment(context(res).auth.role)?[{name:'高禾原版兼容测评',status:'blocked_missing_rules',detail:'测评后台提供依据、已知公式试算和服务端阻塞校验；完整计分与匹配仍缺规则'}]:[]),
-      {name:'齐论测评与手机 H5',status:'available',detail:'新邀请使用固定成品V1.0，完整七模块与28项能力参考评分；保留历史邀请版本。链接与访问码、自动保存续答及结果查看已实现；能力不是实际技能或绩效，不作心理诊断或自动录用依据。'},
+      {name:'齐论测评与手机 H5',status:'available',detail:'新邀请使用固定成品V1.0，完整七模块与28项能力参考评分；保留历史邀请版本。多人共用链接、免访问码登记、独立答卷与自动保存续答已实现；能力不是实际技能或绩效，不作心理诊断或自动录用依据。'},
       ...(externalAgentMode()?[
       {name:'AI 功能',status:agentConfigured()?'available':'waiting_for_configuration',detail:agentConfigured()?'由齐论人才系统接入的 AI 助手（外部智能体）异步处理，通常 1–3 分钟；结果保留引用并需人工复核，无模型费用。':'外部智能体未配置；不会自动使用其他处理方式。'},
       {name:'招聘优化与面试评估',status:agentConfigured()?'available':'waiting_for_configuration',detail:'提问与证据评估交由 AI 助手异步处理；测评不参与匹配分，缺证据不按零分，需人工复核；音频转写未实现。'}

@@ -15,7 +15,6 @@ import {settingsTabs} from './settings-access.ts';
 import {canManageAssessment} from '../../../packages/security/assessment-access.ts';
 const AssessmentAdmin=lazy(()=>import('./assessment-admin.tsx').then(module=>({default:module.AssessmentAdmin})));
 import {AssessmentCenter} from './assessment-center.tsx';
-import {H5App} from './h5.tsx';
 import {PublicEntryH5} from './public-entry.tsx';
 import {ApplicationAssessment} from './application-assessment.tsx';
 import {Recruiting} from './recruiting.tsx';
@@ -75,4 +74,4 @@ function Audit(){
  useEffect(load,[]);
  return <><div className="section-heading"><div><h2>操作审计</h2><p>最近100条授权范围内的事件；“已记录”不等于所有业务均成功。</p></div></div><section className="panel">{error?<RetryError onRetry={load}>{error}</RetryError>:!items?<Loading>正在读取审计记录…</Loading>:!items.length?<Empty>当前授权范围内尚无审计记录。</Empty>:<div className="table-scroll"><table><thead><tr><th>时间</th><th>动作</th><th>对象 / 引用</th><th>结果</th><th>追溯信息</th></tr></thead><tbody>{items.map(x=>{const a=auditDisplay(x.action);return <tr key={x.id}><td>{date(x.created_at)}</td><td>{a.label}{!a.known&&<small>事件含义待解释，保留原码</small>}</td><td>{a.object}<small className="mono">{x.object_id?.slice(0,8)??'—'}</small></td><td>{a.result}</td><td><details className="audit-reference"><summary>完整引用</summary><p className="mono">事件：{x.action}<br/>对象：{x.object_id??'未提供'}<br/>操作人：{x.actor_label??x.actor_id}</p><button onClick={()=>void navigator.clipboard.writeText(`事件 ${x.id}\n动作 ${x.action}\n对象 ${x.object_id??''}\n操作人 ${x.actor_id}`).catch(()=>setError('复制未获浏览器许可，可选择引用手动复制。'))}>复制引用</button></details></td></tr>;})}</tbody></table></div>}</section></>;
 }
-createRoot(document.getElementById('root')!).render(<StrictMode>{location.pathname==='/h5/join'?<PublicEntryH5/>:location.pathname.startsWith('/h5')?<H5App/>:<App/>}</StrictMode>);
+createRoot(document.getElementById('root')!).render(<StrictMode>{location.pathname.startsWith('/h5')?<PublicEntryH5/>:<App/>}</StrictMode>);

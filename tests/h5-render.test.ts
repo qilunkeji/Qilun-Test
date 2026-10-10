@@ -42,7 +42,7 @@ test('成品版真实HTML：统一齐论口径、七模块及28能力，不展�
   const html=renderToStaticMarkup(React.createElement(ReferenceReportView,{report,name:'【虚构】成品验收'}));
   assert.match(html,/齐论测评 V1.0/);assert.match(html,/固定模型推算的参考评分/);assert.equal((html.match(/class="h5-result-section"/g)??[]).length,7);assert.ok('abilities' in report.result);for(const a of report.result.abilities)assert.ok(html.includes(a.name));
   assert.doesNotMatch(html,/原版|历史结果反推|反推估计|补出|能力保持留白|独立样本|平均误差|AgType8Map|32词|无规则/);
-  const center=await readFile(new URL('../apps/admin-web/src/assessment-center.tsx',import.meta.url),'utf8');assert.doesNotMatch(center,/setEstimate|estimate_abilities:|补出28项|value=\{packageKind\}/);assert.match(center,/完整七模块画像，包含28项能力参考评分/);
+  const center=await readFile(new URL('../apps/admin-web/src/public-entry.tsx',import.meta.url),'utf8');assert.doesNotMatch(center,/setEstimate|estimate_abilities:|补出28项|value=\{packageKind\}/);assert.match(center,/完整七模块画像，包含28项能力参考评分/);
  }finally{await server.close();}
 });
 test('答题左右对照只改呈现：AB、五档编码/原选项标签及单陈述完整内容保留',async()=>{

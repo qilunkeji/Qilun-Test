@@ -1,0 +1,98 @@
+#!/usr/bin/env bash
+# PREPARED ONLY. Run once, only after the user's fresh explicit “上线”.
+# Usage: activate-shared-links.sh --authorized上线 <archive SHA256> <release id>
+# Does not change production.env or credentials.
+set -euo pipefail
+umask 077
+test "${1:-}" = --authorized上线
+test "${2:-}" != '' && test "${3:-}" != ''
+[[ "$2" =~ ^[a-f0-9]{64}$ ]]
+[[ "$3" =~ ^[0-9]{8}-shared-links-v[0-9]+$ ]]
+root=/opt/qilun-talent
+old=$root/releases/20261009-resume-library-v2
+new=$root/releases/$3
+archive=$root/staging/$3.tgz
+backup=$root/backups/before-$3.tgz
+envbackup=$root/backups/production-env-before-$3
+countfile=/app/.local/agent-counts-$3.json
+test "$(readlink -f "$root/current")" = "$old"
+test ! -e "$new" && test ! -e "$backup" && test ! -e "$envbackup"
+test ! -e "$root/current.external-agent-next" && test ! -L "$root/current.external-agent-next"
+test "$(sha256sum "$old/dist/admin-web/index.html" | cut -d ' ' -f1)" = cfcbdc5d7434be3131a1c4116827481a73952fd000b306e82fd5615f1be9c3bc
+test "$(sha256sum "$archive" | cut -d ' ' -f1)" = "$2"
+# Reject paths outside approved source/build areas; no private payloads/symlinks.
+tar -tzf "$archive" | awk '/(^\/|(^|\/)\.\.(\/|$)|(^|\/)\.env($|\.)|^\.local\/|^node_modules\/)/{bad=1} !/^(apps\/|packages\/|infra\/|dist\/|deploy\/|tests\/helpers\/|tests\/project-assessments.test.ts$|tests\/resume-library.test.ts$|tests\/public-entry.test.ts$|package.json$|package-lock.json$)/{bad=1} END{exit bad}'
+test -z "$(tar -tvzf "$archive" | awk 'substr($1,1,1)!="-" && substr($1,1,1)!="d" {print "invalid"}')"
+systemctl is-active --quiet qilun-talent.service
+cp -a "$old" "$new"
+tar -xzf "$archive" -C "$new"
+cmp "$old/package.json" "$new/package.json"
+cmp "$old/package-lock.json" "$new/package-lock.json"
+cmp "$old/packages/iam/client.mjs" "$new/packages/iam/client.mjs"
+cmp "$old/apps/api/iam.ts" "$new/apps/api/iam.ts"
+for file in "$old"/infra/migrations/*.sql; do cmp "$file" "$new/infra/migrations/$(basename "$file")"; done
+for file in "$old"/packages/assessment-engine/data/*.json; do cmp "$file" "$new/packages/assessment-engine/data/$(basename "$file")"; done
+chmod -R a+rX "$new/apps" "$new/packages" "$new/infra" "$new/dist" "$new/deploy" "$new/tests"
+mkdir -p "$new/.local/gh-inference-v1"
+isolated(){ docker run --rm --network none --user 1000:1000 --read-only --cap-drop ALL --security-opt no-new-privileges --memory 768m --tmpfs /tmp:rw,noexec,nosuid,size=64m --mount "type=bind,src=$new,dst=/app,readonly" --mount "type=bind,src=$root/shared/gh-inference-v1,dst=/app/.local/gh-inference-v1,readonly" --workdir /app node:24.19.0-bookworm-slim node --experimental-strip-types "$1"; }
+isolated deploy/verify-agent-baseline.mjs
+isolated deploy/verify-agent-startup.mjs
+isolated deploy/verify-external-agent-candidate.mjs
+isolated tests/project-assessments.test.ts
+isolated tests/public-entry.test.ts
+isolated tests/resume-library.test.ts
+model_hash=$(sha256sum "$root/shared/gh-inference-v1/model.json" | cut -d ' ' -f1)
+env_hash=$(sha256sum "$root/shared/production.env")
+stopped=0; switched=0
+link_current(){ ln -sfn "$1" "$root/current.external-agent-next"; mv -Tf "$root/current.external-agent-next" "$root/current"; }
+rollback(){
+ status=$?; trap - EXIT
+ if test "$status" -ne 0 && test "$stopped" = 1; then
+  systemctl stop qilun-talent.service || true
+  if docker inspect qilun-talent-rc >/dev/null 2>&1; then echo 'Container still present; manual recovery required, data untouched.' >&2; exit 1; fi
+  if test "$switched" = 1; then link_current "$old"; fi
+  systemctl start qilun-talent.service
+  echo 'Previous code/config restored; latest shared database retained.' >&2
+ fi
+ exit "$status"
+}
+trap rollback EXIT
+stopped=1
+systemctl stop qilun-talent.service
+if docker inspect qilun-talent-rc >/dev/null 2>&1; then echo 'Container has not exited; no database copy.' >&2; exit 1; fi
+tar -czf "$backup" -C "$root" shared; chmod 600 "$backup"
+cp -p "$root/shared/production.env" "$envbackup"; chmod 600 "$envbackup"
+counts(){ docker run --rm --network none --user 1000:1000 --read-only --cap-drop ALL --memory 512m --tmpfs /tmp:rw,noexec,nosuid,size=32m --mount "type=bind,src=$new,dst=/app,readonly" --mount "type=bind,src=$root/shared,dst=/app/.local" --workdir /app node:24.19.0-bookworm-slim node deploy/verify-shared-data.mjs "$1" "$countfile"; }
+counts before
+test "$env_hash" = "$(sha256sum "$root/shared/production.env")"
+switched=1; link_current "$new"
+systemctl start qilun-talent.service
+ready=0
+for attempt in {1..30}; do
+ if curl -fsS --max-time 3 https://rc.iqilun.cn/api/v1/health | grep -q '"ready":true'; then ready=1; break; fi
+ sleep 1
+done
+test "$ready" = 1
+docker exec qilun-talent-rc node deploy/verify-qilun-public.mjs
+# Stop before opening a second PGlite reader. Nothing writes to production during this check.
+systemctl stop qilun-talent.service
+if docker inspect qilun-talent-rc >/dev/null 2>&1; then
+ echo 'Container has not exited; no second database reader.' >&2
+ exit 1
+fi
+counts after
+test "$model_hash" = "$(sha256sum "$root/shared/gh-inference-v1/model.json" | cut -d ' ' -f1)"
+isolated deploy/verify-agent-baseline.mjs
+systemctl start qilun-talent.service
+systemctl is-active --quiet qilun-talent.service
+systemctl is-enabled --quiet qilun-talent.service
+ready=0
+for attempt in {1..30}; do
+ if curl -fsS --max-time 3 https://rc.iqilun.cn/api/v1/health | grep -q '"ready":true'; then ready=1; break; fi
+ sleep 1
+done
+test "$ready" = 1
+docker exec qilun-talent-rc node deploy/verify-qilun-public.mjs
+test "$env_hash" = "$(sha256sum "$root/shared/production.env")"
+trap - EXIT
+echo 'Shared assessment links activated; production configuration/accounts/data and assessment model preserved.'

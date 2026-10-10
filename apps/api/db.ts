@@ -6,7 +6,7 @@ export async function openDatabase(path?: string) {
   const db = new PGlite(path);
   await db.waitReady;
   await db.exec('CREATE TABLE IF NOT EXISTS schema_migrations (version integer PRIMARY KEY, checksum text NOT NULL, applied_at timestamptz NOT NULL DEFAULT now())');
-  for (const [version,file] of [[1,'001_foundation.sql'],[2,'002_assessments.sql'],[3,'003_ai.sql'],[4,'004_recruiting.sql'],[5,'005_interviews.sql'],[6,'006_reference_h5.sql'],[7,'007_iam_identities.sql'],[8,'008_assessment_ui_progress.sql'],[9,'009_assessment_profile_timing.sql'],[10,'010_agent_tasks.sql'],[11,'011_project_groups_independent_assessments.sql'],[12,'012_public_assessment_entries.sql'],[13,'013_resume_library.sql'],[14,'014_resume_screen_rounds.sql']] as const) {
+  for (const [version,file] of [[1,'001_foundation.sql'],[2,'002_assessments.sql'],[3,'003_ai.sql'],[4,'004_recruiting.sql'],[5,'005_interviews.sql'],[6,'006_reference_h5.sql'],[7,'007_iam_identities.sql'],[8,'008_assessment_ui_progress.sql'],[9,'009_assessment_profile_timing.sql'],[10,'010_agent_tasks.sql'],[11,'011_project_groups_independent_assessments.sql'],[12,'012_public_assessment_entries.sql'],[13,'013_resume_library.sql'],[14,'014_resume_screen_rounds.sql'],[15,'015_shared_assessment_links.sql']] as const) {
   const sql = await readFile(new URL(`../../infra/migrations/${file}`, import.meta.url), 'utf8');
   const checksum = createHash('sha256').update(sql).digest('hex');
   const prior = await db.query<{checksum:string}>('SELECT checksum FROM schema_migrations WHERE version=$1',[version]);

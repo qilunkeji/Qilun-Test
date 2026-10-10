@@ -1,7 +1,5 @@
-import {useEffect,useRef,useState} from 'react';
-import type {SelfPackage,scoreSelfReview} from '../../../packages/assessment-engine/self-review.ts';
-import {GhH5App} from './h5-reference.tsx';
-import type {GhOpen} from './h5-reference.tsx';
+import {useEffect,useRef} from 'react';
+import type {scoreSelfReview} from '../../../packages/assessment-engine/self-review.ts';
 export type Report=ReturnType<typeof scoreSelfReview>;
 const motiveMeta:Record<string,{color:string;summary:string}>={
  财富:{color:'#ef8586',summary:'重视成果回报与资源保障，希望付出能够获得清晰、合理的回馈。'},
@@ -56,20 +54,6 @@ export function ReportView({report,name}:{report:Report;name?:string}){
   <div className="gh-report-actions no-print"><button className="primary" onClick={()=>window.print()}>打印 / 保存 PDF</button><p>分析结果用于自我认识与发展沟通，请结合实际经历理解。</p></div>
  </article>;
 }
-type Open={id:string;name:string;package:SelfPackage;purpose:string;expires_at:string;answers:Record<string,number>;revision:number;consented:boolean;submitted:boolean;report:Report|null;submitted_at:string|null};
-export function H5App(){
- const [ghData,setGhData]=useState<GhOpen>();
- const token=location.hash.slice(1),[pin,setPin]=useState(''),[data,setData]=useState<Open>(),[answers,setAnswers]=useState<Record<string,number>>({}),[revision,setRevision]=useState(0),[step,setStep]=useState(0),[busy,setBusy]=useState(false),[error,setError]=useState(''),[dirty,setDirty]=useState(false),[agreed,setAgreed]=useState(false);
- async function call<T>(action:string,body:object={}):Promise<T>{const r=await fetch(`/api/v1/public/assessment/${action}`,{method:'POST',credentials:'omit',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,...body})});const j=await r.json();if(!r.ok)throw new Error(j.error?.message??'操作失败');return j.data;}
- async function run(fn:()=>Promise<void>){setBusy(true);setError('');try{await fn();}catch(e){setError((e as Error).message+'。未同步的答案仍保留在当前页面，请勿关闭。');}finally{setBusy(false);}}
- async function open(){const response=await call<Open|GhOpen>('open');if('kind' in response.package&&response.package.kind==='gh_reference_277'){setGhData(response as GhOpen);return;}const r=response as Open;setData(r);setAnswers(r.answers);setRevision(r.revision);setDirty(false);const qs=r.package.dimensions.flatMap(d=>d.questions);const missing=qs.findIndex(q=>r.answers[q.id]===undefined);setStep(Math.max(0,Math.floor(missing/3)));}
- async function save(submit=false){const r=await call<{revision:number;report:Report|null;submitted:boolean}>(submit?'submit':'save',{answers,revision});setRevision(r.revision);setDirty(false);if(r.submitted)setData({...data!,submitted:true,report:r.report});}
- const questions=data?.package.dimensions.flatMap(d=>d.questions)??[],pages=Math.ceil(questions.length/3),count=Object.keys(answers).length;
- if(ghData)return <GhH5App token={token} pin={pin} initial={ghData}/>;
- return <main className="h5-shell"><div className="h5-brand"><img src="/brand/qilun-logo-light.png" alt="齐论 AI"/><span>齐论人才测评</span></div>{error&&<div role="alert" className="notice error">{error}<button onClick={()=>void run(open)}>重新读取服务器答卷（放弃本页未保存答案）</button></div>}
- {!data?<form className="h5-card" onSubmit={e=>{e.preventDefault();void run(open);}}><h1>欢迎参加测评</h1><p>请使用邀请信息中的六位访问码。无需注册后台账号。</p>{!token&&<p role="alert">链接不完整，请重新打开邀请人发送的链接。</p>}<label className="field"><span>访问码</span><input inputMode="numeric" autoComplete="off" required pattern="[0-9]{6}" maxLength={6} value={pin} onChange={e=>setPin(e.target.value)}/></label><button className="primary" disabled={busy||!token}>{busy?'验证中…':'进入测评'}</button><p className="muted">链接与访问码共同保护本次答卷及报告，请勿转发。</p></form>
- :data.submitted&&data.report?<div className="h5-card"><p className="muted">{data.name} · 已完成</p><ReportView report={data.report} name={data.name}/><p className="muted no-print">报告已自动生成。下次可通过原测评链接和访问码再次查看。</p></div>
- :!data.consented?<section className="h5-card"><h1>{data.package.title}</h1><p>{data.package.notice}</p><dl><dt>邀请用途</dt><dd>{data.purpose}</dd><dt>题量与时间</dt><dd>{questions.length}题，约5–8分钟，不限答题速度</dd><dt>数据使用</dt><dd>答案和报告供本人及有权限的齐论工作人员查看；访问截止 {new Date(data.expires_at).toLocaleString()}。如需删除，请联系邀请人。</dd></dl><label className="check-label"><input type="checkbox" checked={agreed} onChange={e=>setAgreed(e.target.checked)}/>我理解这是自愿自评，同意按上述用途保存答案并生成报告。</label><button className="primary" disabled={!agreed||busy} onClick={()=>void run(async()=>{await call('consent',{accepted:true,consent_version:data.package.consent_version});setData({...data,consented:true});})}>同意并开始</button><p className="muted">如不愿参与，关闭页面并联系邀请人选择访谈方式即可。</p></section>
- :<section className="h5-card"><div className="section-heading"><h1>工作中的你</h1><span>{count} / {questions.length}</span></div><progress max={questions.length} value={count}/><p className="muted">回想近三个月，选择最符合自己的描述。没有标准答案。</p><p role="status">{dirty?'有未保存答案，点击下一组或保存后同步':'已同步到服务器'} · 第 {step+1} / {pages} 组</p>{questions.slice(step*3,step*3+3).map((q,i)=><fieldset key={q.id} disabled={busy}><legend>{step*3+i+1}. {q.text}</legend><div className="h5-options">{data.package.scale.map((label,n)=><label key={label} className={answers[q.id]===n+1?'selected':''}><input type="radio" name={q.id} checked={answers[q.id]===n+1} onChange={()=>{setAnswers({...answers,[q.id]:n+1});setDirty(true);}}/><span>{label}</span></label>)}</div></fieldset>)}<div className="h5-actions"><button disabled={busy||step===0} onClick={()=>setStep(step-1)}>上一组</button><button disabled={busy} onClick={()=>void run(()=>save())}>保存进度</button>{step<pages-1?<button className="primary" disabled={busy} onClick={()=>void run(async()=>{await save();setStep(step+1);})}>下一组</button>:<button className="primary" disabled={busy||count!==questions.length} onClick={()=>void run(()=>save(true))}>提交并查看报告</button>}</div><p className="muted">提交后答案将锁定；需要重新测评请联系邀请人。网络中断时请保留本页面。</p></section>}
- </main>;
-}
+// All public assessment URLs, including old /h5 and /h5/report paths,
+// now enter shared registration. ReportView above remains for old reports.
+export {PublicEntryH5 as H5App} from './public-entry.tsx';

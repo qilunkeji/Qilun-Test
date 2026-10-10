@@ -40,6 +40,16 @@ async function request(path:string,body?:unknown,s?:Session,headers:Record<strin
  const r=await fetch(`${base}/api/v1${path}`,{method:body===undefined?'GET':'POST',headers:{'Content-Type':'application/json','Origin':origin,...(s?{Cookie:s.cookie,'X-CSRF-Token':s.csrf}:{}),...headers},...(body===undefined?{}:{body:JSON.stringify(body)})});
  const json=await r.json() as {data:unknown;error:unknown};return {status:r.status,...json,cookie:r.headers.get('set-cookie')};
 }
+// Participant setup now goes through shared registration, then an explicit
+// archive binding when the downstream fixture requires a person's archive.
+async function createParticipant(body:{candidate_id:string;purpose:string;days:number;package_kind?:string;estimate_abilities?:boolean},session:Session){
+ const created=await request('/assessment/invites',body,session);assert.equal(created.status,201);assert.equal(created.data.pin,undefined);
+ const entryToken=created.data.url.split('#')[1],entry=await request('/public/assessment/entry/open',{token:entryToken});assert.equal(entry.status,200);
+ const enrolled=await request('/public/assessment/entry/enroll',{token:entryToken,participant_key:randomBytes(32).toString('base64url'),accepted:true,consent_version:entry.data.consent_version,profile:{name:'【虚构】本人确认',phone:'13800000000',birth_date:'1990-06-15'}});assert.equal(enrolled.status,201);
+ const opened=await request('/public/assessment/open',enrolled.data);assert.equal(opened.status,200);
+ assert.equal((await request(`/assessment/invites/${opened.data.id}/bind`,{candidate_id:body.candidate_id,confirm:'bind_assessment'},session)).status,200);
+ return {...created,data:{id:opened.data.id,url:`${origin}/h5/#${enrolled.data.token}`,pin:undefined,entry_id:created.data.id}};
+}
 async function login(tenant:string,username:string){const r=await request('/auth/login',{tenant_id:tenant,username,password});assert.equal(r.status,200);assert.match(r.cookie!,/HttpOnly/i);assert.match(r.cookie!,/SameSite=Strict/i);return {cookie:r.cookie!.split(';')[0],csrf:r.data.csrf_token};}
 // Historical fixture only: new production invitations must use the standard
 // product. Seed old snapshots directly in this isolated test database.
@@ -66,8 +76,8 @@ const importBody={name:'虚构候选人甲',contact:'fictional@example.invalid',
 let jobA:any,jobB:any,talent:any,application:any;
 test('277题H5邀请保存续答、价值观排序、版本同意、幂等提交及授权报告',async(t)=>{
  const person=await request('/assessment/people',{name:'【虚构验收】277题',processing_basis:'仅限独立测试库的虚构验收数据'},a);
- t.after(async()=>{await db.query('DELETE FROM assessment_invites WHERE candidate_id=$1',[person.data.id]);await db.query('DELETE FROM candidates WHERE id=$1',[person.data.id]);});
- const created=await request('/assessment/invites',{candidate_id:person.data.id,purpose:'虚构测评发展参考验收',days:7,package_kind:'gh_reference_277'},a);assert.equal(created.status,201);
+ t.after(async()=>{await db.query('DELETE FROM assessment_invites WHERE candidate_id=$1 OR id IN (SELECT invite_id FROM assessment_archive_bindings WHERE candidate_id=$1)',[person.data.id]);await db.query('DELETE FROM candidates WHERE id=$1',[person.data.id]);});
+ const created=await createParticipant({candidate_id:person.data.id,purpose:'虚构测评发展参考验收',days:7,package_kind:'gh_reference_277'},a);assert.equal(created.status,201);
  const auth={token:created.data.url.split('#')[1],pin:created.data.pin};
  const opened=await request('/public/assessment/open',auth),pkg=opened.data.package as GhInvitePackage;assert.equal(pkg.questions.length,277);assert.equal(pkg.estimate_abilities,true);assert.equal(pkg.version,qilunStandardVersion);
  assert.equal((await request('/public/assessment/consent',{...auth,accepted:true,consent_version:selfReviewPackage.consent_version})).status,400);
@@ -136,7 +146,7 @@ test('新邀请默认统一完整版，旧checkbox的true/false/省略都不能�
  const reports=[];
  for(const estimate of [undefined,false,true]){
   const body={candidate_id:person.data.id,purpose:'固定完整版重复计算验收',days:1,...(estimate===undefined?{}:{estimate_abilities:estimate})};
-  const created=await request('/assessment/invites',body,a);assert.equal(created.status,201);ids.push(created.data.id);
+  const created=await createParticipant(body,a);assert.equal(created.status,201);ids.push(created.data.id);
   const auth={token:created.data.url.split('#')[1],pin:created.data.pin},pkg=(await request('/public/assessment/open',auth)).data.package as GhInvitePackage;
   assert.equal(pkg.version,qilunStandardVersion);assert.equal(pkg.estimate_abilities,true);assert.equal((await request('/public/assessment/consent',{...auth,accepted:true,consent_version:pkg.consent_version})).status,200);
   const selected=pkg.value_groups.map(g=>g.slice(0,5));
@@ -161,8 +171,8 @@ test('已发旧277留白邀请保留原同意版本与计分，不自动升级�
 });
 test('HR日常277题邀请、H5与七模块结果继续可用，不能删除答卷或进入原理后台',async(t)=>{
  const person=await request('/assessment/people',{name:'【虚构验收】普通HR邀请',processing_basis:'仅独立测试库使用，不涉及真人资料'},hr);assert.equal(person.status,201);
- t.after(async()=>{await db.query('DELETE FROM assessment_invites WHERE candidate_id=$1',[person.data.id]);await db.query('DELETE FROM candidates WHERE id=$1',[person.data.id]);});
- const created=await request('/assessment/invites',{candidate_id:person.data.id,purpose:'虚构HR正常测评流程验收',days:7,package_kind:'gh_reference_277'},hr);assert.equal(created.status,201);
+ t.after(async()=>{await db.query('DELETE FROM assessment_invites WHERE candidate_id=$1 OR id IN (SELECT invite_id FROM assessment_archive_bindings WHERE candidate_id=$1)',[person.data.id]);await db.query('DELETE FROM candidates WHERE id=$1',[person.data.id]);});
+ const created=await createParticipant({candidate_id:person.data.id,purpose:'虚构HR正常测评流程验收',days:7,package_kind:'gh_reference_277'},hr);assert.equal(created.status,201);
  const auth={token:created.data.url.split('#')[1],pin:created.data.pin},pkg=(await request('/public/assessment/open',auth)).data.package as GhInvitePackage;
  assert.equal((await request('/assessment/invites',undefined,hr)).status,200);
  assert.equal((await request('/public/assessment/open',auth)).data.package.questions.length,277);
