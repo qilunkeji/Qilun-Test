@@ -1,5 +1,5 @@
 import type {Express,Response,Request} from 'express';
-import {randomUUID,createHmac} from 'node:crypto';
+import {randomUUID,createHmac,randomBytes} from 'node:crypto';
 import {z} from 'zod';
 import type {Database} from './db.ts';
 import type {AssessmentRuntime} from './assessment-product.ts';
@@ -11,7 +11,7 @@ import {checkProject} from './project-routes.ts';
 import {ServiceError} from './http-error.ts';
 // Accept an old client's PIN field during rollout, but never require or use it
 // for a shared registration entrance.
-const auth={token:z.string().min(32).max(128),pin:z.string().regex(/^\d{6}$/).optional()};
+const auth={token:z.union([z.string().regex(/^[A-Za-z0-9_-]{22}$/),z.string().min(32).max(128)]),pin:z.string().regex(/^\d{6}$/).optional()};
 const send=(res:Response,data:unknown,status=200)=>res.status(status).json({data,request_id:res.locals.requestId});
 const unavailable=()=>new ServiceError(404,'ENTRY_UNAVAILABLE','测评链接无效，或已停止登记、到期。请联系邀请人。');
 type Entry={id:string;tenant_id:string;created_by:string;title:string;purpose:string;project_group_id:string|null;legacy_invite_id:string|null;package:GhInvitePackage;package_hash:string;expires_at:string};
@@ -19,12 +19,12 @@ function manager(res:Response){const a=res.locals.auth;if(!['talent_lead','hr'].
 export async function createSharedEntry(db:Database,a:{tenant_id:string;user_id:string},input:{title:string;purpose:string;days:number;project_group_id?:string|null},h5Origin:string,runtime:AssessmentRuntime){
  if(!runtime.standard)throw new ServiceError(503,'STANDARD_RULES_UNAVAILABLE','测评服务暂不可用');
  await checkProject(db,a.tenant_id,input.project_group_id);
- const id=randomUUID(),token=randomToken(),hash=digest(token),pkg=JSON.stringify(qilunStandardInvitePackage(runtime.standard)),expires=new Date(Date.now()+input.days*86400000).toISOString();
+ const id=randomUUID(),token=randomBytes(16).toString('base64url'),hash=digest(token),pkg=JSON.stringify(qilunStandardInvitePackage(runtime.standard)),expires=new Date(Date.now()+input.days*86400000).toISOString();
  await db.transaction(async tx=>{
   await tx.query('INSERT INTO assessment_public_entries(id,tenant_id,created_by,title,purpose,project_group_id,token_hash,pin_hash,package,package_hash,expires_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',[id,a.tenant_id,a.user_id,input.title,input.purpose,input.project_group_id??null,hash,digest(randomToken()),pkg,digest(pkg),expires]);
   await tx.query('INSERT INTO audit_events(id,tenant_id,actor_id,action,object_id) VALUES($1,$2,$3,$4,$5)',[randomUUID(),a.tenant_id,a.user_id,'assessment.public_entry_created',id]);
  });
- return {id,url:`${h5Origin}/h5/join#${token}`,expires_at:expires};
+ return {id,url:`${h5Origin}/h5#${token}`,expires_at:expires};
 }
 export function registerPublicEntryAdmin(app:Express,db:Database,h5Origin:string,runtime:AssessmentRuntime){
  app.get('/api/v1/assessment/public-entries',async(_req,res)=>{const a=manager(res);send(res,{items:(await db.query(`SELECT e.id,e.title,e.purpose,e.project_group_id,e.expires_at,e.revoked_at,e.created_at,count(i.id)::int AS participants,count(i.id) FILTER(WHERE i.submitted_at IS NOT NULL)::int AS completed FROM assessment_public_entries e LEFT JOIN assessment_invites i ON i.tenant_id=e.tenant_id AND i.public_entry_id=e.id WHERE e.tenant_id=$1 GROUP BY e.id ORDER BY e.created_at DESC LIMIT 100`,[a.tenant_id])).rows});});

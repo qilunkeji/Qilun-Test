@@ -1,12 +1,12 @@
 // Public read-only checks. No credentials or business writes.
 import assert from 'node:assert/strict';
 import {readFile,readdir} from 'node:fs/promises';
-import {createHash} from 'node:crypto';
+import {createHash,randomBytes} from 'node:crypto';
 const base='https://rc.iqilun.cn',checks=[];
 async function request(path,expected,options){const r=await fetch(base+path,{signal:AbortSignal.timeout(15000),...options});assert.equal(r.status,expected,path);checks.push({path,status:r.status});return r;}
 const hash=x=>createHash('sha256').update(x).digest('hex');
 const html=await (await request('/',200)).text();assert.equal(html,await readFile('dist/admin-web/index.html','utf8'));
-for(const path of ['/h5/','/h5/report','/h5/join','/brand/qilun-logo-light.png','/favicon.ico','/report-layout/manifest.json'])await request(path,200);
+for(const path of ['/h5','/h5/','/h5/report','/h5/join','/brand/qilun-logo-light.png','/favicon.ico','/report-layout/manifest.json'])await request(path,200);
 for(const file of (await readdir('dist/admin-web/assets')).filter(name=>/\.(js|css)$/.test(name))){const path='/assets/'+file,r=await request(path,200);assert.equal(hash(Buffer.from(await r.arrayBuffer())),hash(await readFile('dist/admin-web'+path)),path);}
 assert.equal(hash(Buffer.from(await (await request('/brand/qilun-logo-light.png',200)).arrayBuffer())),hash(await readFile('apps/admin-web/public/brand/qilun-logo-light.png')));
 const health=(await (await request('/api/v1/health',200)).json()).data;
@@ -23,6 +23,8 @@ await request('/api/v1/assessment/gh-replay/score',401,{method:'POST',headers:{O
 await request('/api/v1/public/assessment/open',400,{method:'POST',headers:{Origin:base,'Content-Type':'application/json'},body:'{}'});
 await request('/api/v1/assessment/public-entries',401);
 for(const action of ['open','enroll'])await request('/api/v1/public/assessment/entry/'+action,400,{method:'POST',headers:{Origin:base,'Content-Type':'application/json'},body:'{}'});
+// Random non-existent entry tokens check new short and legacy validation, read-only.
+for(const bytes of [16,32])await request('/api/v1/public/assessment/entry/open',404,{method:'POST',headers:{Origin:base,'Content-Type':'application/json'},body:JSON.stringify({token:randomBytes(bytes).toString('base64url')})});
 await request('/.local/gh-inference-v1/model.json',404);
 // Unrecognized non-API paths use the SPA shell, not the source filesystem.
 const source=await request('/packages/assessment-engine/data/qilun-standard-v1.json',200);

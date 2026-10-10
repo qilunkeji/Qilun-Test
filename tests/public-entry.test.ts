@@ -12,7 +12,7 @@ const profile={name:'【虚构】同名参与者',phone:'13800000000',birth_date
 async function fixture(t:{after:(fn:()=>Promise<void>)=>void}){const restore=agentEnvironment(),f=await agentFixture();t.after(async()=>{await f.close();restore();});return f;}
 async function entry(f:Awaited<ReturnType<typeof agentFixture>>,group?:string){
  const r=await f.request('/api/v1/assessment/public-entries',{title:'【虚构】公共登记',purpose:'仅用于隔离的外部发展测评',days:7,project_group_id:group??null});assert.equal(r.status,201);assert.equal(r.body.data.pin,undefined);
- const token=r.body.data.url.split('#')[1],open=await f.request('/api/v1/public/assessment/entry/open',{token},null);assert.equal(open.status,200);assert.doesNotMatch(JSON.stringify(open.body),/participant_name|answers|profile_cipher|pin/);return {token,id:r.body.data.id,consent_version:open.body.data.consent_version};
+ const url=new URL(r.body.data.url),token=url.hash.slice(1);assert.equal(url.pathname,'/h5');assert.equal(url.search,'');assert.match(token,/^[A-Za-z0-9_-]{22}$/);assert.equal(Buffer.from(token,'base64url').length,16);const open=await f.request('/api/v1/public/assessment/entry/open',{token},null);assert.equal(open.status,200);assert.doesNotMatch(JSON.stringify(open.body),/participant_name|answers|profile_cipher|pin/);return {token,id:r.body.data.id,consent_version:open.body.data.consent_version};
 }
 function enrollment(e:Awaited<ReturnType<typeof entry>>,name=profile.name){return {token:e.token,consent_version:e.consent_version,accepted:true,profile:{...profile,name},participant_key:randomBytes(32).toString('base64url')};}
 test('同一链接十人无密码登记：同名不合并、答案隔离、幂等重试与独立报告',async t=>{
@@ -20,7 +20,7 @@ test('同一链接十人无密码登记：同名不合并、答案隔离、幂�
  const before=(await f.db.query<{n:number}>('SELECT count(*)::int n FROM candidates')).rows[0].n;
  const inputs=Array.from({length:10},(_,i)=>enrollment(e,i<2?profile.name:`【虚构】参与者${i+1}`));
  const individuals=await Promise.all(inputs.map(async input=>{const r=await f.request('/api/v1/public/assessment/entry/enroll',input,null);assert.equal(r.status,201);assert.equal(r.body.data.pin,undefined);return r.body.data;}));
- assert.equal(new Set(individuals.map(c=>c.token)).size,10);
+ assert.equal(new Set(individuals.map(c=>c.token)).size,10);assert.ok(individuals.every(c=>/^[A-Za-z0-9_-]{43}$/.test(c.token)));
  assert.equal((await f.request('/api/v1/public/assessment/entry/enroll',inputs[0],null)).body.data.token,individuals[0].token);
  const own=(await f.request('/api/v1/public/assessment/open',individuals[0],null)).body.data;assert.equal(own.name,profile.name);assert.equal(own.metadata.participant_name,profile.name);assert.ok(own.consented);
  const q=own.package.questions[0].id;
@@ -33,9 +33,19 @@ test('同一链接十人无密码登记：同名不合并、答案隔离、幂�
  const list=(await f.request('/api/v1/assessment/invites?group='+g)).body.data;assert.equal(list.total,10);assert.ok(list.items.every((x:{candidate_id:string|null})=>x.candidate_id===null));
  const admin=(await f.request('/api/v1/assessment/public-entries')).body.data.items;assert.equal(admin[0].participants,10);assert.equal(admin[0].completed,2);
  const raw=(await f.db.query<{profile_cipher:string;token_hash:string;pin_required:boolean}>('SELECT profile_cipher,token_hash,pin_required FROM assessment_invites WHERE public_entry_id=$1',[e.id])).rows;for(const row of raw){assert.ok(!row.profile_cipher.includes(profile.phone));assert.equal(row.pin_required,false);assert.notEqual(row.token_hash,individuals[0].token);}
- assert.equal((await f.request('/api/v1/public/assessment/open',{token:e.token},null)).status,404);
- assert.equal((await f.request('/api/v1/public/assessment/save',{token:e.token,revision:0,answers:{}},null)).status,404);
+ assert.equal((await f.request('/api/v1/public/assessment/open',{token:e.token},null)).status,400);
+ assert.equal((await f.request('/api/v1/public/assessment/save',{token:e.token,revision:0,answers:{}},null)).status,400);
  assert.equal(f.modelCalls(),0);
+});
+test('旧43位共用链接继续登记和生成独立凭据，短入口不放宽个人答卷认证',async t=>{
+ const f=await fixture(t),e=await entry(f),legacy=randomBytes(32).toString('base64url');
+ await f.db.query('UPDATE assessment_public_entries SET token_hash=$2 WHERE id=$1',[e.id,digest(legacy)]);
+ const open=await f.request('/api/v1/public/assessment/entry/open',{token:legacy},null);assert.equal(open.status,200);
+ const enrolled=await f.request('/api/v1/public/assessment/entry/enroll',{...enrollment(e),token:legacy},null);assert.equal(enrolled.status,201);assert.match(enrolled.body.data.token,/^[A-Za-z0-9_-]{43}$/);
+ assert.equal((await f.request('/api/v1/public/assessment/open',enrolled.body.data,null)).status,200);
+ assert.equal((await f.request('/api/v1/public/assessment/open',{token:legacy},null)).status,404);
+ assert.equal((await f.request('/api/v1/public/assessment/entry/open',{token:'a'.repeat(21)},null)).status,400);
+ assert.equal((await f.request('/api/v1/public/assessment/entry/open',{token:'!'.repeat(22)},null)).status,400);
 });
 test('资料/同意/版本校验、同设备换人与跨入口隔离，停止登记仍可本人续答',async t=>{
  const f=await fixture(t),e=await entry(f),e2=await entry(f),body=enrollment(e);
@@ -44,7 +54,7 @@ test('资料/同意/版本校验、同设备换人与跨入口隔离，停止登
  const enrolled=race[0];
  assert.equal((await f.request('/api/v1/public/assessment/entry/enroll',{...body,profile:{...profile,name:'另一人'}},null)).status,409);
  assert.equal((await f.request('/api/v1/public/assessment/entry/enroll',{...body,token:e2.token},null)).status,404);
- assert.equal((await f.request('/api/v1/public/assessment/entry/enroll',{...body,participant_key:e.token},null)).status,404);
+ assert.equal((await f.request('/api/v1/public/assessment/entry/enroll',{...body,participant_key:e.token},null)).status,400);
  const second=(await f.request('/api/v1/public/assessment/entry/enroll',enrollment(e,'【虚构】另一人'),null)).body.data;assert.notEqual(second.token,enrolled.body.data.token);
  assert.equal((await f.request('/api/v1/assessment/public-entries',undefined,'ops')).status,403);assert.equal((await f.request('/api/v1/assessment/public-entries',undefined,null)).status,401);
  assert.equal((await f.request(`/api/v1/assessment/public-entries/${e.id}/revoke`,{})).status,200);

@@ -1,4 +1,6 @@
 import assert from 'node:assert/strict';
+import {randomBytes} from 'node:crypto';
+import {digest} from '../packages/security/index.ts';
 import {mkdir} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {agentEnvironment,agentFixture} from '../tests/helpers/agent-fixture.ts';
@@ -21,7 +23,12 @@ async function noPassword(p){assert.equal(await p.locator('input[pattern="[0-9]{
 async function fits(p){assert.ok(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));}
 try{
  const created=(await f.request('/api/v1/assessment/invites',{purpose:'【虚构】共享链接浏览器验证',days:7})).body.data,shared=f.origin+new URL(created.url).pathname+'#'+created.url.split('#')[1];
- const c=await context(),p=await page(c);await p.goto(shared);await p.getByLabel('本人姓名',{exact:true}).waitFor();await noPassword(p);await fits(p);await p.screenshot({path:out+'/registration-mobile.png',fullPage:true});
+ assert.equal(new URL(shared).pathname,'/h5');assert.match(new URL(shared).hash.slice(1),/^[A-Za-z0-9_-]{22}$/);
+ // An already-sent long /h5/join URL remains usable with the new frontend/API.
+ const oldEntry=(await f.request('/api/v1/assessment/public-entries',{title:'【虚构】旧链接',purpose:'仅用于旧链接兼容验收',days:7})).body.data,oldToken=randomBytes(32).toString('base64url');
+ await f.db.query('UPDATE assessment_public_entries SET token_hash=$2 WHERE id=$1',[oldEntry.id,digest(oldToken)]);
+ const oldPage=await page(await context());await oldPage.goto(f.origin+'/h5/join#'+oldToken);await oldPage.getByLabel('本人姓名',{exact:true}).waitFor();await noPassword(oldPage);await oldPage.close();
+ const c=await context(),p=await page(c);await p.goto(shared);await p.getByLabel('本人姓名',{exact:true}).waitFor();await noPassword(p);assert.doesNotMatch(await p.locator('form > p').allTextContents().then(x=>x.join(' ')),/密码|访问码|独立保存/);assert.ok(await p.getByText('答案没有对错',{exact:false}).isVisible());await fits(p);await p.screenshot({path:out+'/registration-mobile.png',fullPage:true});
  // Lose an enrollment RESPONSE after the real API commits. Retry on the same
  // page must recover the same participant rather than create a duplicate.
  c.dropNextEnrollment=true;await p.getByLabel('本人姓名',{exact:true}).fill('【虚构】同名参与者');await p.getByLabel('手机号码',{exact:true}).fill('13800000000');await p.getByLabel('出生日期',{exact:true}).fill('1990-06-15');await p.getByRole('checkbox').check();await p.getByRole('button',{name:'开始我的测评',exact:true}).click();await p.getByRole('alert').waitFor();assert.equal((await f.request('/api/v1/assessment/invites')).body.data.total,1);
@@ -45,8 +52,8 @@ try{
  assert.equal((await f.request('/api/v1/public/assessment/submit',{...b,revision:bo.revision,answers:Object.fromEntries(pkg.questions.map(q=>[q.id,3])),value_draft:{selected,ranked:selected.flat().slice(0,10)}},null)).status,200);
  await p.reload();await p.getByRole('button',{name:'我是【虚构】换人参与者，继续测评',exact:true}).click();await p.getByText('报告已自动生成。', {exact:false}).waitFor();await fits(p);
  assert.ok(await p.evaluate(()=>{const boxes=[...document.querySelectorAll('.original-controls > *')].map(x=>x.getBoundingClientRect());return boxes.every((a,i)=>boxes.slice(i+1).every(b=>Math.min(a.right,b.right)-Math.max(a.left,b.left)<=1||Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top)<=1));}),'mobile report controls must not overlap');await p.screenshot({path:out+'/own-report-mobile.png',fullPage:true});
- const admin=await page(await context());await admin.setViewportSize({width:1440,height:1000});await admin.goto(f.origin+'/assessments');await admin.getByRole('button',{name:'发起测评',exact:true}).click();await admin.getByRole('button',{name:'创建测评链接',exact:true}).waitFor();assert.equal(await admin.getByLabel('邀请方式').count(),0);assert.equal(await admin.getByText('指定人员 · 专属邀请',{exact:true}).count(),0);await admin.getByRole('button',{name:'创建测评链接',exact:true}).click();await admin.getByRole('button',{name:'复制测评链接',exact:true}).waitFor();assert.doesNotMatch(await admin.locator('.invitation-share textarea').inputValue(),/访问码：|个人链接/);await admin.evaluate(()=>window.scrollTo(0,0));await admin.screenshot({path:out+'/admin-shared-links.png',fullPage:true});
- await admin.goto(f.origin+'/applications');await admin.getByRole('button',{name:'发起测评',exact:true}).first().click();await admin.getByRole('button',{name:'复制测评链接',exact:true}).waitFor();assert.doesNotMatch(await admin.locator('.invitation-share textarea').inputValue(),/访问码：/);
+ const admin=await page(await context());await admin.setViewportSize({width:1440,height:1000});await admin.goto(f.origin+'/assessments');await admin.getByRole('button',{name:'发起测评',exact:true}).click();await admin.getByRole('button',{name:'创建测评链接',exact:true}).waitFor();assert.equal(await admin.getByLabel('邀请方式').count(),0);assert.equal(await admin.getByText('指定人员 · 专属邀请',{exact:true}).count(),0);await admin.getByRole('button',{name:'创建测评链接',exact:true}).click();await admin.getByRole('button',{name:'复制测评链接',exact:true}).waitFor();assert.doesNotMatch(await admin.locator('.invitation-share textarea').inputValue(),/密码|访问码|个人链接|后台|多人|同一浏览器/);const invitation=await admin.locator('.invitation-share textarea').inputValue();assert.match(invitation,/齐论 AI 测评/);assert.match(invitation,/真实想法认真作答/);await admin.context().grantPermissions(['clipboard-read','clipboard-write'],{origin:f.origin});await admin.getByRole('button',{name:'复制测评链接',exact:true}).click();await admin.getByRole('status').filter({hasText:'已复制邀请信息'}).waitFor();assert.equal(await admin.evaluate(()=>navigator.clipboard.readText()),invitation);await admin.evaluate(()=>window.scrollTo(0,0));await admin.screenshot({path:out+'/admin-shared-links.png',fullPage:true});
+ await admin.goto(f.origin+'/applications');await admin.getByRole('button',{name:'发起测评',exact:true}).first().click();await admin.getByRole('button',{name:'复制测评链接',exact:true}).waitFor();assert.doesNotMatch(await admin.locator('.invitation-share textarea').inputValue(),/密码|访问码|后台|多人/);
  // Distinct invitation/report pages; history belongs at the very bottom and
  // stays collapsed until deliberately opened, including with the keyboard.
  await admin.goto(f.origin+'/assessments');await admin.getByRole('heading',{name:'参与者进度',exact:true}).waitFor();
