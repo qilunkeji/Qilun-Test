@@ -98,7 +98,7 @@ export function createApp(db:Database, config:{origin:string; contactKey:Buffer;
     next();
   });
   const send=(res:Response,data:unknown,status=200)=>res.status(status).json({data,request_id:context(res).requestId});
-  app.get('/api/v1/health', async (_req,res)=>{await db.query('SELECT 1');send(res,{status:'ok',stage:'P2-P3',database:'pglite',deployment:config.production?'single-instance-https':'local-only',assessment:{version:'qilun-internal-assessment/1.0.0',ready:!!assessmentRuntime.standard}});});
+  app.get('/api/v1/health', async (_req,res)=>{await db.query('SELECT 1');send(res,{status:'ok',stage:'P2-P3',database:db.driver,deployment:config.production?'single-instance-https':'local-only',assessment:{version:'qilun-internal-assessment/1.0.0',ready:!!assessmentRuntime.standard}});});
   const failures=new Map<string,{count:number;until:number}>();
   const dummyHash=hashPassword(randomToken());
   registerPublicInvites(app,db,assessmentRuntime,config.contactKey);

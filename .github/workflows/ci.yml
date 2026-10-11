@@ -8,7 +8,28 @@ on:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 40
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: qilun
+          POSTGRES_PASSWORD: qilun
+          POSTGRES_DB: qilun_maintenance
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U qilun -d qilun_maintenance"
+          --health-interval 5s --health-timeout 3s --health-retries 12
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s --health-timeout 3s --health-retries 12
+    env:
+      PGURL: postgres://qilun:qilun@127.0.0.1:5432/qilun_maintenance
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -21,8 +42,12 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: Typecheck
         run: pnpm exec tsc --noEmit
-      - name: Tests
+      - name: Tests (embedded PGlite)
         run: pnpm test
+      - name: Tests (PostgreSQL 16)
+        run: pnpm test
+        env:
+          DATABASE_URL: ${{ env.PGURL }}
       - name: Production build
         run: pnpm run build
       - name: Fixed scoring rules verification

@@ -453,7 +453,7 @@ test('磁盘持久化、备份恢复和重复迁移实际演练（虚构独立�
  try{
   local=await openDatabase(join(directory,'db'));const tenant=randomUUID();await local.query('INSERT INTO tenants(id,name) VALUES($1,$2)',[tenant,'虚构持久化测试']);
   await local.close();local=await openDatabase(join(directory,'db'));assert.equal((await local.query('SELECT id FROM tenants WHERE id=$1',[tenant])).rows.length,1);
-  const dump=await local.dumpDataDir();await local.close();local=undefined;
+  const dump=await local.dumpDataDir?.();assert.ok(dump,'embedded driver dump required for this drill');await local.close();local=undefined;
   const {PGlite}=await import('@electric-sql/pglite');const restored=await PGlite.create({loadDataDir:dump});
   try{assert.equal((await restored.query('SELECT id FROM tenants WHERE id=$1',[tenant])).rows.length,1);}finally{await restored.close();}
  }finally{if(local)await local.close();await rm(directory,{recursive:true,force:true});}

@@ -6,7 +6,7 @@ import {iamConfig,talentIAM} from './iam.ts';
 const deployment=deploymentConfig(process.env);
 const key=process.env.CONTACT_ENCRYPTION_KEY??'';
 if(!/^[a-f0-9]{64}$/i.test(key))throw new Error('Missing server encryption key. Run npm run init first.');
-const db=await openDatabase(process.env.DATA_DIR??'.local/database');
+const db=await openDatabase(process.env.DATABASE_URL??process.env.DATA_DIR??'.local/database');
 const port=deployment.port;
 await db.query("UPDATE ai_runs SET status='interrupted',error_code='PROCESS_INTERRUPTED' WHERE status='running'");
 const defaultTenantId=process.env.DEFAULT_TENANT_ID;

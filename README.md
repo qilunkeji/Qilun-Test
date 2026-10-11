@@ -23,7 +23,7 @@ pnpm run dev
 
 打开 http://127.0.0.1:3100 。`pnpm run init` 仅首次建立一个本地组织与人才负责人账号，生成随机密码，不植入候选人。登录组织 ID、账号和密码保存在 `.local/initial-access.txt`；不要上传或提交该文件。再次初始化不会重置账号。`.env` 中的随机联系方式加密密钥只留在服务端。
 
-本地数据存放 `.local/database/`，刷新页面和正常重启不丢失；线上使用独立持久化目录，不与本地同步。PGlite仅允许一个API进程。默认仍仅本机访问；公网模式须通过显式HTTPS配置校验、回环上游和可信网关，不允许把本地开发地址直接暴露到公网。开发、测试和生产使用不同目录。
+本地数据默认存放 `.local/database/`（内嵌 PGlite，仅允许一个 API 进程）；设置 `DATABASE_URL=postgres://...` 后改用独立 PostgreSQL（`docker compose -f infra/compose/docker-compose.yml up -d` 可起本地 PG16+Redis），此时支持多实例。刷新页面和正常重启不丢失；线上使用独立持久化目录，不与本地同步。默认仍仅本机访问；公网模式须通过显式HTTPS配置校验、回环上游和可信网关，不允许把本地开发地址直接暴露到公网。开发、测试和生产使用不同目录。存量 PGlite 数据可用 `scripts/migrate-pglite-to-pg.ts` 迁移并用 `scripts/verify-pg-migration.ts` 对账（行数+全表哈希）。
 
 浏览器验收创建的一个岗位及一个候选人均带「【虚构验收】」标记，只存在本地开发库；不是平台采集或真实招聘资料。自动化测试另外建立独立内存库/临时磁盘库，不读取开发数据库。
 

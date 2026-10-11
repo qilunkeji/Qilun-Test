@@ -10,6 +10,10 @@
     "@qilun/iam": "workspace:*",
     "@qilun/security": "workspace:*",
     "express": "5.2.1",
+    "pg": "^8.14.0",
     "zod": "4.6.5"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.23.1"
   }
 }

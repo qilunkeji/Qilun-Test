@@ -2,7 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {randomBytes,randomUUID,createHmac} from 'node:crypto';
 import {readFile} from 'node:fs/promises';
-import {PGlite} from '@electric-sql/pglite';
+import {openUnmigratedDatabase} from '../apps/api/db.ts';
 import {agentEnvironment,agentFixture} from './helpers/agent-fixture.ts';
 import {createApp} from '../apps/api/app.ts';
 import {loadAssessmentRuntime} from '../apps/api/assessment-product.ts';
@@ -98,7 +98,7 @@ test('旧公共入口的个人链接安全转登记；缓存的旧凭据可续�
  const another=await f.request('/api/v1/public/assessment/entry/enroll',{...enrollment(e,'【虚构】新的参与者'),token},null);assert.equal(another.status,201);assert.equal(another.body.data.pin,undefined);assert.deepEqual((await f.request('/api/v1/public/assessment/open',another.body.data,null)).body.data.answers,{});
 });
 test('015升级旧单人链接为共用登记入口，保留历史混合答卷与原始绑定，不向新参与者泄漏',async t=>{
- const restore=agentEnvironment(),db=new PGlite();await db.waitReady;t.after(async()=>{await db.close();restore();});
+ const restore=agentEnvironment(),db=await openUnmigratedDatabase();t.after(async()=>{await db.close();restore();});
  const files=['001_foundation.sql','002_assessments.sql','003_ai.sql','004_recruiting.sql','005_interviews.sql','006_reference_h5.sql','007_iam_identities.sql','008_assessment_ui_progress.sql','009_assessment_profile_timing.sql','010_agent_tasks.sql','011_project_groups_independent_assessments.sql','012_public_assessment_entries.sql','013_resume_library.sql','014_resume_screen_rounds.sql'];
  for(const file of files)await db.exec(await readFile(new URL('../infra/migrations/'+file,import.meta.url),'utf8'));
  const tenant=randomUUID(),user=randomUUID(),candidate=randomUUID(),id=randomUUID(),token=randomBytes(32).toString('base64url'),key=randomBytes(32),pkg=JSON.stringify(qilunStandardInvitePackage(loadAssessmentRuntime().standard!));

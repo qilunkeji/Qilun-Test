@@ -1,0 +1,33 @@
+# Local/CI/staging PostgreSQL + Redis for the qilun talent system.
+# Production composition (nginx, api instances, observability) lands in Phase 6.
+# Usage: docker compose -f infra/compose/docker-compose.yml up -d
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: qilun
+      POSTGRES_PASSWORD: qilun
+      POSTGRES_DB: qilun_maintenance
+    ports:
+      - "127.0.0.1:54329:5432"
+    volumes:
+      - qilun_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U qilun -d qilun_maintenance"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "127.0.0.1:6380:6379"
+    volumes:
+      - qilun_redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+volumes:
+  qilun_pgdata:
+  qilun_redisdata:
