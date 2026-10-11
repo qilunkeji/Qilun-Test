@@ -1,5 +1,9 @@
 # 新电脑 Codex 接手说明
 
+## 2026-10-11 导出名称追加齐论性格分析已上线
+
+按用户补充，统一导出名为「齐论性格分析-本人姓名」（PNG与PDF建议文件名），不再仅用姓名。沿用codex/assessment-export-person-name分支完成同一功能修订，无远程。类型/构建、隔离前后台实际PNG下载与打印标题恢复通过；当前发布目录仅更新前端，入口index-DL4L_QPw.js、后台assessment-admin-CZHY2jBH.js，配置/服务进程保持不变。备份frontend-before-report-export-brand-name-20261011.tgz（0600）；服务器及本机公网检查通过。详见docs/20261011-测评导出按姓名命名.md顶部补充，一次性activate-report-export-brand-name.sh勿重跑。下方为前版记录。
+
 ## 2026-10-11 测评导出文件按本人姓名已上线
 
 在current `20261011-participant-invitation-v1` 上仅更新前端：PNG采用测评填写的participant_name（完整姓名），缺历史字段时用报告姓名；PDF打印临时使用同名标题并在结束后恢复。前台/后台两位虚构参与者真实PNG下载及打印标题恢复通过，9项相关回归、类型/构建通过；服务器与本机公网资源/健康/权限校验通过。旧静态资源保留，前端及源码备份0600，PID2634187不变，配置/账号/答卷/计分无修改、无新迁移。详见docs/20261011-测评导出按姓名命名.md。分支codex/assessment-export-person-name，无远程不推送；一次性激活脚本勿重跑。下方为前次发布记录。

@@ -1,9 +1,8 @@
-/** Use the participant's entered name as the file basename, keeping characters
- * supported by common desktop and mobile filesystems. */
+/** Brand the export and retain the participant's entered name, keeping
+ * characters supported by common desktop and mobile filesystems. */
 export function reportExportName(name?:string|null){
  const clean=(name??'').trim().replace(/[\\/:*?"<>|\u0000-\u001f\u007f]/g,'_').replace(/[. ]+$/g,'');
- if(!clean)return '测评报告';
- return /^(con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\.|$)/i.test(clean)?'_'+clean:clean;
+ return clean?`齐论性格分析-${clean}`:'齐论性格分析';
 }
 
 /** Browsers use the document title for their suggested Save as PDF filename. */
