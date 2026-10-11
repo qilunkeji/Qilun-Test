@@ -131,7 +131,11 @@ public class BusinessController {
               (SELECT count(*)::int FROM applications a JOIN candidates c ON c.id=a.candidate_id AND c.tenant_id=a.tenant_id WHERE a.tenant_id=$1 AND c.retention_until>now()) AS applications,
               (SELECT count(*)::int FROM candidates WHERE tenant_id=$1 AND retention_until<=now()) AS expired""".replace("$1", "$1"),
             auth.tenantId());
-        return rows.get(0);
+        Map<String, Object> out = new LinkedHashMap<>(rows.get(0));
+        if ("external_agent".equals(System.getenv("PROCESSING_MODE"))) {
+            out.put("agent_pending", ApplicationContextHolderHolder.queueStatus(auth.tenantId()));
+        }
+        return out;
     }
 
     // ---------------------------------------------------------------- jobs list

@@ -18,18 +18,23 @@ import { join, resolve } from 'node:path';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { randomBytes } from 'node:crypto';
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
 
 const here = resolve(fileURLToPath(new URL('.', import.meta.url)));
 const ROOT = resolve(here, '../..');
 const FIXED_PASSWORD = 'Parity!Fixed-2026';
 const FIXED_KEY = randomBytes(32).toString('hex'); // fixed per differ invocation, identical for both sides
+const { createHash } = await import('node:crypto');
+const AGENT_TOKEN = randomBytes(32).toString('base64url');
+const AGENT_SHA = createHash('sha256').update(AGENT_TOKEN).digest('hex');
 
 const arg = (name) => { const i = process.argv.indexOf(`--${name}`); return i >= 0 ? process.argv[i + 1] : undefined; };
 const MODE = process.argv.includes('--a') && process.argv.includes('--b') ? 'url' : (process.argv.includes('--java') ? 'java' : 'self');
 const ONLY = arg('only') ? new Set(arg('only').split(',')) : null;
 
 // --- normalization ---------------------------------------------------------
-const VOLATILE_KEYS = new Set(['request_id', 'csrf_token', 'token', 'session', 'cookie', 'url', 'pin']);
+const VOLATILE_KEYS = new Set(['request_id', 'csrf_token', 'token', 'session', 'cookie', 'url', 'pin', 'lease_token', 'nonce']);
 const ISO_LIKE = /^\d{4}-\d{2}-\d{2}T\d{2}:/;
 const UUID_LIKE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const DB_ENGINE = new Set(['pglite', 'postgresql']);
@@ -190,6 +195,42 @@ async function runScenarios(base) {
   }));
   results.push(await flow('material-archive', '/api/v1/recruiting/materials/' + ctx.materialId + '/archive', { body: {} }));
   results.push(await flow('interview-assessments', '/api/v1/interviews/assessments/' + ctx.applicationId, { method: 'GET' }));
+  // --- agent queue chain (external-agent mode)
+  const mcp = async (method, params, id) => {
+    const res = await fetch(base + '/mcp/agent', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + AGENT_TOKEN }, body: JSON.stringify({ jsonrpc: '2.0', id: id ?? 1, method, params }) });
+    const body = await res.json().catch(() => ({}));
+    const rawText = (body.result && body.result.content && body.result.content[0] && body.result.content[0].text) || null;
+    // tool payloads are JSON-in-string; normalize the inner object too (uuids/tokens/timings are volatile)
+    try {
+      for (const c of (body.result && body.result.content) || []) {
+        if (c.type === 'text' && typeof c.text === 'string') {
+          const inner = JSON.parse(c.text);
+          delete inner.created_to_claim_seconds; delete inner.claim_to_submit_seconds; delete inner.total_seconds;
+          c.text = JSON.stringify(normalize(inner));
+        }
+      }
+    } catch { /* non-JSON text stays as-is */ }
+    return { status: res.status, body: normalize(body), rawText };
+  };
+  results.push({ name: 'mcp-initialize', ...(await mcp('initialize', {})) });
+  results.push({ name: 'agent-test', status: 0, body: null });
+  const testRes = await fetch(base + '/api/v1/ai/agent-test', { method: 'POST', headers: { 'Content-Type': 'application/json', Origin: base, Cookie: session, 'X-CSRF-Token': csrf } });
+  const testBody = await testRes.json();
+  results.push({ name: 'agent-test', status: testRes.status, body: normalize(testBody) });
+  ctx.pingTaskId = testBody.data && testBody.data.task_id;
+  const claim = await mcp('tools/call', { name: 'claim_task', arguments: { request_id: 'parity-claim-1' } });
+  results.push({ name: 'mcp-claim', status: claim.status, body: claim.body });
+  if (!claim.rawText) throw new Error('mcp-claim unexpected: ' + JSON.stringify(claim).slice(0, 300));
+  const claimText = JSON.parse(claim.rawText);
+  ctx.leaseToken = claimText.lease_token;
+  ctx.claimedTaskId = claimText.task_id;
+  const submit = await mcp('tools/call', { name: 'submit_task_result', arguments: { task_id: ctx.claimedTaskId, lease_token: ctx.leaseToken, request_id: 'parity-submit-1', result: { nonce: claimText.context.nonce, ok: true } } });
+  results.push({ name: 'mcp-submit', status: submit.status, body: submit.body });
+  if (!submit.rawText) throw new Error('mcp-submit unexpected: ' + JSON.stringify(submit).slice(0, 300));
+  const pending = await fetch(base + '/api/v1/ai/pending', { headers: { Origin: base, Cookie: session } });
+  results.push({ name: 'ai-pending', status: pending.status, body: normalize(await pending.json()) });
+  const settings = await fetch(base + '/api/v1/ai/settings', { headers: { Origin: base, Cookie: session } });
+  results.push({ name: 'ai-settings', status: settings.status, body: normalize(await settings.json()) });
   results.push(await flow('audit-after', '/api/v1/audit-events', { method: 'GET' }));
   return ONLY ? results.filter(r => ONLY.has(r.name)) : results;
 }
@@ -206,7 +247,7 @@ async function bootLegacy(port) {
   await db.close();
   const origin = `http://127.0.0.1:${port}`;
   const child = spawn(process.execPath, ['--experimental-strip-types', 'apps/api/main.ts'], {
-    cwd: ROOT, env: { ...process.env, PORT: String(port), DATA_DIR: dataDir, PUBLIC_ORIGIN: origin, H5_ORIGIN: origin, CONTACT_ENCRYPTION_KEY: FIXED_KEY, NODE_ENV: '' },
+    cwd: ROOT, env: { ...process.env, PORT: String(port), DATA_DIR: dataDir, PUBLIC_ORIGIN: origin, H5_ORIGIN: origin, CONTACT_ENCRYPTION_KEY: FIXED_KEY, NODE_ENV: '', PROCESSING_MODE: 'external_agent', AGENT_WRITE_TOKEN_SHA256: AGENT_SHA, DEFAULT_TENANT_ID: '00000000-0000-4000-8000-000000000001' },
     stdio: ['ignore', 'ignore', 'pipe'],
   });
   const stderr = []; child.stderr.on('data', d => stderr.push(d));
@@ -231,7 +272,7 @@ async function bootJava(port) {
   const jar = resolve(ROOT, 'backend/qilun-api/target/qilun-api-0.1.0-SNAPSHOT.jar');
   const child = spawn(javaBin, ['-jar', jar], {
     cwd: ROOT,
-    env: { ...process.env, QILUN_DATABASE_URL: `jdbc:postgresql://127.0.0.1:54329/${dbName}?user=qilun`, QILUN_ORIGIN: origin, SERVER_PORT: String(port), QILUN_PARITY_SEED: '1', CONTACT_ENCRYPTION_KEY: FIXED_KEY },
+    env: { ...process.env, QILUN_DATABASE_URL: `jdbc:postgresql://127.0.0.1:54329/${dbName}?user=qilun`, QILUN_ORIGIN: origin, SERVER_PORT: String(port), QILUN_PARITY_SEED: '1', CONTACT_ENCRYPTION_KEY: FIXED_KEY, PROCESSING_MODE: 'external_agent', AGENT_WRITE_TOKEN_SHA256: AGENT_SHA, DEFAULT_TENANT_ID: '00000000-0000-4000-8000-000000000001' },
     stdio: ['ignore', 'pipe', 'pipe'],
   });
   const stderr = []; child.stderr.on('data', d => stderr.push(d)); child.stdout.on('data', d => stderr.push(d));
@@ -292,6 +333,11 @@ try {
   }
   const problems = diffResults(a, b);
   console.log(`scenarios=${a.length} diffs=${problems.length}`);
+  if (process.env.DIFFER_DEBUG) {
+    const { writeFileSync } = require('node:fs');
+    writeFileSync('tools/parity/last-a.json', JSON.stringify(a, null, 1));
+    writeFileSync('tools/parity/last-b.json', JSON.stringify(b, null, 1));
+  }
   problems.forEach(p => console.log('DIFF ' + p));
   console.log(problems.length ? 'PARITY_FAILED' : 'PARITY_OK');
   process.exit(problems.length ? 1 : 0);

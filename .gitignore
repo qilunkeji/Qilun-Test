@@ -31,3 +31,5 @@ tools/crosstest/bcprov.jar
 tools/crosstest/*.class
 backend/**/target/
 tools/parity/java-last.log
+tools/parity/last-a.json
+tools/parity/last-b.json
