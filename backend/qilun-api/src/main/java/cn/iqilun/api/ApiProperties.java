@@ -13,6 +13,8 @@ public class ApiProperties {
     private boolean production = false;
     /** 64-hex CONTACT_ENCRYPTION_KEY equivalent. */
     private String contactKey = "";
+    /** Frozen inverse model file (hash-locked against the rulebook at boot). */
+    private String engineModelFile = ".local/gh-inference-v1/model.json";
 
     public String getDatabaseUrl() { return databaseUrl; }
     public void setDatabaseUrl(String v) { this.databaseUrl = v; }
@@ -24,4 +26,6 @@ public class ApiProperties {
     public void setProduction(boolean v) { this.production = v; }
     public String getContactKey() { return contactKey; }
     public void setContactKey(String v) { this.contactKey = v; }
+    public String getEngineModelFile() { return engineModelFile; }
+    public void setEngineModelFile(String v) { this.engineModelFile = v; }
 }

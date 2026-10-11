@@ -32,13 +32,18 @@ const ONLY = arg('only') ? new Set(arg('only').split(',')) : null;
 const VOLATILE_KEYS = new Set(['request_id', 'csrf_token', 'token', 'session', 'cookie']);
 const ISO_LIKE = /^\d{4}-\d{2}-\d{2}T\d{2}:/;
 const UUID_LIKE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-function normalize(value, key) {
+const DB_ENGINE = new Set(['pglite', 'postgresql']);
+function normalize(value, key, parent) {
+  // the whole point of the rewrite: legacy reports 'pglite', the Java backend
+  // reports 'postgresql' for the same healthy deployment — an intended delta.
+  if (key === 'database' && parent === 'data' && DB_ENGINE.has(value)) return '<engine>';
   if (Array.isArray(value)) return value.map(v => normalize(v));
   if (value && typeof value === 'object') {
     const out = {};
+    const parentKey = key;
     for (const [k, v] of Object.entries(value)) {
       if (VOLATILE_KEYS.has(k)) { out[k] = '<volatile>'; continue; }
-      out[k] = normalize(v, k);
+      out[k] = normalize(v, k, parentKey);
     }
     return out;
   }

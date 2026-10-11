@@ -16,10 +16,12 @@ public class HealthController {
 
     private final Db db;
     private final ApiProperties properties;
+    private final EngineRuntime engineRuntime;
 
-    public HealthController(Db db, ApiProperties properties) {
+    public HealthController(Db db, ApiProperties properties, EngineRuntime engineRuntime) {
         this.db = db;
         this.properties = properties;
+        this.engineRuntime = engineRuntime;
     }
 
     @GetMapping("/api/v1/health")
@@ -27,7 +29,7 @@ public class HealthController {
         db.query("SELECT 1");
         Map<String, Object> assessment = new LinkedHashMap<>();
         assessment.put("version", "qilun-internal-assessment/1.0.0");
-        assessment.put("ready", false);
+        assessment.put("ready", engineRuntime.ready());
         Map<String, Object> out = new LinkedHashMap<>();
         out.put("status", "ok");
         out.put("stage", "P2-P3");
