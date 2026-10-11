@@ -18,6 +18,17 @@
     <postgresql.version>42.7.14</postgresql.version>
     <bouncycastle.version>1.78.1</bouncycastle.version>
   </properties>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <parameters>true</parameters>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
   <dependencyManagement>
     <dependencies>
       <dependency>

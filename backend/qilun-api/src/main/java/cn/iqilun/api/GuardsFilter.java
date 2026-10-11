@@ -89,7 +89,8 @@ public class GuardsFilter extends OncePerRequestFilter {
     }
 
     private boolean isAuthExempt(String path) {
-        return "/api/v1/health".equals(path) || "/api/v1/auth/options".equals(path) || "/api/v1/auth/login".equals(path);
+        return "/api/v1/health".equals(path) || "/api/v1/auth/options".equals(path) || "/api/v1/auth/login".equals(path)
+            || path.startsWith("/api/v1/public/");
     }
 
     static String cookieValue(HttpServletRequest request) {

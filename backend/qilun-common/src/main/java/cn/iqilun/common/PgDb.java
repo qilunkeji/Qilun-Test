@@ -33,8 +33,12 @@ public final class PgDb implements Db, AutoCloseable {
     public List<Map<String, Object>> query(String sql, Object... params) throws Exception {
         lock.lock();
         try {
-            try (PreparedStatement ps = connection.prepareStatement(Placeholders.toJdbc(sql))) {
-                bind(ps, params);
+            Placeholders.Translated translated = Placeholders.toJdbc(sql);
+            try (PreparedStatement ps = connection.prepareStatement(translated.jdbc())) {
+                // each '?' maps back to its $N; repeated $N re-binds the same value (legacy driver semantics)
+                for (int i = 0; i < translated.paramIndex().length; i++) {
+                    bindOne(ps, i + 1, params[translated.paramIndex()[i] - 1]);
+                }
                 // legacy db.query() also serves INSERT/UPDATE (PGlite returns no rows); mirror that
                 boolean hasResultSet = ps.execute();
                 List<Map<String, Object>> rows = new ArrayList<>();
@@ -98,15 +102,12 @@ public final class PgDb implements Db, AutoCloseable {
         }
     }
 
-    private static void bind(PreparedStatement ps, Object... params) throws Exception {
-        for (int i = 0; i < params.length; i++) {
-            Object value = params[i];
-            if (value instanceof String) {
-                // send as unspecified type so the server casts varchar->uuid/timestamp like the legacy driver
-                ps.setObject(i + 1, value, java.sql.Types.OTHER);
-            } else {
-                ps.setObject(i + 1, value);
-            }
+    private static void bindOne(PreparedStatement ps, int position, Object value) throws Exception {
+        if (value instanceof String) {
+            // send as unspecified type so the server casts varchar->uuid/timestamp like the legacy driver
+            ps.setObject(position, value, java.sql.Types.OTHER);
+        } else {
+            ps.setObject(position, value);
         }
     }
 }

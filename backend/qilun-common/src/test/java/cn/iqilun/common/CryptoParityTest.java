@@ -36,7 +36,11 @@ class CryptoParityTest {
 
     @Test
     void placeholderRewriteSkipsStringLiterals() {
-        assertEquals("SELECT a FROM t WHERE x=? AND y='a$1b' AND z=?", Placeholders.toJdbc("SELECT a FROM t WHERE x=$1 AND y='a$1b' AND z=$2"));
+        Placeholders.Translated t = Placeholders.toJdbc("SELECT a FROM t WHERE x=$1 AND y='a$1b' AND z=$2");
+        assertEquals("SELECT a FROM t WHERE x=? AND y='a$1b' AND z=?", t.jdbc());
+        assertArrayEquals(new int[]{1, 2}, t.paramIndex());
+        Placeholders.Translated repeated = Placeholders.toJdbc("SELECT $1,$1 FROM t WHERE id=$2 OR pid=$1");
+        assertArrayEquals(new int[]{1, 1, 2, 1}, repeated.paramIndex());
     }
 
     private static String field(String json, String name) {

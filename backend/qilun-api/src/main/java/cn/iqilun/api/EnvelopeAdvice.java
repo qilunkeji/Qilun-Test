@@ -28,6 +28,8 @@ public class EnvelopeAdvice implements ResponseBodyAdvice<Object> {
         if (request instanceof ServletServerHttpRequest servlet) {
             HttpServletRequest req = servlet.getServletRequest();
             if (req.getRequestURI().startsWith("/api") && !req.getRequestURI().startsWith("/api/v3")) {
+                // error envelopes from GlobalExceptionHandler are final — never double-wrap
+                if (body instanceof Map<?, ?> map && map.containsKey("error")) return body;
                 Map<String, Object> envelope = new LinkedHashMap<>();
                 envelope.put("data", body);
                 envelope.put("request_id", req.getAttribute(GuardsFilter.REQUEST_ID));
