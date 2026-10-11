@@ -160,13 +160,36 @@ async function runScenarios(base) {
     extract: j => { ctx.jobId = j.data.id; ctx.versionId = j.data.version_id; },
   });
   results.push(jobCreate);
-  results.push(await flow('application-create', '/api/v1/applications', {
+  const appCreate = await flow('application-create', '/api/v1/applications', {
     body: { candidate_id: ctx.candidateId, job_id: ctx.jobId, job_version_id: ctx.versionId, resume_version_id: ctx.resumeId, batch: 'parity-batch' },
-  }));
+    extract: j => { ctx.applicationId = j.data.id; },
+  });
+  results.push(appCreate);
   results.push(await flow('application-duplicate', '/api/v1/applications', {
     body: { candidate_id: ctx.candidateId, job_id: ctx.jobId, job_version_id: ctx.versionId, resume_version_id: ctx.resumeId, batch: 'parity-batch' },
   }));
   results.push(await flow('resume-delete-in-use', '/api/v1/resume-library/' + ctx.resumeId + '/delete', { body: { confirm: 'delete_resume' } }));
+  // --- recruiting materials + interview chain
+  results.push(await flow('material-create', '/api/v1/recruiting/materials', {
+    body: { title: '对等验证公司介绍', category: '公司介绍', source_name: 'parity', content: '对等验证参考资料内容，至少五个字。' },
+    extract: j => { ctx.materialId = j.data.id; },
+  }));
+  results.push(await flow('materials-list', '/api/v1/recruiting/materials', { method: 'GET' }));
+  results.push(await flow('material-detail', '/api/v1/resumes-material/'.replace('resumes-material/', 'recruiting/materials/') + ctx.materialId, { method: 'GET' }));
+  results.push(await flow('interview-create', '/api/v1/interviews', {
+    body: { application_id: ctx.applicationId, assessment_id: null, rubric: [{ name: '工程能力', requirement: '能独立完成后端开发任务', weight: 60 }, { name: '协作沟通', requirement: '能与团队清晰协作', weight: 40 }], question_count: 10 },
+    extract: j => { ctx.interviewId = j.data.id; },
+  }));
+  results.push(await flow('interviews-list', '/api/v1/interviews', { method: 'GET' }));
+  results.push(await flow('interview-detail', '/api/v1/interviews/' + ctx.interviewId, { method: 'GET' }));
+  results.push(await flow('interview-transcript', '/api/v1/interviews/' + ctx.interviewId + '/transcript', {
+    body: { text: '候选人回答：我负责过完整订单系统的设计与上线。', expected_revision: 0, processing_confirmed: true },
+  }));
+  results.push(await flow('interview-transcript-conflict', '/api/v1/interviews/' + ctx.interviewId + '/transcript', {
+    body: { text: '候选人回答：我负责过完整订单系统的设计与上线（旧版本）。', expected_revision: 0, processing_confirmed: true },
+  }));
+  results.push(await flow('material-archive', '/api/v1/recruiting/materials/' + ctx.materialId + '/archive', { body: {} }));
+  results.push(await flow('interview-assessments', '/api/v1/interviews/assessments/' + ctx.applicationId, { method: 'GET' }));
   results.push(await flow('audit-after', '/api/v1/audit-events', { method: 'GET' }));
   return ONLY ? results.filter(r => ONLY.has(r.name)) : results;
 }
