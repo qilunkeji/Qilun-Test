@@ -33,3 +33,6 @@ backend/**/target/
 tools/parity/java-last.log
 tools/parity/last-a.json
 tools/parity/last-b.json
+frontend/dist/
+_ui.log
+_fe.log

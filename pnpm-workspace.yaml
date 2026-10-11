@@ -1,6 +1,7 @@
 packages:
   - apps/api
   - apps/admin-web
+  - frontend
   - packages/contracts
   - packages/security
   - packages/assessment-engine
