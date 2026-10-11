@@ -131,6 +131,42 @@ async function runScenarios(base) {
   const inviteId = listJson.data.items[0] && listJson.data.items[0].id;
   if (inviteId) results.push(await flow('invite-report', `/api/v1/assessment/invites/${inviteId}/report`, { method: 'GET' }));
   results.push(await flow('dashboard-after', '/api/v1/dashboard', { method: 'GET' }));
+  // --- resume chain: web import -> library -> grant -> extension import -> duplicate -> delete
+  const importBody = {
+    name: '【虚构】简历链路', purpose: 'recruitment', processing_basis: '对等验证用途说明',
+    retention_until: new Date(Date.now() + 200 * 86400000).toISOString(), channel: 'manual-parity',
+    external_id: 'parity-001', authorization_ref: 'parity-auth', filename: 'parity.txt',
+    text_content: '张三\n五年后端经验\n熟悉Java与PostgreSQL', completeness: 'full',
+  };
+  results.push(await flow('resume-import', '/api/v1/talents/imports', { body: importBody, extract: j => { ctx.resumeId = j.data.resume_version_id; ctx.candidateId = j.data.candidate_id; } }));
+  results.push(await flow('resume-library', '/api/v1/resume-library', { method: 'GET' }));
+  results.push(await flow('resumes-detail', '/api/v1/resumes/' + ctx.resumeId, { method: 'GET' }));
+  results.push(await flow('talents-detail', '/api/v1/talents/' + ctx.candidateId, { method: 'GET' }));
+  results.push(await flow('grant-create', '/api/v1/resume-extension/grants', {
+    body: { extension_id: 'abcdefghijklmnopabcdefghijklmnop' },
+    extract: j => { ctx.crToken = j.data.token; },
+  }));
+  const extImport = await fetch(base + '/extension/v1/imports', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Origin: 'chrome-extension://abcdefghijklmnopabcdefghijklmnop', Authorization: 'Bearer ' + ctx.crToken },
+    body: JSON.stringify({ ...importBody, text_content: importBody.text_content + '\n扩展导入一版' }),
+  });
+  results.push({ name: 'extension-import', status: extImport.status, body: normalize(await extImport.json()), setCookie: null });
+  results.push(await flow('resume-import-duplicate', '/api/v1/talents/imports', { body: importBody }));
+  // job chain: create job -> application for the imported candidate
+  const jobCreate = await flow('job-create', '/api/v1/jobs', {
+    method: 'POST',
+    body: { title: '对等验证岗位', department: '质量部', owner: 'parity', location: '远程', tasks: '对等验证职责', criteria: '对等验证标准', public_jd: '对等验证JD', status: 'open', change_reason: '初始' },
+    extract: j => { ctx.jobId = j.data.id; ctx.versionId = j.data.version_id; },
+  });
+  results.push(jobCreate);
+  results.push(await flow('application-create', '/api/v1/applications', {
+    body: { candidate_id: ctx.candidateId, job_id: ctx.jobId, job_version_id: ctx.versionId, resume_version_id: ctx.resumeId, batch: 'parity-batch' },
+  }));
+  results.push(await flow('application-duplicate', '/api/v1/applications', {
+    body: { candidate_id: ctx.candidateId, job_id: ctx.jobId, job_version_id: ctx.versionId, resume_version_id: ctx.resumeId, batch: 'parity-batch' },
+  }));
+  results.push(await flow('resume-delete-in-use', '/api/v1/resume-library/' + ctx.resumeId + '/delete', { body: { confirm: 'delete_resume' } }));
   results.push(await flow('audit-after', '/api/v1/audit-events', { method: 'GET' }));
   return ONLY ? results.filter(r => ONLY.has(r.name)) : results;
 }

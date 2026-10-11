@@ -6,7 +6,11 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -26,6 +30,11 @@ public class BusinessController {
         GuardsFilter.Auth auth = (GuardsFilter.Auth) request.getAttribute(GuardsFilter.AUTH);
         if (!List.of("talent_lead", "hr").contains(auth.role()))
             throw new ApiError(403, "FORBIDDEN_SCOPE", "当前角色无此权限");
+    }
+
+    static GuardsFilter.Auth authBusinessPublic(HttpServletRequest request) {
+        allowBusiness(request);
+        return (GuardsFilter.Auth) request.getAttribute(GuardsFilter.AUTH);
     }
 
     static void allowedKeys(HttpServletRequest request, String... allowed) {
@@ -203,5 +212,116 @@ public class BusinessController {
         out.put("page", input.page);
         out.put("page_size", input.pageSize);
         return out;
+    }
+
+    // ---------------------------------------------------------------- jobs create / detail
+    @org.springframework.web.bind.annotation.PostMapping("/api/v1/jobs")
+    public org.springframework.http.ResponseEntity<Map<String, Object>> createJob(@RequestBody(required = false) Map<String, Object> body,
+                                                                                  HttpServletRequest request) throws Exception {
+        allowBusiness(request);
+        GuardsFilter.Auth a = (GuardsFilter.Auth) request.getAttribute(GuardsFilter.AUTH);
+        List<String> allowed = List.of("title", "department", "owner", "location", "tasks", "criteria", "public_jd", "status", "change_reason");
+        if (body == null || body.keySet().stream().anyMatch(k -> !allowed.contains(k))) throw new ApiError(400, "INVALID_INPUT", "输入格式不正确");
+        for (String k : List.of("title", "department", "owner", "location", "change_reason"))
+            if (!(body.get(k) instanceof String s && !s.isBlank())) throw new ApiError(400, "INVALID_INPUT", "输入格式不正确");
+        for (String k : List.of("tasks", "criteria", "public_jd"))
+            if (!(body.get(k) instanceof String)) throw new ApiError(400, "INVALID_INPUT", "输入格式不正确");
+        if (!List.of("draft", "pending", "open", "paused", "closed", "archived").contains(body.get("status")))
+            throw new ApiError(400, "INVALID_INPUT", "输入格式不正确");
+        String jobId = UUID.randomUUID().toString(), versionId = UUID.randomUUID().toString();
+        db.tx(tx -> {
+            tx.query("INSERT INTO jobs(id,tenant_id,created_by) VALUES($1,$2,$3)", jobId, a.tenantId(), a.userId());
+            tx.query("INSERT INTO job_versions(id,tenant_id,job_id,version,title,department,owner,location,tasks,criteria,public_jd,status,change_reason,created_by) VALUES($1,$2,$3,1,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)",
+                versionId, a.tenantId(), jobId, body.get("title"), body.get("department"), body.get("owner"), body.get("location"),
+                body.get("tasks"), body.get("criteria"), body.get("public_jd"), body.get("status"), body.get("change_reason"), a.userId());
+            tx.query("INSERT INTO audit_events(id,tenant_id,actor_id,action,object_id) VALUES($1,$2,$3,$4,$5)",
+                UUID.randomUUID().toString(), a.tenantId(), a.userId(), "job.created", jobId);
+            return null;
+        });
+        Map<String, Object> out = new LinkedHashMap<>();
+        out.put("id", jobId);
+        out.put("version_id", versionId);
+        out.put("revision", 1L);
+        return org.springframework.http.ResponseEntity.status(201).body(out);
+    }
+
+    @GetMapping("/api/v1/jobs/{id}")
+    public Map<String, Object> jobDetail(@PathVariable String id, HttpServletRequest request) throws Exception {
+        allowBusiness(request);
+        GuardsFilter.Auth a = (GuardsFilter.Auth) request.getAttribute(GuardsFilter.AUTH);
+        List<Map<String, Object>> jobs = db.query("SELECT id,revision,created_at FROM jobs WHERE tenant_id=$1 AND id=$2", a.tenantId(), id);
+        if (jobs.isEmpty()) throw new ApiError(404, "NOT_FOUND", "对象不存在或不在授权范围内");
+        Map<String, Object> out = new LinkedHashMap<>(jobs.get(0));
+        out.put("versions", db.query("SELECT * FROM job_versions WHERE tenant_id=$1 AND job_id=$2 ORDER BY version DESC", a.tenantId(), id));
+        return out;
+    }
+
+    @GetMapping("/api/v1/resumes/{id}")
+    public Map<String, Object> resumeDetail(@PathVariable String id, HttpServletRequest request) throws Exception {
+        allowBusiness(request);
+        GuardsFilter.Auth a = (GuardsFilter.Auth) request.getAttribute(GuardsFilter.AUTH);
+        List<Map<String, Object>> rows = db.query("SELECT r.* FROM resume_versions r JOIN candidates c ON c.tenant_id=r.tenant_id AND c.id=r.candidate_id WHERE r.tenant_id=$1 AND r.id=$2 AND c.retention_until>now()", a.tenantId(), id);
+        if (rows.isEmpty()) throw new ApiError(404, "NOT_FOUND", "对象不存在或不在授权范围内");
+        Map<String, Object> out = new LinkedHashMap<>(rows.get(0));
+        out.put("chunks", db.query("SELECT id,line_number,text_content FROM document_chunks WHERE tenant_id=$1 AND resume_version_id=$2 ORDER BY line_number", a.tenantId(), id));
+        return out;
+    }
+
+    @GetMapping("/api/v1/talents/{id}")
+    public Map<String, Object> talentDetail(@PathVariable String id, HttpServletRequest request) throws Exception {
+        allowBusiness(request);
+        GuardsFilter.Auth a = (GuardsFilter.Auth) request.getAttribute(GuardsFilter.AUTH);
+        List<Map<String, Object>> candidates = db.query("SELECT id,name,purpose,processing_basis,retention_until,created_at,project_group_id FROM candidates WHERE tenant_id=$1 AND id=$2 AND retention_until>now()", a.tenantId(), id);
+        if (candidates.isEmpty()) throw new ApiError(404, "NOT_FOUND", "对象不存在或不在授权范围内");
+        Map<String, Object> out = new LinkedHashMap<>(candidates.get(0));
+        out.put("sources", db.query("SELECT id,channel,external_id,authorization_ref,created_at FROM candidate_sources WHERE tenant_id=$1 AND candidate_id=$2", a.tenantId(), id));
+        out.put("resumes", db.query("SELECT id,source_id,version,filename,content_hash,completeness,created_at FROM resume_versions WHERE tenant_id=$1 AND candidate_id=$2 ORDER BY version DESC", a.tenantId(), id));
+        out.put("applications", db.query("SELECT a.*,v.title,v.version AS job_version FROM applications a JOIN job_versions v ON v.id=a.job_version_id AND v.tenant_id=a.tenant_id WHERE a.tenant_id=$1 AND a.candidate_id=$2 ORDER BY a.created_at DESC", a.tenantId(), id));
+        out.put("assessments", db.query("SELECT i.id,i.submitted_at,i.created_at,i.revoked_at FROM assessment_invites i LEFT JOIN assessment_archive_bindings b ON b.tenant_id=i.tenant_id AND b.invite_id=i.id WHERE i.tenant_id=$1 AND coalesce(i.candidate_id,b.candidate_id)=$2 ORDER BY i.created_at DESC", a.tenantId(), id));
+        return out;
+    }
+
+    @org.springframework.web.bind.annotation.PostMapping("/api/v1/applications")
+    public org.springframework.http.ResponseEntity<Map<String, Object>> createApplication(@RequestBody(required = false) Map<String, Object> body,
+                                                                                         HttpServletRequest request) throws Exception {
+        allowBusiness(request);
+        GuardsFilter.Auth a = (GuardsFilter.Auth) request.getAttribute(GuardsFilter.AUTH);
+        List<String> allowed = List.of("candidate_id", "job_id", "job_version_id", "resume_version_id", "batch");
+        if (body == null || body.keySet().stream().anyMatch(k -> !allowed.contains(k))) throw new ApiError(400, "INVALID_INPUT", "输入格式不正确");
+        Map<String, Object> result = db.tx(tx -> {
+            List<Map<String, Object>> candidates = tx.query("SELECT purpose FROM candidates WHERE tenant_id=$1 AND id=$2 AND retention_until>now()", a.tenantId(), body.get("candidate_id"));
+            if (candidates.isEmpty()) throw new ApiError(404, "NOT_FOUND", "对象不存在或不在授权范围内");
+            if (!"recruitment".equals(candidates.get(0).get("purpose")))
+                throw new ApiError(409, "PURPOSE_REVIEW_REQUIRED", "储备用途不能自动转为本次招聘，请先核验用途和意向");
+            List<Map<String, Object>> jobs = tx.query("SELECT v.id,v.status FROM job_versions v JOIN jobs j ON j.tenant_id=v.tenant_id AND j.id=v.job_id AND j.revision=v.version WHERE v.tenant_id=$1 AND v.id=$2 AND v.job_id=$3",
+                a.tenantId(), body.get("job_version_id"), body.get("job_id"));
+            if (jobs.isEmpty()) throw new ApiError(404, "NOT_FOUND", "对象不存在或不在授权范围内");
+            if (!"open".equals(jobs.get(0).get("status")))
+                throw new ApiError(409, "JOB_NOT_OPEN", "仅可对已确认招聘中的岗位建立新申请");
+            List<Map<String, Object>> resumes = tx.query("SELECT id FROM resume_versions WHERE tenant_id=$1 AND id=$2 AND candidate_id=$3",
+                a.tenantId(), body.get("resume_version_id"), body.get("candidate_id"));
+            if (resumes.isEmpty()) throw new ApiError(404, "NOT_FOUND", "对象不存在或不在授权范围内");
+            List<Map<String, Object>> existing = tx.query("SELECT id,job_version_id,resume_version_id FROM applications WHERE tenant_id=$1 AND candidate_id=$2 AND job_id=$3 AND batch=$4",
+                a.tenantId(), body.get("candidate_id"), body.get("job_id"), body.get("batch"));
+            Map<String, Object> out = new LinkedHashMap<>();
+            if (!existing.isEmpty()) {
+                Map<String, Object> prior = existing.get(0);
+                if (!String.valueOf(prior.get("job_version_id")).equals(body.get("job_version_id"))
+                    || !String.valueOf(prior.get("resume_version_id")).equals(body.get("resume_version_id")))
+                    throw new ApiError(409, "VERSION_CONFLICT", "该批次已有申请，不覆盖历史版本");
+                out.put("id", prior.get("id"));
+                out.put("duplicate", true);
+                return out;
+            }
+            String appId = UUID.randomUUID().toString();
+            tx.query("INSERT INTO applications(id,tenant_id,candidate_id,job_id,job_version_id,resume_version_id,batch,created_by) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
+                appId, a.tenantId(), body.get("candidate_id"), body.get("job_id"), body.get("job_version_id"), body.get("resume_version_id"), body.get("batch"), a.userId());
+            tx.query("INSERT INTO audit_events(id,tenant_id,actor_id,action,object_id) VALUES($1,$2,$3,$4,$5)",
+                UUID.randomUUID().toString(), a.tenantId(), a.userId(), "application.created", appId);
+            out.put("id", appId);
+            out.put("duplicate", false);
+            return out;
+        });
+        return org.springframework.http.ResponseEntity.status(Boolean.TRUE.equals(result.get("duplicate")) ? 200 : 201).body(result);
     }
 }
