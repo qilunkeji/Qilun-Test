@@ -29,3 +29,4 @@ tools/golden/vectors.jsonl
 tools/crosstest/vectors.json
 tools/crosstest/bcprov.jar
 tools/crosstest/*.class
+backend/**/target/

@@ -1,0 +1,18 @@
+server:
+  port: 43131
+spring:
+  application:
+    name: qilun-api
+  jackson:
+    serialization:
+      indent-output: false
+qilun:
+  database-url: ${QILUN_DATABASE_URL:jdbc:postgresql://127.0.0.1:54329/qilun_java?user=qilun}
+  migrations-dir: ${QILUN_MIGRATIONS_DIR:infra/migrations}
+  origin: ${QILUN_ORIGIN:http://127.0.0.1:43131}
+  production: ${QILUN_PRODUCTION:false}
+springdoc:
+  api-docs:
+    path: /api/v3/openapi.json
+  swagger-ui:
+    path: /api/v3/swagger-ui.html

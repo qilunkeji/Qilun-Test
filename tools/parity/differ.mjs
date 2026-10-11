@@ -25,7 +25,8 @@ const FIXED_PASSWORD = 'Parity!Fixed-2026';
 const FIXED_KEY = randomBytes(32).toString('hex'); // fixed per differ invocation, identical for both sides
 
 const arg = (name) => { const i = process.argv.indexOf(`--${name}`); return i >= 0 ? process.argv[i + 1] : undefined; };
-const MODE = process.argv.includes('--a') && process.argv.includes('--b') ? 'url' : 'self';
+const MODE = process.argv.includes('--a') && process.argv.includes('--b') ? 'url' : (process.argv.includes('--java') ? 'java' : 'self');
+const ONLY = arg('only') ? new Set(arg('only').split(',')) : null;
 
 // --- normalization ---------------------------------------------------------
 const VOLATILE_KEYS = new Set(['request_id', 'csrf_token', 'token', 'session', 'cookie']);
@@ -74,7 +75,7 @@ async function runScenarios(base) {
   results.push(await call('public-open-bogus', '/api/v1/public/assessment/open', { method: 'POST', body: { token: 'bogus-token-000000' } }));
   results.push(await call('ai-meta', '/api/v1/ai/meta', { cookie: session }));
   results.push(await call('auth-me-after-logout', '/api/v1/auth/me'));
-  return results;
+  return ONLY ? results.filter(r => ONLY.has(r.name)) : results;
 }
 
 // --- legacy system boot ----------------------------------------------------
@@ -101,6 +102,31 @@ async function bootLegacy(port) {
   throw new Error(`legacy system failed to boot on ${origin}: ${Buffer.concat(stderr).toString().slice(0, 400)}`);
 }
 
+// --- java system boot (R1+): fresh throwaway PG database + spring boot jar ---
+async function bootJava(port) {
+  const dbName = `qilun_parity_java_${Date.now()}`;
+  const { default: pg } = await import('pg');
+  const admin = new pg.Client({ connectionString: 'postgres://qilun@127.0.0.1:54329/postgres' });
+  await admin.connect();
+  await admin.query(`CREATE DATABASE ${dbName}`);
+  await admin.end();
+  const origin = `http://127.0.0.1:${port}`;
+  const javaBin = process.env.JAVA_BIN ?? 'java';
+  const jar = resolve(ROOT, 'backend/qilun-api/target/qilun-api-0.1.0-SNAPSHOT.jar');
+  const child = spawn(javaBin, ['-jar', jar], {
+    cwd: ROOT,
+    env: { ...process.env, QILUN_DATABASE_URL: `jdbc:postgresql://127.0.0.1:54329/${dbName}?user=qilun`, QILUN_ORIGIN: origin, SERVER_PORT: String(port), QILUN_PARITY_SEED: '1' },
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+  const stderr = []; child.stderr.on('data', d => stderr.push(d)); child.stdout.on('data', d => stderr.push(d));
+  for (let i = 0; i < 90; i++) {
+    await new Promise(r => setTimeout(r, 500));
+    try { const res = await fetch(`${origin}/api/v1/health`); if (res.ok) return { child, dbName, origin, stderr }; } catch { /* booting */ }
+  }
+  child.kill();
+  throw new Error(`java system failed to boot on ${origin}: ${Buffer.concat(stderr).toString().slice(0, 400)}`);
+}
+
 // --- driver ----------------------------------------------------------------
 async function capture(base) { return runScenarios(base); }
 function diffResults(a, b) {
@@ -118,6 +144,13 @@ try {
   let a, b;
   if (MODE === 'url') {
     a = await capture(arg('a')); b = await capture(arg('b'));
+  } else if (MODE === 'java') {
+    const legacy = await bootLegacy(3211);
+    systems.push(legacy);
+    a = await capture(legacy.origin);
+    const jvm = await bootJava(43140);
+    systems.push(jvm);
+    b = await capture(jvm.origin);
   } else {
     for (const [label, port] of [['A', 3211], ['B', 3212]]) {
       const sys = await bootLegacy(port);

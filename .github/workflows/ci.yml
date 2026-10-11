@@ -76,3 +76,31 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: Cross-language crypto regression (TS <-> Java)
         run: node --experimental-strip-types tools/crosstest/run.mjs
+
+  backend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: qilun
+          POSTGRES_PASSWORD: qilun
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U qilun"
+          --health-interval 5s --health-timeout 3s --health-retries 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+      - name: Build and test (migration parity + crypto)
+        working-directory: backend
+        run: mvn -B package
+        env:
+          QILUN_TEST_PG: jdbc:postgresql://127.0.0.1:5432/postgres?user=qilun&password=qilun
