@@ -1,5 +1,9 @@
 # 新电脑 Codex 接手说明
 
+## 2026-10-11 协作开发交接
+
+用户要求交付全部源码及服务器连接/上线配置。分支codex/development-handoff新增docs/协作开发交接.md和docs/服务器连接与部署交接.md；源码与全部Git历史、固定模型及配置快照整理为本地协作包，当前SSH密钥/生产实值/智能体令牌放单独私密包，均在.local/handoff/20261011-development/，不入Git或公开上传。只读核对服务器，未改生产服务、账号、权限和业务数据。无Git远程，不猜测地址。
+
 ## 2026-10-11 导出名称追加齐论性格分析已上线
 
 按用户补充，统一导出名为「齐论性格分析-本人姓名」（PNG与PDF建议文件名），不再仅用姓名。沿用codex/assessment-export-person-name分支完成同一功能修订，无远程。类型/构建、隔离前后台实际PNG下载与打印标题恢复通过；当前发布目录仅更新前端，入口index-DL4L_QPw.js、后台assessment-admin-CZHY2jBH.js，配置/服务进程保持不变。备份frontend-before-report-export-brand-name-20261011.tgz（0600）；服务器及本机公网检查通过。详见docs/20261011-测评导出按姓名命名.md顶部补充，一次性activate-report-export-brand-name.sh勿重跑。下方为前版记录。
