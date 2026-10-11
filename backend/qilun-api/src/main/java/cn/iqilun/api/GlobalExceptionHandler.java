@@ -32,6 +32,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> internal(Exception e, HttpServletRequest request) {
+        org.slf4j.LoggerFactory.getLogger(GlobalExceptionHandler.class).error("INTERNAL_ERROR", e);
         Map<String, Object> error = new LinkedHashMap<>();
         error.put("code", "INTERNAL_ERROR");
         error.put("message", "服务错误，请凭请求编号联系管理员");

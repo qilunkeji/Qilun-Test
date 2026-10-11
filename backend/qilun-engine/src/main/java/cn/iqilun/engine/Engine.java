@@ -99,6 +99,12 @@ public final class Engine {
         throw new IllegalStateException("cfg item missing " + id);
     }
 
+    /** qilunStandardInvitePackage(runtime.standard) equivalent. */
+    public Map<String, Object> standardPackage(String modelHash) {
+        return InvitePackages.qilunStandardInvitePackage(c, modelHash, rulesFingerprint,
+            str(c.rulebook.get("title")), str(c.rulebook.get("public_note")));
+    }
+
     static Map<String, Object> obj() { return new LinkedHashMap<>(); }
     static double sumD(List<Double> a) { double t = 0; for (double v : a) t += v; return t; }
     static double sumRows(List<Map<String, Object>> rows, String key) { double t = 0; for (Map<String, Object> r : rows) t += num(r.get(key)); return t; }

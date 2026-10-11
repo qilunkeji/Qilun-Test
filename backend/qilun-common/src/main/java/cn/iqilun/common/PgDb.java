@@ -103,7 +103,9 @@ public final class PgDb implements Db, AutoCloseable {
     }
 
     private static void bindOne(PreparedStatement ps, int position, Object value) throws Exception {
-        if (value instanceof String) {
+        if (value == null) {
+            ps.setNull(position, java.sql.Types.OTHER);
+        } else if (value instanceof String) {
             // send as unspecified type so the server casts varchar->uuid/timestamp like the legacy driver
             ps.setObject(position, value, java.sql.Types.OTHER);
         } else {

@@ -29,14 +29,16 @@ const MODE = process.argv.includes('--a') && process.argv.includes('--b') ? 'url
 const ONLY = arg('only') ? new Set(arg('only').split(',')) : null;
 
 // --- normalization ---------------------------------------------------------
-const VOLATILE_KEYS = new Set(['request_id', 'csrf_token', 'token', 'session', 'cookie']);
+const VOLATILE_KEYS = new Set(['request_id', 'csrf_token', 'token', 'session', 'cookie', 'url', 'pin']);
 const ISO_LIKE = /^\d{4}-\d{2}-\d{2}T\d{2}:/;
 const UUID_LIKE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const DB_ENGINE = new Set(['pglite', 'postgresql']);
+const ORIGIN_LIKE = /^http:\/\/127\.0\.0\.1:\d+$/;
 function normalize(value, key, parent) {
   // the whole point of the rewrite: legacy reports 'pglite', the Java backend
   // reports 'postgresql' for the same healthy deployment — an intended delta.
   if (key === 'database' && parent === 'data' && DB_ENGINE.has(value)) return '<engine>';
+  if (key === 'h5_origin' && typeof value === 'string' && ORIGIN_LIKE.test(value)) return '<origin>';
   if (Array.isArray(value)) return value.map(v => normalize(v));
   if (value && typeof value === 'object') {
     const out = {};
@@ -68,7 +70,9 @@ async function runScenarios(base) {
   results.push(await call('auth-options', '/api/v1/auth/options'));
   const login = await fetch(base + '/api/v1/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json', Origin: base }, body: JSON.stringify({ username: 'local-admin', password: FIXED_PASSWORD }) });
   const session = (login.headers.get('set-cookie') || '').split(';')[0];
-  results.push({ name: 'login', status: login.status, body: normalize(await login.json()), setCookie: '<cookie>' });
+  const loginBody = await login.json();
+  results.push({ name: 'login', status: login.status, body: normalize(loginBody), setCookie: '<cookie>' });
+  const csrf = loginBody.data && loginBody.data.csrf_token;
   results.push(await call('auth-me', '/api/v1/auth/me', { cookie: session }));
   results.push(await call('readiness', '/api/v1/readiness', { cookie: session }));
   results.push(await call('dashboard', '/api/v1/dashboard', { cookie: session }));
@@ -80,6 +84,54 @@ async function runScenarios(base) {
   results.push(await call('public-open-bogus', '/api/v1/public/assessment/open', { method: 'POST', body: { token: 'bogus-token-000000' } }));
   results.push(await call('ai-meta', '/api/v1/ai/meta', { cookie: session }));
   results.push(await call('auth-me-after-logout', '/api/v1/auth/me'));
+
+  // --- stateful assessment flow: create entry -> enroll -> answer -> submit -> report
+  const ctx = {};
+  const flow = async (name, path, opts = {}) => {
+    const res = await fetch(base + path, {
+      method: opts.method ?? 'POST',
+      headers: { 'Content-Type': 'application/json', Origin: base, ...(session ? { Cookie: session } : {}), ...(csrf && (opts.body !== undefined || opts.method === 'DELETE') ? { 'X-CSRF-Token': csrf } : {}) },
+      body: opts.body === undefined ? undefined : JSON.stringify(opts.body),
+    });
+    const text = await res.text();
+    let parsed; try { parsed = JSON.parse(text); } catch { parsed = { raw: text.slice(0, 200) }; }
+    if (opts.extract) {
+      try { opts.extract(parsed, ctx); }
+      catch (e) { throw new Error(`scenario ${name} unexpected shape: ${JSON.stringify(parsed).slice(0, 400)} :: ${e.message}`); }
+    }
+    return { name, status: res.status, body: normalize(parsed), setCookie: null };
+  };
+  const PK = 'ParityParticipantKey01234567890123456789010';
+  results.push(await flow('invite-create', '/api/v1/assessment/invites', {
+    body: { purpose: '对等验证：标准测评全链路', days: 7 },
+    extract: j => { ctx.entryToken = j.data.url.split('#')[1]; },
+  }));
+  results.push(await flow('entry-open', '/api/v1/public/assessment/entry/open', { body: { token: ctx.entryToken } }));
+  results.push(await flow('entry-enroll', '/api/v1/public/assessment/entry/enroll', {
+    body: { token: ctx.entryToken, participant_key: PK, accepted: true, consent_version: 'qilun-internal-assessment-consent/1.0.0', profile: { name: '【虚构】对等参与者', phone: '13800000000', birth_date: '1990-06-15' } },
+  }));
+  results.push(await flow('personal-open', '/api/v1/public/assessment/open', {
+    body: { token: PK },
+    extract: j => { ctx.qids = j.data.package.questions.map(q => q.id); ctx.groups = j.data.package.value_groups; },
+  }));
+  const answers = Object.fromEntries(ctx.qids.map(id => [id, 3]));
+  const selected = ctx.groups.map(g => g.slice(0, 5)), ranked = selected.flat().slice(0, 10);
+  results.push(await flow('draft-save', '/api/v1/public/assessment/save', {
+    body: { token: PK, revision: 0, answers: { [ctx.qids[0]]: 3 }, value_draft: { selected: [[], [], [], []], ranked: [] } },
+  }));
+  results.push(await flow('submit', '/api/v1/public/assessment/submit', {
+    body: { token: PK, revision: 1, answers, value_draft: { selected, ranked }, active_seconds: 120 },
+  }));
+  results.push(await flow('submit-idempotent', '/api/v1/public/assessment/submit', {
+    body: { token: PK, revision: 2, answers, value_draft: { selected, ranked } },
+  }));
+  results.push(await flow('invites-list', '/api/v1/assessment/invites', { method: 'GET' }));
+  const listRes = await fetch(base + '/api/v1/assessment/invites', { headers: { Origin: base, Cookie: session } });
+  const listJson = await listRes.json();
+  const inviteId = listJson.data.items[0] && listJson.data.items[0].id;
+  if (inviteId) results.push(await flow('invite-report', `/api/v1/assessment/invites/${inviteId}/report`, { method: 'GET' }));
+  results.push(await flow('dashboard-after', '/api/v1/dashboard', { method: 'GET' }));
+  results.push(await flow('audit-after', '/api/v1/audit-events', { method: 'GET' }));
   return ONLY ? results.filter(r => ONLY.has(r.name)) : results;
 }
 
@@ -120,10 +172,14 @@ async function bootJava(port) {
   const jar = resolve(ROOT, 'backend/qilun-api/target/qilun-api-0.1.0-SNAPSHOT.jar');
   const child = spawn(javaBin, ['-jar', jar], {
     cwd: ROOT,
-    env: { ...process.env, QILUN_DATABASE_URL: `jdbc:postgresql://127.0.0.1:54329/${dbName}?user=qilun`, QILUN_ORIGIN: origin, SERVER_PORT: String(port), QILUN_PARITY_SEED: '1' },
+    env: { ...process.env, QILUN_DATABASE_URL: `jdbc:postgresql://127.0.0.1:54329/${dbName}?user=qilun`, QILUN_ORIGIN: origin, SERVER_PORT: String(port), QILUN_PARITY_SEED: '1', CONTACT_ENCRYPTION_KEY: FIXED_KEY },
     stdio: ['ignore', 'pipe', 'pipe'],
   });
   const stderr = []; child.stderr.on('data', d => stderr.push(d)); child.stdout.on('data', d => stderr.push(d));
+  const { createWriteStream } = await import('node:fs');
+  const logFile = createWriteStream(resolve(ROOT, 'tools/parity/java-last.log'));
+  child.stdout.on('data', d => logFile.write(d)); child.stderr.on('data', d => logFile.write(d));
+  child.on('exit', () => logFile.end());
   for (let i = 0; i < 90; i++) {
     await new Promise(r => setTimeout(r, 500));
     try { const res = await fetch(`${origin}/api/v1/health`); if (res.ok) return { child, dbName, origin, stderr }; } catch { /* booting */ }
@@ -139,7 +195,13 @@ function diffResults(a, b) {
   if (a.length !== b.length) problems.push(`scenario count ${a.length} vs ${b.length}`);
   for (let i = 0; i < Math.min(a.length, b.length); i++) {
     const ja = JSON.stringify(a[i]), jb = JSON.stringify(b[i]);
-    if (ja !== jb) problems.push(`scenario "${a[i].name}" differs:\n  A: ${ja.slice(0, 400)}\n  B: ${jb.slice(0, 400)}`);
+    if (ja !== jb) {
+      let pos = 0;
+      while (pos < Math.min(ja.length, jb.length) && ja[pos] === jb[pos]) pos++;
+      problems.push(`scenario "${a[i].name}" differs at char ${pos}:
+  A: ${ja.slice(Math.max(0, pos - 80), pos + 140)}
+  B: ${jb.slice(Math.max(0, pos - 80), pos + 140)}`);
+    }
   }
   return problems;
 }
@@ -152,9 +214,11 @@ try {
   } else if (MODE === 'java') {
     const legacy = await bootLegacy(3211);
     systems.push(legacy);
+    console.error('[differ] capturing A (legacy) ...');
     a = await capture(legacy.origin);
     const jvm = await bootJava(43140);
     systems.push(jvm);
+    console.error('[differ] capturing B (java) ...');
     b = await capture(jvm.origin);
   } else {
     for (const [label, port] of [['A', 3211], ['B', 3212]]) {

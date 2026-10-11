@@ -81,6 +81,7 @@ public class GuardsFilter extends OncePerRequestFilter {
             String fields = e.fields == null ? "" : ",\"fields\":[]";
             response.getWriter().write("{\"error\":{\"code\":\"" + e.code + "\",\"message\":\"" + e.getMessage() + "\"" + fields + "},\"request_id\":\"" + requestId + "\"}");
         } catch (Exception e) {
+            org.slf4j.LoggerFactory.getLogger(GuardsFilter.class).error("INTERNAL_ERROR_FILTER", e);
             response.setStatus(500);
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");

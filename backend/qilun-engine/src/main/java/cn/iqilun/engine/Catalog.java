@@ -22,6 +22,7 @@ public final class Catalog {
     public final Map<String, Object> reportTextCfg;
     public final Map<String, Object> rulebook;
     public final Map<String, Object> model;
+    public final Map<String, Object> bank;
 
     public Catalog(Path repoRoot, Path modelFile) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
@@ -31,6 +32,7 @@ public final class Catalog {
         reportTextCfg = asMap(convert(mapper.readTree(Files.readString(data.resolve("gh-report-text-v1.json")))));
         rulebook = asMap(convert(mapper.readTree(Files.readString(data.resolve("qilun-standard-v1.json")))));
         model = asMap(convert(mapper.readTree(Files.readString(modelFile))));
+        bank = asMap(convert(mapper.readTree(Files.readString(data.resolve("question-bank-277.json")))));
     }
 
     @SuppressWarnings("unchecked")
