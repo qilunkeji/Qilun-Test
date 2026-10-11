@@ -23,3 +23,9 @@ outputs/
 迁移交付/
 *.zip
 .DS_Store
+
+# generated artifacts (deterministically regenerable, do not commit)
+tools/golden/vectors.jsonl
+tools/crosstest/vectors.json
+tools/crosstest/bcprov.jar
+tools/crosstest/*.class

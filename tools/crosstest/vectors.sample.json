@@ -1,0 +1,9 @@
+{
+  "key_hex": "a62b0cf4ae8b70371320ba4dc1cb2ce32eabebc4724c936bb216b90f3800919a",
+  "tenant": "995f00ab-0510-4b30-9b7c-19a57a7494ee",
+  "plaintext": "张三 13800000000 1990-06-15 —— 中文明文跨语言测试 ✅",
+  "ciphertext": "QTloqg1iav-cCEK_.yKiEVFZxMPn8wJV9emnSzw.Sqw6LzJkx7lksqHcHa0NudBAPkrLdq3yTz_yEMvHQhUGJNqIzP32PCTXDNJJjVoJv7QCjo0kApuWawVekjcJQPqRrHA",
+  "password_note": "password is fixed below",
+  "saved_hash": "2be848662f61f8ca6dc45c6c538de58b:5513c66f01e11e1439f8039100c193ed70bc6d2506f9d5a8e7822a558970eb201379d651c23450dac912b7cf46fe73c0c232f581ea508b5c74149509086a59f2",
+  "password": "QiLun#跨语言$crypt2026"
+}

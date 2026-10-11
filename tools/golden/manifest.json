@@ -1,0 +1,10 @@
+{
+  "generator": "tools/golden/generate.mjs",
+  "seed": 20261011,
+  "count": 1200,
+  "engine_version": "qilun-internal-assessment/1.0.0",
+  "scoring_version": "gh-report-replay-v22",
+  "rules_fingerprint": "03f5e8584eeddd2c56ab7d4ce1ef6e72dd62d1bda42f2efd4cad176826f006b3",
+  "model_hash": "b1488c9922c0ae85cf29c6227f20c9d1aba495c14cc32e41a4c4cbcd6395e19d",
+  "chain_head": "88b5dacee547a7acbc8725ac6ed73062536048f674137a5fc611a9f21b046efe"
+}
