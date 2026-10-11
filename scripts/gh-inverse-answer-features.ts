@@ -1,6 +1,6 @@
 import {readFileSync,writeFileSync,mkdirSync,readdirSync} from 'node:fs';
-import {ghReplayExample,scoreGhReportReplay} from '../packages/assessment-engine/gh-derived.ts';
-import {ghInferenceFeatures,ghInferenceFeatureKeys} from '../packages/assessment-engine/gh-inference.ts';
+import {ghReplayExample,scoreGhReportReplay} from '@qilun/assessment-engine/gh-derived.ts';
+import {ghInferenceFeatures,ghInferenceFeatureKeys} from '@qilun/assessment-engine/gh-inference.ts';
 const dir='.local/gh-inference-v1';mkdirSync(dir,{recursive:true});
 const root='.local/gh-evidence-v22/baselines/v14/v10新增证据/证据';
 const ids=readdirSync(root+'/original-answers-v10').filter(n=>n.endsWith('.json')).sort().map(n=>n.slice(0,-5));

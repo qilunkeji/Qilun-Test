@@ -1,0 +1,7 @@
+packages:
+  - apps/api
+  - apps/admin-web
+  - packages/contracts
+  - packages/security
+  - packages/assessment-engine
+  - packages/iam

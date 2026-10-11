@@ -2,7 +2,7 @@ import {randomUUID,randomBytes} from 'node:crypto';
 import {request as httpRequest} from 'node:http';
 import {openDatabase} from '../../apps/api/db.ts';
 import {createApp} from '../../apps/api/app.ts';
-import {digest,encryptContact} from '../../packages/security/index.ts';
+import {digest,encryptContact} from '@qilun/security/index.ts';
 export function agentEnvironment(extra:Record<string,string|undefined>={}){const env={PROCESSING_MODE:'external_agent',AGENT_WRITE_TOKEN_SHA256:digest(randomBytes(32).toString('base64url')),AGENT_WAKE_WEBHOOK_URL:undefined,AGENT_WAKE_WEBHOOK_SECRET:undefined,AGENT_WAKE_WEBHOOK_AUTH_HEADER:undefined,AGENT_MAX_PENDING_PER_USER:'20',AGENT_HOURLY_LIMIT_PER_USER:'100',AGENT_REDACT_CONTACTS:'true',...extra};const previous=Object.fromEntries(Object.keys(env).map(k=>[k,process.env[k]]));for(const [k,v] of Object.entries(env)){if(v===undefined)delete process.env[k];else process.env[k]=v;}return()=>{for(const [k,v] of Object.entries(previous)){if(v===undefined)delete process.env[k];else process.env[k]=v;}};}
 export async function agentFixture(wakeTransport?:typeof fetch,staticDir?:string){
  const db=await openDatabase(),tenant=randomUUID(),key=randomBytes(32),writer=randomBytes(32).toString('base64url');process.env.AGENT_WRITE_TOKEN_SHA256=digest(writer);

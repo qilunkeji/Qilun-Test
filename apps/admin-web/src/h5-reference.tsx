@@ -1,5 +1,5 @@
-import type {GhInvitePackage,GhInviteReport,GhValueDraft} from '../../../packages/assessment-engine/gh-invite.ts';
-import type {GhProgress} from '../../../packages/assessment-engine/gh-progress.ts';
+import type {GhInvitePackage,GhInviteReport,GhValueDraft} from '@qilun/assessment-engine/gh-invite.ts';
+import type {GhProgress} from '@qilun/assessment-engine/gh-progress.ts';
 import {OriginalReportStudio} from './original-report.tsx';
 import {ghReportValues,ghReportRoles} from './gh-report-data.ts';
 import './h5-reference.css';

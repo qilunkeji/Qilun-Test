@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {ghInvitePackage,emptyGhValues,validateGhInviteDraft,scoreGhInvite} from '../packages/assessment-engine/gh-invite.ts';
+import {ghInvitePackage,emptyGhValues,validateGhInviteDraft,scoreGhInvite} from '@qilun/assessment-engine/gh-invite.ts';
 import {deploymentConfig} from '../apps/api/deployment.ts';
 test('277手机邀请只包含题干与选项，不包含计分权重、私人历史人员或推算模型',()=>{
  const p=ghInvitePackage();assert.equal(p.questions.length,277);assert.equal(p.words.length,32);assert.equal(p.estimate_abilities,false);assert.equal(p.value_groups.length,4);

@@ -1,6 +1,6 @@
-import type {GhDisplayReport as GhReportReplay} from '../../../packages/assessment-engine/gh-inference.ts';
+import type {GhDisplayReport as GhReportReplay} from '@qilun/assessment-engine/gh-inference.ts';
 import {ghReportValues,ghReportRoles,ghRadarGeometry} from './gh-report-data.ts';
-import {halfUp} from '../../../packages/assessment-engine/gh-rounding.ts';
+import {halfUp} from '@qilun/assessment-engine/gh-rounding.ts';
 const palette=['#ed8a8a','#e2b4b3','#6ac36c','#b3d9ad','#73a0fb','#b0c6f9','#f7c739','#f6dd9a'];
 const shown=(v:number)=>halfUp(v,2).toString();
 

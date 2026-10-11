@@ -1,7 +1,7 @@
 import {randomUUID} from 'node:crypto';
 import {z} from 'zod';
-import {createIAM} from '../../packages/iam/vendor/iam-client.mjs';
-import {digest} from '../../packages/security/index.ts';
+import {createIAM} from '@qilun/iam/vendor/iam-client.mjs';
+import {digest} from '@qilun/security/index.ts';
 import type {Database} from './db.ts';
 import {ServiceError} from './http-error.ts';
 export type IAMLocal={tenant_id:string;user_id:string;username:string;role:string};

@@ -1,5 +1,5 @@
 import {z} from 'zod';
-import {decryptContact} from '../../../packages/security/index.ts';
+import {decryptContact} from '@qilun/security/index.ts';
 import {aiOutput,validateAIOutput} from '../ai-output.ts';
 import {interviewQuestionsOutput,interviewEvaluationOutput,validateInterviewOutput,interviewPrompt} from '../interviews.ts';
 import type {InterviewContext} from '../interviews.ts';

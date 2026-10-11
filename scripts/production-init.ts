@@ -1,7 +1,7 @@
 import {mkdir,writeFile} from 'node:fs/promises';
 import {randomBytes,randomUUID} from 'node:crypto';
 import {openDatabase} from '../apps/api/db.ts';
-import {hashPassword} from '../packages/security/index.ts';
+import {hashPassword} from '@qilun/security/index.ts';
 import {deploymentConfig} from '../apps/api/deployment.ts';
 deploymentConfig(process.env);
 if(process.env.NODE_ENV!=='production'||!/^[a-f0-9]{64}$/i.test(process.env.CONTACT_ENCRYPTION_KEY??''))throw new Error('Explicit production configuration required');

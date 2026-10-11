@@ -3,10 +3,10 @@ import {api} from './api.ts';
 import {Notice} from './ui.tsx';
 import {OriginalReportStudio} from './original-report.tsx';
 import {ghDraftVersion,restoreGhQuizDraft} from './gh-quiz-state.ts';
-import type {ReplicaCatalog} from '../../../packages/assessment-engine/strength-v3.ts';
-import type {GhEvidenceCatalog} from '../../../packages/assessment-engine/gh-server-evidence.ts';
-import type {GhReportReplay,GhReplayInput,ghReplayCatalog} from '../../../packages/assessment-engine/gh-derived.ts';
-import type {GhDisplayReport,InverseSummary} from '../../../packages/assessment-engine/gh-inference.ts';
+import type {ReplicaCatalog} from '@qilun/assessment-engine/strength-v3.ts';
+import type {GhEvidenceCatalog} from '@qilun/assessment-engine/gh-server-evidence.ts';
+import type {GhReportReplay,GhReplayInput,ghReplayCatalog} from '@qilun/assessment-engine/gh-derived.ts';
+import type {GhDisplayReport,InverseSummary} from '@qilun/assessment-engine/gh-inference.ts';
 
 type Catalog=ReturnType<typeof ghReplayCatalog>;
 function download(name:string,data:unknown){const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}

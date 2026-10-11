@@ -3,7 +3,7 @@ import {api} from './api.ts';
 import {Notice,Badge} from './ui.tsx';
 import {RuleExperiment} from './rule-experiment.tsx';
 // Only types are shared. Rules and calculations execute exclusively through the server API.
-import type {ruleCatalog,deriveMotivation} from '../../../packages/assessment-engine/rules.ts';
+import type {ruleCatalog,deriveMotivation} from '@qilun/assessment-engine/rules.ts';
 type Catalog=ReturnType<typeof ruleCatalog>;
 type Derived=ReturnType<typeof deriveMotivation>&{input_hash:string};
 const dimensions=['财富','健康','享受','工作','权力','创新','情感','荣誉'];

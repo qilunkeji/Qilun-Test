@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {deriveMotivation,piecewiseWeight,encodeAnswer,validateValueSelection,externalMatchLabel,validateFormalPublication,deriveStylePairs,sumFirstSixteenTalents} from '../packages/assessment-engine/rules.ts';
+import {deriveMotivation,piecewiseWeight,encodeAnswer,validateValueSelection,externalMatchLabel,validateFormalPublication,deriveStylePairs,sumFirstSixteenTalents} from '@qilun/assessment-engine/rules.ts';
 
 const scores={财富:60,健康:40,享受:45,工作:70,权力:55,创新:65,情感:50,荣誉:60};
 const pc={adapter:'gh_talent_web_v81',source_field:'pc_motivation_report_values',scale_ref:'synthetic-v1',input_kind:'synthetic',purpose:'rule_verification_only',scores};

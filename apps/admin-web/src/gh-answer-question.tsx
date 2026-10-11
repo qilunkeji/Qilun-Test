@@ -1,4 +1,4 @@
-import type {GhInvitePackage} from '../../../packages/assessment-engine/gh-invite.ts';
+import type {GhInvitePackage} from '@qilun/assessment-engine/gh-invite.ts';
 
 type Props={question:GhInvitePackage['questions'][number];choices:GhInvitePackage['choices'];value?:number;disabled:boolean;onSelect:(value:number)=>void};
 /** Presentation only: the original order, labels and 1–5 codes are unchanged. */

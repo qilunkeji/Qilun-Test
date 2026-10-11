@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {selfReviewPackage,scoreSelfReview,validateAnswers} from '../packages/assessment-engine/self-review.ts';
+import {selfReviewPackage,scoreSelfReview,validateAnswers} from '@qilun/assessment-engine/self-review.ts';
 const ids=selfReviewPackage.dimensions.flatMap(d=>d.questions.map(q=>q.id));
 test('24项原创自评固定计分边界、重算一致和逐题依据',()=>{
  assert.equal(ids.length,24);assert.equal(new Set(ids).size,24);

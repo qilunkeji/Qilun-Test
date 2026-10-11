@@ -1,5 +1,5 @@
 import {useEffect,useRef} from 'react';
-import type {scoreSelfReview} from '../../../packages/assessment-engine/self-review.ts';
+import type {scoreSelfReview} from '@qilun/assessment-engine/self-review.ts';
 export type Report=ReturnType<typeof scoreSelfReview>;
 const motiveMeta:Record<string,{color:string;summary:string}>={
  财富:{color:'#ef8586',summary:'重视成果回报与资源保障，希望付出能够获得清晰、合理的回馈。'},

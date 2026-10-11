@@ -1,0 +1,13 @@
+{
+  "name": "@qilun/assessment-engine",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./*.ts": "./*.ts",
+    "./data/*.json": "./data/*.json"
+  },
+  "dependencies": {
+    "zod": "4.6.5"
+  }
+}

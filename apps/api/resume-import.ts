@@ -1,6 +1,6 @@
 import {randomUUID} from 'node:crypto';
-import {importInput} from '../../packages/contracts/index.ts';
-import {digest,encryptContact} from '../../packages/security/index.ts';
+import {importInput} from '@qilun/contracts/index.ts';
+import {digest,encryptContact} from '@qilun/security/index.ts';
 import {ServiceError} from './http-error.ts';
 import type {Database} from './db.ts';
 const conflict=(m:string)=>new ServiceError(409,'VERSION_CONFLICT',m);

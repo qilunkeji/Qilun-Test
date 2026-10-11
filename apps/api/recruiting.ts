@@ -2,7 +2,7 @@ import {z} from 'zod';
 import type {Express,Response} from 'express';
 import type {Database} from './db.ts';
 import {randomUUID} from 'node:crypto';
-import {encryptContact,decryptContact,digest} from '../../packages/security/index.ts';
+import {encryptContact,decryptContact,digest} from '@qilun/security/index.ts';
 import {ServiceError} from './http-error.ts';
 export const recruitingBrief=z.object({title:z.string().trim().min(1).max(120),location:z.string().trim().max(120),salary_min:z.number().int().min(0).max(1000000).nullable(),salary_max:z.number().int().min(0).max(1000000).nullable(),salary_months:z.number().int().min(12).max(24),experience:z.string().max(80),education:z.string().max(80),style:z.enum(['专业清晰','有吸引力','简洁直接']),requirements:z.string().trim().max(3000),material_ids:z.array(z.string().uuid()).max(10)}).strict().refine(x=>(x.salary_min===null&&x.salary_max===null)||(x.salary_min!==null&&x.salary_max!==null&&x.salary_min>0&&x.salary_max>=x.salary_min),{message:'薪资区间需同时填写，且上限不低于下限'});
 function auth(res:Response){const a=res.locals.auth;if(!['hr','talent_lead'].includes(a.role))throw new ServiceError(403,'FORBIDDEN_SCOPE','当前角色无此权限');return a;}

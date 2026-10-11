@@ -1,9 +1,9 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {existsSync,readFileSync} from 'node:fs';
-import {ghReplayExample,scoreGhReportReplay,deriveGhDimensions,deriveGhStyle,calibrateGh,gradeGh,halfUp,translateGhRole,replayGhFinalMatch,buildGhPositionModel,deriveGhPotentialGroups,ghReplayCatalog,ghReplayVersion,validateGhValueFlow} from '../packages/assessment-engine/gh-derived.ts';
+import {ghReplayExample,scoreGhReportReplay,deriveGhDimensions,deriveGhStyle,calibrateGh,gradeGh,halfUp,translateGhRole,replayGhFinalMatch,buildGhPositionModel,deriveGhPotentialGroups,ghReplayCatalog,ghReplayVersion,validateGhValueFlow} from '@qilun/assessment-engine/gh-derived.ts';
 import {restoreGhQuizDraft,ghDraftVersion} from '../apps/admin-web/src/gh-quiz-state.ts';
-import {ghEvidenceCatalog} from '../packages/assessment-engine/gh-server-evidence.ts';
+import {ghEvidenceCatalog} from '@qilun/assessment-engine/gh-server-evidence.ts';
 import {ghReportValues,ghReportRoles,ghRadarGeometry} from '../apps/admin-web/src/gh-report-data.ts';
 
 test('v22版本严格绑定，完整答案生成有限结果、同分INFP、当前无配置6项为0',()=>{

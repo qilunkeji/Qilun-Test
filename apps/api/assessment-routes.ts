@@ -4,16 +4,16 @@ import {randomUUID,createHash} from 'node:crypto';
 import {resolve} from 'node:path';
 import {access} from 'node:fs/promises';
 import {z} from 'zod';
-import {deriveMotivation,deriveInput,ruleCatalog,validateFormalPublication} from '../../packages/assessment-engine/rules.ts';
-import {experiment,experimentInput} from '../../packages/assessment-engine/experimental.ts';
-import {replicaCatalog,replicaScoreInput,scoreExternalStrengthV3,validateReplicaAnswers,replicaGaps} from '../../packages/assessment-engine/strength-v3.ts';
-import {ghEvidenceCatalog,ghEvidenceInput,scoreGhFirstLayer} from '../../packages/assessment-engine/gh-server-evidence.ts';
-import {ghReplayCatalog,scoreGhReportReplay,replayGhFinalMatch,buildGhPositionModel,deriveGhPotentialGroups} from '../../packages/assessment-engine/gh-derived.ts';
-import {ghInferenceVersion,scoreGhInferredReport,ghPublicInverseSummary} from '../../packages/assessment-engine/gh-inference.ts';
-import {canManageAssessment} from '../../packages/security/assessment-access.ts';
+import {deriveMotivation,deriveInput,ruleCatalog,validateFormalPublication} from '@qilun/assessment-engine/rules.ts';
+import {experiment,experimentInput} from '@qilun/assessment-engine/experimental.ts';
+import {replicaCatalog,replicaScoreInput,scoreExternalStrengthV3,validateReplicaAnswers,replicaGaps} from '@qilun/assessment-engine/strength-v3.ts';
+import {ghEvidenceCatalog,ghEvidenceInput,scoreGhFirstLayer} from '@qilun/assessment-engine/gh-server-evidence.ts';
+import {ghReplayCatalog,scoreGhReportReplay,replayGhFinalMatch,buildGhPositionModel,deriveGhPotentialGroups} from '@qilun/assessment-engine/gh-derived.ts';
+import {ghInferenceVersion,scoreGhInferredReport,ghPublicInverseSummary} from '@qilun/assessment-engine/gh-inference.ts';
+import {canManageAssessment} from '@qilun/security/assessment-access.ts';
 import {loadAssessmentRuntime} from './assessment-product.ts';
 import type {AssessmentRuntime} from './assessment-product.ts';
-import {qilunStandardRulebook} from '../../packages/assessment-engine/qilun-standard.ts';
+import {qilunStandardRulebook} from '@qilun/assessment-engine/qilun-standard.ts';
 
 export function registerAssessmentRoutes(app:Express,db:Database,localPreview?:{directory:string;tenantId:string},runtime:AssessmentRuntime=loadAssessmentRuntime()){
  // Trained artifacts never enter public assets, responses, or a client bundle.

@@ -1,5 +1,5 @@
-import type {GhDisplayReport as GhReportReplay} from '../../../packages/assessment-engine/gh-inference.ts';
-import {halfUp} from '../../../packages/assessment-engine/gh-rounding.ts';
+import type {GhDisplayReport as GhReportReplay} from '@qilun/assessment-engine/gh-inference.ts';
+import {halfUp} from '@qilun/assessment-engine/gh-rounding.ts';
 export const ghRadarGeometry={data:{cx:904,cy:323,radius:90},'talent-04':{cx:612.5,cy:358,radius:84.75}};
 /** Bind by item ID, not translated display names. Source orders calibrated
  * value rows before multiplying by 6; null rows remain at the end. */

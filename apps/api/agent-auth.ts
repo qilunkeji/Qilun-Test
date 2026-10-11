@@ -1,6 +1,6 @@
 import {timingSafeEqual} from 'node:crypto';
 import type {Request} from 'express';
-import {digest} from '../../packages/security/index.ts';
+import {digest} from '@qilun/security/index.ts';
 import {ServiceError} from './http-error.ts';
 import {agentConfigured} from './processing-mode.ts';
 export function createAgentActor(defaultTenantId?:string,now:()=>number=Date.now){

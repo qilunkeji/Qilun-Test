@@ -1,5 +1,5 @@
 import {z} from 'zod';
-import {decryptContact} from '../../packages/security/index.ts';
+import {decryptContact} from '@qilun/security/index.ts';
 import {ServiceError} from './http-error.ts';
 import {commonRules} from './agent-tasks/types.ts';
 import type {Store,Task,TaskTypeDef} from './agent-tasks/registry.ts';

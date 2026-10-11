@@ -8,8 +8,8 @@ import {createServer,type Server} from 'node:http';
 import {openDatabase,type Database} from '../apps/api/db.ts';
 import {createApp} from '../apps/api/app.ts';
 import {iamConfig,mapIAMIdentity,selectIAMRole,type IAMBridge} from '../apps/api/iam.ts';
-import {createIAM} from '../packages/iam/vendor/iam-client.mjs';
-import {hashPassword} from '../packages/security/index.ts';
+import {createIAM} from '@qilun/iam/vendor/iam-client.mjs';
+import {hashPassword} from '@qilun/security/index.ts';
 
 let db:Database;
 const tenant=randomUUID(),otherTenant=randomUUID(),legacy=randomUUID(),otherUser=randomUUID(),password='Fictional-IAM-check-984!';

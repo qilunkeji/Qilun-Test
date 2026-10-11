@@ -1,8 +1,8 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {existsSync,readFileSync} from 'node:fs';
-import {ghSyntheticInput,scoreGhFirstLayer,ghEvidenceCatalog} from '../packages/assessment-engine/gh-server-evidence.ts';
-import rules from '../packages/assessment-engine/data/gh-server-rules.json' with {type:'json'};
+import {ghSyntheticInput,scoreGhFirstLayer,ghEvidenceCatalog} from '@qilun/assessment-engine/gh-server-evidence.ts';
+import rules from '@qilun/assessment-engine/data/gh-server-rules.json' with {type:'json'};
 
 test('277题五档规则全覆盖；前端模块不混同服务端分组',()=>{
  assert.equal(rules.questions.length,277);assert.equal(new Set(rules.questions.map(q=>q.id)).size,277);

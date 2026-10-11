@@ -13,20 +13,22 @@
     "test": "node --experimental-strip-types --test --test-concurrency=1 tests/*.test.ts",
     "verify:evidence": "node scripts/verify-evidence.mjs"
   },
-  "dependencies": {
-    "@electric-sql/pglite": "0.5.8",
-    "express": "5.2.1",
-    "react": "19.3.0",
-    "react-dom": "19.3.0",
-    "zod": "4.6.5"
-  },
   "devDependencies": {
+    "@electric-sql/pglite": "0.5.8",
+    "@qilun/assessment-engine": "workspace:*",
+    "@qilun/contracts": "workspace:*",
+    "@qilun/iam": "workspace:*",
+    "@qilun/security": "workspace:*",
     "@types/express": "^5.0.0",
     "@types/node": "^24.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "express": "5.2.1",
     "pdfjs-dist": "6.3.289",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
     "typescript": "7.0.2",
-    "vite": "8.3.0"
+    "vite": "8.3.0",
+    "zod": "4.6.5"
   }
 }

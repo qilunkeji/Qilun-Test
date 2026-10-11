@@ -1,0 +1,10 @@
+{
+  "name": "@qilun/iam",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./client.mjs": "./client.mjs",
+    "./vendor/iam-client.mjs": "./vendor/iam-client.mjs"
+  }
+}

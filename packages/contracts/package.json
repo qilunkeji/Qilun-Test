@@ -1,0 +1,12 @@
+{
+  "name": "@qilun/contracts",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./index.ts": "./index.ts"
+  },
+  "dependencies": {
+    "zod": "4.6.5"
+  }
+}

@@ -10,7 +10,7 @@ import {createAgentActor} from '../apps/api/agent-auth.ts';
 import {redactContacts} from '../apps/api/agent-tasks/redact.ts';
 import {externalAgentMode,agentConfigured} from '../apps/api/processing-mode.ts';
 import {assertModelCallAllowed,guardedTransport} from '../apps/api/model-guard.ts';
-import {digest,encryptContact} from '../packages/security/index.ts';
+import {digest,encryptContact} from '@qilun/security/index.ts';
 import {createApp} from '../apps/api/app.ts';
 import {createBusinessTaskTypes,agentFeatures} from '../apps/api/agent-tasks/types.ts';
 import type {RunContext} from '../apps/api/agent-tasks/types.ts';

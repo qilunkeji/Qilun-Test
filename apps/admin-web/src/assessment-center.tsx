@@ -10,9 +10,9 @@ import {invitationStats} from './ui-presentation.ts';
 import {ReportView} from './h5.tsx';
 import type {Report} from './h5.tsx';
 import {ReferenceReportView} from './h5-reference.tsx';
-import type {GhInviteReport} from '../../../packages/assessment-engine/gh-invite.ts';
+import type {GhInviteReport} from '@qilun/assessment-engine/gh-invite.ts';
 import type {ReportMetadata} from './report-header.tsx';
-import {canManageAssessment} from '../../../packages/security/assessment-access.ts';
+import {canManageAssessment} from '@qilun/security/assessment-access.ts';
 import './assessment-center.css';
 type Row={candidate_id?:string|null;project_group_id?:string|null;participant_kind?:string;id:string;name:string;title:string;purpose:string;expires_at:string;revoked_at:string|null;submitted_at:string|null;revision:number};
 export function AssessmentCenter({role,initialReportId}:{role:string;initialReportId?:string}){

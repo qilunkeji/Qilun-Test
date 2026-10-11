@@ -1,9 +1,9 @@
 import {readFileSync} from 'node:fs';
 import {resolve} from 'node:path';
-import {digest} from '../../packages/security/index.ts';
-import {validateGhInverseModel} from '../../packages/assessment-engine/gh-inference.ts';
-import type {GhInverseModel} from '../../packages/assessment-engine/gh-inference.ts';
-import {qilunStandardRulebook,qilunStandardVersion} from '../../packages/assessment-engine/qilun-standard.ts';
+import {digest} from '@qilun/security/index.ts';
+import {validateGhInverseModel} from '@qilun/assessment-engine/gh-inference.ts';
+import type {GhInverseModel} from '@qilun/assessment-engine/gh-inference.ts';
+import {qilunStandardRulebook,qilunStandardVersion} from '@qilun/assessment-engine/qilun-standard.ts';
 
 export type AssessmentRuntime={legacy?:{model:GhInverseModel;hash:string};standard?:{model:GhInverseModel;model_hash:string;rules_fingerprint:string};problem?:string};
 function freeze<T>(value:T):T{

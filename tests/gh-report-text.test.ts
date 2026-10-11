@@ -1,9 +1,9 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {existsSync,readFileSync} from 'node:fs';
-import cfg from '../packages/assessment-engine/data/gh-report-text-v1.json' with {type:'json'};
-import {deriveGhMotivationText,deriveGhReportText} from '../packages/assessment-engine/gh-report-text.ts';
-import {ghReplayExample,scoreGhReportReplay} from '../packages/assessment-engine/gh-derived.ts';
+import cfg from '@qilun/assessment-engine/data/gh-report-text-v1.json' with {type:'json'};
+import {deriveGhMotivationText,deriveGhReportText} from '@qilun/assessment-engine/gh-report-text.ts';
+import {ghReplayExample,scoreGhReportReplay} from '@qilun/assessment-engine/gh-derived.ts';
 
 const motive=(scores:number[])=>scores.map((raw,i)=>({code:String(i+1),raw}));
 test('原文词库覆盖34优势、8价值观、8角色岗位、4气质；分发内容无个人信息',()=>{

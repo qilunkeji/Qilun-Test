@@ -1,7 +1,7 @@
 import {randomUUID,randomBytes,createHmac} from 'node:crypto';
 import {z} from 'zod';
 import type {Database} from '../db.ts';
-import {digest,randomToken} from '../../../packages/security/index.ts';
+import {digest,randomToken} from '@qilun/security/index.ts';
 import {ServiceError} from '../http-error.ts';
 import {getTaskType} from './registry.ts';
 import type {Task,Store,TaskTypeDef} from './registry.ts';

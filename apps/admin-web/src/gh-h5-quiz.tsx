@@ -1,7 +1,7 @@
 import {useEffect,useRef,useState} from 'react';
-import type {GhInviteReport,GhValueDraft} from '../../../packages/assessment-engine/gh-invite.ts';
-import {resumeGhProgress} from '../../../packages/assessment-engine/gh-progress.ts';
-import type {GhProgress} from '../../../packages/assessment-engine/gh-progress.ts';
+import type {GhInviteReport,GhValueDraft} from '@qilun/assessment-engine/gh-invite.ts';
+import {resumeGhProgress} from '@qilun/assessment-engine/gh-progress.ts';
+import type {GhProgress} from '@qilun/assessment-engine/gh-progress.ts';
 import {DraftAutosaver,stableDraftJSON} from './draft-autosaver.ts';
 import type {SaveStatus} from './draft-autosaver.ts';
 import {ReferenceReportView} from './h5-reference.tsx';

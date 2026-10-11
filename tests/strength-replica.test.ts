@@ -1,8 +1,8 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {replicaCatalog,scoreExternalStrengthV3,validateReplicaAnswers} from '../packages/assessment-engine/strength-v3.ts';
-import evidence from '../packages/assessment-engine/data/strength-v3.json' with {type:'json'};
-import fixtures from '../packages/assessment-engine/data/strength-replay-fixtures.json' with {type:'json'};
+import {replicaCatalog,scoreExternalStrengthV3,validateReplicaAnswers} from '@qilun/assessment-engine/strength-v3.ts';
+import evidence from '@qilun/assessment-engine/data/strength-v3.json' with {type:'json'};
+import fixtures from '@qilun/assessment-engine/data/strength-replay-fixtures.json' with {type:'json'};
 
 const answers=(choices:number[])=>Object.fromEntries(evidence.externalQuestions.map((q,i)=>[q.id,choices[i]]));
 test('补给277题逐题保留：213对照题、64陈述题，不携带历史身份与答案',()=>{

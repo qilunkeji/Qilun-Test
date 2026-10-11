@@ -1,7 +1,7 @@
 import {useState} from 'react';
 import {api} from './api.ts';
 import {Notice} from './ui.tsx';
-import type {experiment} from '../../../packages/assessment-engine/experimental.ts';
+import type {experiment} from '@qilun/assessment-engine/experimental.ts';
 export function RuleExperiment(){
  const [answers,setAnswers]=useState([4,2,3,3,2,4]),[aggregation,setAggregation]=useState('mean');
  const [result,setResult]=useState<ReturnType<typeof experiment>>(),[error,setError]=useState(''),[busy,setBusy]=useState(false);

@@ -1,6 +1,6 @@
 import {readFile,writeFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
-import {deriveMotivation,dimensionNames} from '../packages/assessment-engine/rules.ts';
+import {deriveMotivation,dimensionNames} from '@qilun/assessment-engine/rules.ts';
 type Report={ref:string;name:string;sha256:string;pages:{page:number;text:string}[]};
 const results=[];
 const hashes=new Set<string>();

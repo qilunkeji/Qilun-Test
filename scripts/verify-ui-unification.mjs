@@ -8,7 +8,7 @@ import {createHash} from 'node:crypto';
 import {execFile} from 'node:child_process';
 import {promisify} from 'node:util';
 import {loadAssessmentRuntime} from '../apps/api/assessment-product.ts';
-import {qilunStandardInvitePackage,scoreGhInvite,emptyGhValues} from '../packages/assessment-engine/gh-invite.ts';
+import {qilunStandardInvitePackage,scoreGhInvite,emptyGhValues} from '@qilun/assessment-engine/gh-invite.ts';
 const {chromium}=await import(process.env.PLAYWRIGHT_MODULE??'playwright');
 const out=resolve('.local/ui-unification'),runtime=loadAssessmentRuntime().standard;
 assert.ok(runtime);await mkdir(out,{recursive:true});

@@ -6,8 +6,8 @@ import {PGlite} from '@electric-sql/pglite';
 import {agentEnvironment,agentFixture} from './helpers/agent-fixture.ts';
 import {createApp} from '../apps/api/app.ts';
 import {loadAssessmentRuntime} from '../apps/api/assessment-product.ts';
-import {qilunStandardInvitePackage} from '../packages/assessment-engine/gh-invite.ts';
-import {digest,encryptContact} from '../packages/security/index.ts';
+import {qilunStandardInvitePackage} from '@qilun/assessment-engine/gh-invite.ts';
+import {digest,encryptContact} from '@qilun/security/index.ts';
 const profile={name:'【虚构】同名参与者',phone:'13800000000',birth_date:'1990-06-15'};
 async function fixture(t:{after:(fn:()=>Promise<void>)=>void}){const restore=agentEnvironment(),f=await agentFixture();t.after(async()=>{await f.close();restore();});return f;}
 async function entry(f:Awaited<ReturnType<typeof agentFixture>>,group?:string){

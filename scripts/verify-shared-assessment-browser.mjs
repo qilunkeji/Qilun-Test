@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {randomBytes} from 'node:crypto';
-import {digest} from '../packages/security/index.ts';
+import {digest} from '@qilun/security/index.ts';
 import {mkdir} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {agentEnvironment,agentFixture} from '../tests/helpers/agent-fixture.ts';

@@ -3,7 +3,7 @@ import type {Express,Response} from 'express';
 import {randomUUID} from 'node:crypto';
 import {z} from 'zod';
 import type {Database} from './db.ts';
-import {encryptContact,decryptContact,digest} from '../../packages/security/index.ts';
+import {encryptContact,decryptContact,digest} from '@qilun/security/index.ts';
 import {registerRecruitingRoutes,recruitingBrief,recruitingEvidence} from './recruiting.ts';
 import {ServiceError} from './http-error.ts';
 import {assertModelCallAllowed,guardedTransport} from './model-guard.ts';

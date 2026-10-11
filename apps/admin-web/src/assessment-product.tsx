@@ -1,7 +1,7 @@
 import {useEffect,useState} from 'react';
 import {api} from './api.ts';
 import {Notice} from './ui.tsx';
-import type {InverseSummary} from '../../../packages/assessment-engine/gh-inference.ts';
+import type {InverseSummary} from '@qilun/assessment-engine/gh-inference.ts';
 type ProductRules={available:boolean;rules_fingerprint:string|null;problem:string|null;rulebook:{version:string;title:string;steps:{title:string;detail:string}[];limitations:string[];model_sha256:string;feature_count:number;ability_count:number;runtime_training:boolean;runtime_ai_generation:boolean;artifacts:Record<string,string>;aggregates:Record<string,unknown>};validation_summary:InverseSummary|null};
 export function AssessmentProductRules(){
  const [data,setData]=useState<ProductRules>(),[error,setError]=useState('');

@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
-import {encryptContact} from '../packages/security/index.ts';
+import {encryptContact} from '@qilun/security/index.ts';
 import {agentEnvironment,agentFixture} from './helpers/agent-fixture.ts';
 import {createParticipant} from './helpers/assessment-participant.ts';
 const profile={name:'【虚构】外部本人',phone:'13800000000',birth_date:'1990-06-15'};

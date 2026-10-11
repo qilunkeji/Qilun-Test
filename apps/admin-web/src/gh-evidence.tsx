@@ -1,7 +1,7 @@
 import {useEffect,useRef,useState} from 'react';
 import {api} from './api.ts';
 import {Notice} from './ui.tsx';
-import type {GhEvidenceCatalog,GhFirstLayerTrial} from '../../../packages/assessment-engine/gh-server-evidence.ts';
+import type {GhEvidenceCatalog,GhFirstLayerTrial} from '@qilun/assessment-engine/gh-server-evidence.ts';
 
 function download(name:string,data:unknown){
  const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json;charset=utf-8'}));

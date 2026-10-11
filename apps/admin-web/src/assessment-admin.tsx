@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import {canManageAssessment} from '../../../packages/security/assessment-access.ts';
+import {canManageAssessment} from '@qilun/security/assessment-access.ts';
 import {AssessmentReplica} from './assessment-replica.tsx';
 import {OriginalReportStudio} from './original-report.tsx';
 import {AssessmentRules} from './assessment-rules.tsx';

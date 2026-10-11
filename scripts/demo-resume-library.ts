@@ -1,7 +1,7 @@
 // Local-only, disposable in-memory fixture. Does not load .env or production data.
 import {agentEnvironment,agentFixture} from '../tests/helpers/agent-fixture.ts';
 import {createApp} from '../apps/api/app.ts';
-import {hashPassword} from '../packages/security/index.ts';
+import {hashPassword} from '@qilun/security/index.ts';
 import {randomUUID} from 'node:crypto';
 const restore=agentEnvironment(),f=await agentFixture(),port=3101,origin=`http://127.0.0.1:${port}`;
 await f.db.query('UPDATE staff_users SET password_hash=$1 WHERE id=$2',[await hashPassword('demo-resume-local'),f.sessions.talent_lead.user]);

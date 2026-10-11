@@ -1,0 +1,15 @@
+{
+  "name": "@qilun/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@electric-sql/pglite": "0.5.8",
+    "@qilun/assessment-engine": "workspace:*",
+    "@qilun/contracts": "workspace:*",
+    "@qilun/iam": "workspace:*",
+    "@qilun/security": "workspace:*",
+    "express": "5.2.1",
+    "zod": "4.6.5"
+  }
+}

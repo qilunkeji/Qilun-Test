@@ -1,7 +1,7 @@
 import { randomBytes,randomUUID } from 'node:crypto';
 import { readFile,writeFile,mkdir } from 'node:fs/promises';
 import { openDatabase } from '../apps/api/db.ts';
-import { hashPassword } from '../packages/security/index.ts';
+import { hashPassword } from '@qilun/security/index.ts';
 if(process.env.NODE_ENV==='production')throw new Error('Only local initialization is supported');
 await mkdir('.local',{recursive:true});
 try {await readFile('.env');} catch(err){

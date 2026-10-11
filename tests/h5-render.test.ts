@@ -4,8 +4,8 @@ import React from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {createServer} from 'vite';
 import {readFile} from 'node:fs/promises';
-import {ghInvitePackage,emptyGhValues} from '../packages/assessment-engine/gh-invite.ts';
-import {qilunStandardInvitePackage,scoreGhInvite} from '../packages/assessment-engine/gh-invite.ts';
+import {ghInvitePackage,emptyGhValues} from '@qilun/assessment-engine/gh-invite.ts';
+import {qilunStandardInvitePackage,scoreGhInvite} from '@qilun/assessment-engine/gh-invite.ts';
 import {loadAssessmentRuntime} from '../apps/api/assessment-product.ts';
 
 test('H5实际HTML：正式欢迎页、前台Part与题号、横排五选项及恢复位置；普通后台无原理模板',async()=>{

@@ -1,9 +1,9 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {existsSync,readFileSync} from 'node:fs';
-import {ghReplayExample,scoreGhReportReplay,deriveGhPotentialGroups} from '../packages/assessment-engine/gh-derived.ts';
-import {ghInferenceVersion,ghInferenceFeatureKeys,ghInferenceQualityIds,ghInferenceFeatures,predictGhAbility,scoreGhInferredReport,validateGhInverseModel} from '../packages/assessment-engine/gh-inference.ts';
-import type {GhInverseModel} from '../packages/assessment-engine/gh-inference.ts';
+import {ghReplayExample,scoreGhReportReplay,deriveGhPotentialGroups} from '@qilun/assessment-engine/gh-derived.ts';
+import {ghInferenceVersion,ghInferenceFeatureKeys,ghInferenceQualityIds,ghInferenceFeatures,predictGhAbility,scoreGhInferredReport,validateGhInverseModel} from '@qilun/assessment-engine/gh-inference.ts';
+import type {GhInverseModel} from '@qilun/assessment-engine/gh-inference.ts';
 const modelPath=new URL('../.local/gh-inference-v1/model.json',import.meta.url);
 const vectorsPath=new URL('../.local/gh-inference-v1/prediction-vectors.json',import.meta.url);
 const model=()=>validateGhInverseModel(JSON.parse(readFileSync(modelPath,'utf8')));

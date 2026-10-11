@@ -12,7 +12,7 @@ import {Talents} from './talents.tsx';
 import {ResumeLibrary} from './resume-library.tsx';
 import './resume-library.css';
 import {settingsTabs} from './settings-access.ts';
-import {canManageAssessment} from '../../../packages/security/assessment-access.ts';
+import {canManageAssessment} from '@qilun/security/assessment-access.ts';
 const AssessmentAdmin=lazy(()=>import('./assessment-admin.tsx').then(module=>({default:module.AssessmentAdmin})));
 import {AssessmentCenter} from './assessment-center.tsx';
 import {PublicEntryH5} from './public-entry.tsx';

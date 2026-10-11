@@ -1,5 +1,5 @@
 import {z} from 'zod';
-import {decryptContact} from '../../packages/security/index.ts';
+import {decryptContact} from '@qilun/security/index.ts';
 export const profileSchema=z.object({name:z.string().trim().min(1).max(80).optional(),phone:z.string().trim().regex(/^\+?[0-9]{7,15}$/),birth_date:z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine(value=>{const d=new Date(value+'T00:00:00Z');return Number.isFinite(d.getTime())&&d.toISOString().slice(0,10)===value&&value>='1900-01-01'&&value<=new Date().toISOString().slice(0,10);},'出生日期无效')}).strict();
 export function reportMetadata(row:{profile_cipher?:string|null;profile_required?:boolean;tenant_id:string;active_seconds?:number|null},key:Buffer){
  const profile=row.profile_cipher?profileSchema.parse(JSON.parse(decryptContact(row.profile_cipher,key,row.tenant_id))):null;

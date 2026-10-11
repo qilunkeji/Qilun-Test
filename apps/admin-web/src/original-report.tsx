@@ -3,7 +3,7 @@ import {saveReportImage,reportExportName,printReport} from './report-export.ts';
 import {reportHeaderBranding,reportCoverBranding,reportFooterContactMask,reportFooterBranding,reportBodyBranding} from './report-branding.ts';
 import {QilunReportCoverArt} from './qilun-report-cover.tsx';
 import {GhReportPlots,ghReportFields} from './gh-report-preview.tsx';
-import type {GhDisplayReport as GhReportReplay} from '../../../packages/assessment-engine/gh-inference.ts';
+import type {GhDisplayReport as GhReportReplay} from '@qilun/assessment-engine/gh-inference.ts';
 import './original-report.css';
 import {ReportHeader} from './report-header.tsx';
 import type {ReportMetadata} from './report-header.tsx';

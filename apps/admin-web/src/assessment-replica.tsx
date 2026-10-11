@@ -1,7 +1,7 @@
 import {useEffect,useRef,useState} from 'react';
 import {api} from './api.ts';
 import {Notice} from './ui.tsx';
-import type {ReplicaCatalog,ReplicaMode,StrengthTrial} from '../../../packages/assessment-engine/strength-v3.ts';
+import type {ReplicaCatalog,ReplicaMode,StrengthTrial} from '@qilun/assessment-engine/strength-v3.ts';
 import './assessment-replica.css';
 import {GhEvidencePanel} from './gh-evidence.tsx';
 import {GhReplayPanel} from './gh-replay.tsx';

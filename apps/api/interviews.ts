@@ -2,7 +2,7 @@ import {z} from 'zod';
 import {randomUUID} from 'node:crypto';
 import type {Express,Response} from 'express';
 import type {Database} from './db.ts';
-import {encryptContact,decryptContact} from '../../packages/security/index.ts';
+import {encryptContact,decryptContact} from '@qilun/security/index.ts';
 import {ServiceError} from './http-error.ts';
 import {externalAgentMode} from './processing-mode.ts';
 const rubricSchema=z.array(z.object({name:z.string().trim().min(2).max(100),requirement:z.string().trim().min(5).max(500),weight:z.number().int().min(1).max(100)}).strict()).min(1).max(6).refine(x=>new Set(x.map(i=>i.name)).size===x.length,{message:'能力项不能重复'});

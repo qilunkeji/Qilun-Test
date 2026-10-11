@@ -2,7 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {setImmediate as tick,setTimeout as delay} from 'node:timers/promises';
 import {DraftAutosaver,stableDraftJSON} from '../apps/admin-web/src/draft-autosaver.ts';
-import {resumeGhProgress,ghProgressSchema} from '../packages/assessment-engine/gh-progress.ts';
+import {resumeGhProgress,ghProgressSchema} from '@qilun/assessment-engine/gh-progress.ts';
 
 test('自动保存串行使用最新revision；保存期间的新答案不被旧回包误标为已保存',async()=>{
  const calls:{value:number;revision:number}[]=[],resolvers:((v:{revision:number})=>void)[]=[],states:string[]=[];

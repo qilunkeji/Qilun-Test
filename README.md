@@ -12,16 +12,16 @@
 
 ## 本地启动
 
-要求 Node.js 24+、npm。依赖已锁定在 package-lock.json。Windows 64 位可双击根目录 `启动系统.cmd`；开发命令可使用 `runtime/node-win-x64/npm.cmd`。迁移请先读 `00_新电脑先看.md`。
+要求 Node.js 24+ 与 pnpm 10（`npm i -g pnpm@10`）。本仓库为 pnpm workspace，依赖锁定在 pnpm-lock.yaml，包含 `apps/api`、`apps/admin-web` 与 `packages/*` 共享包（`@qilun/contracts`、`@qilun/security`、`@qilun/assessment-engine`、`@qilun/iam`）。迁移请先读 `00_新电脑先看.md`。
 
 ```powershell
-npm ci
-npm run build
-npm run init
-npm run dev
+pnpm install
+pnpm run build
+pnpm run init
+pnpm run dev
 ```
 
-打开 http://127.0.0.1:3100 。`npm run init` 仅首次建立一个本地组织与人才负责人账号，生成随机密码，不植入候选人。登录组织 ID、账号和密码保存在 `.local/initial-access.txt`；不要上传或提交该文件。再次初始化不会重置账号。`.env` 中的随机联系方式加密密钥只留在服务端。
+打开 http://127.0.0.1:3100 。`pnpm run init` 仅首次建立一个本地组织与人才负责人账号，生成随机密码，不植入候选人。登录组织 ID、账号和密码保存在 `.local/initial-access.txt`；不要上传或提交该文件。再次初始化不会重置账号。`.env` 中的随机联系方式加密密钥只留在服务端。
 
 本地数据存放 `.local/database/`，刷新页面和正常重启不丢失；线上使用独立持久化目录，不与本地同步。PGlite仅允许一个API进程。默认仍仅本机访问；公网模式须通过显式HTTPS配置校验、回环上游和可信网关，不允许把本地开发地址直接暴露到公网。开发、测试和生产使用不同目录。
 
@@ -30,9 +30,9 @@ npm run dev
 ## 验证
 
 ```powershell
-npm run verify:evidence
-npm run build
-npm test
+pnpm run verify:evidence
+pnpm run build
+pnpm test
 ```
 
 具体结果、命令、截图和未测项见 [P1 验收记录](docs/P1-验收记录.md)。接口说明见 [API](docs/API-P1.md)，基线与取舍见 [P0](docs/P0-基线.md)，部署与恢复见 [运行与恢复](docs/运行与恢复.md)。

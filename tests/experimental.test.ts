@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {experiment} from '../packages/assessment-engine/experimental.ts';
+import {experiment} from '@qilun/assessment-engine/experimental.ts';
 const base={purpose:'synthetic_method_comparison',answers:[5,1,3,3,1,5],benchmarks:[[5,1,5,1,5,1]],aggregation:'mean',weights:[1,1,1]};
 test('实验链保留正反向、范围端点与三种不同总分',()=>{
  const r=experiment(base);assert.deepEqual(r.candidate.map(x=>x.normalized),[100,50,0]);assert.deepEqual(r.components,[100,50,0]);

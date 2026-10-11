@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
-import {canManageAssessment} from '../packages/security/assessment-access.ts';
+import {canManageAssessment} from '@qilun/security/assessment-access.ts';
 import {settingsTabs} from '../apps/admin-web/src/settings-access.ts';
 
 test('后台入口与服务端使用相同角色约束，未知或中心通用admin角色不默认获得权限',()=>{

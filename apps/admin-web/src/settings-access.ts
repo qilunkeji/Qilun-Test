@@ -1,4 +1,4 @@
-import {canManageAssessment} from '../../../packages/security/assessment-access.ts';
+import {canManageAssessment} from '@qilun/security/assessment-access.ts';
 
 export function settingsTabs(role:string):{id:string;label:string}[] {
  return [
