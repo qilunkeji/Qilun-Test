@@ -1,5 +1,5 @@
 import {useEffect,useRef,useState} from 'react';
-import {saveReportImage} from './report-export.ts';
+import {saveReportImage,reportExportName,printReport} from './report-export.ts';
 import {reportHeaderBranding,reportCoverBranding,reportFooterContactMask,reportFooterBranding,reportBodyBranding} from './report-branding.ts';
 import {QilunReportCoverArt} from './qilun-report-cover.tsx';
 import {GhReportPlots,ghReportFields} from './gh-report-preview.tsx';
@@ -21,6 +21,7 @@ export function OriginalReportStudio({sourceBase='/api/v1/assessment/layout/sour
  const [error,setError]=useState(''),[editing,setEditing]=useState(false),[selected,setSelected]=useState(''),[zoom,setZoom]=useState('fit');
  const [fields,setFields]=useState<Record<string,string>>({});
  const sheetRef=useRef<HTMLDivElement>(null),[saving,setSaving]=useState(false);
+ const exportName=metadata?.participant_name?.trim()||personName?.trim();
  useEffect(()=>{fetch('/report-layout/manifest.json').then(r=>{if(!r.ok)throw new Error('尚未生成原版报告母版');return r.json();}).then(setManifest).catch(e=>setError(e.message));},[]);
  if(!manifest)return <div className="original-studio"><p role="status">{error||(replay&&'product' in replay?'正在加载测评数据表…':'正在加载原版报告母版…')}</p></div>;
  const page=manifest.pages.find(p=>p.id===sheet)!;
@@ -45,8 +46,8 @@ export function OriginalReportStudio({sourceBase='/api/v1/assessment/layout/sour
    <div className="original-controls">
     {!dataOnly&&<label>报告页面<select aria-label="原版报告页面" value={sheet} onChange={e=>selectPage(e.target.value)}><optgroup label="数据报告"><option value="data">七模块数据总览</option></optgroup><optgroup label="人才报告 · 10页">{manifest.pages.filter(p=>p.document==='talent').map(p=><option value={p.id} key={p.id}>{p.page}. {p.title}</option>)}</optgroup></select></label>}
     <label>显示比例<select aria-label="显示比例" value={zoom} onChange={e=>setZoom(e.target.value)}><option value="fit">适合窗口</option><option value="native">原稿尺寸</option></select></label>
-    {dataOnly&&<button className="report-save-image" disabled={saving} onClick={async()=>{if(!sheetRef.current)return;setSaving(true);setError('');try{await saveReportImage(sheetRef.current,'齐论AI-测评数据报告.png');}catch(e){setError((e as Error).message);}finally{setSaving(false);}}}>{saving?'正在生成…':'保存图片'}</button>}
-    <button onClick={()=>window.print()}>{dataOnly?'打印 / 保存 PDF':'打印当前页'}</button>
+    {dataOnly&&<button className="report-save-image" disabled={saving} onClick={async()=>{if(!sheetRef.current)return;setSaving(true);setError('');try{await saveReportImage(sheetRef.current,`${reportExportName(exportName)}.png`);}catch(e){setError((e as Error).message);}finally{setSaving(false);}}}>{saving?'正在生成…':'保存图片'}</button>}
+    <button onClick={()=>dataOnly?printReport(exportName):window.print()}>{dataOnly?'打印 / 保存 PDF':'打印当前页'}</button>
    </div>
   </div>
   {dataOnly&&<p className="report-mobile-hint no-print">左右滑动查看完整数据表，可保存图片或 PDF。</p>}
