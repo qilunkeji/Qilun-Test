@@ -10,9 +10,14 @@ const nav = [
   { to: '/assessments', label: '测评中心' },
   { to: '/interviews', label: '面试评估' },
   { to: '/resume-library', label: '简历库' },
+  { to: '/resume-screens', label: '智能筛选' },
+  { to: '/extension-grants', label: '扩展授权' },
   { to: '/optimize', label: '招聘优化' },
   { to: '/assistant', label: 'AI 中心' },
   { to: '/project-groups', label: '项目组' },
+  { to: '/public-entries', label: '公共入口' },
+  { to: '/assessment/rules', label: '规则' },
+  { to: '/assessment/replica', label: '复刻面板' },
   { to: '/settings', label: '设置' },
 ];
 </script>

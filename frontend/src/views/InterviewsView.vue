@@ -13,7 +13,7 @@ onMounted(async () => {
 <template>
   <div>
     <h2>面试评估</h2>
-    <el-table :data="rows">
+    <el-table :data="rows" @row-click="(row: any) => $router.push(`/interviews/${row.id}`)">
       <el-table-column prop="name" label="候选人" />
       <el-table-column prop="title" label="岗位" />
       <el-table-column prop="revision" label="文稿版本" width="100" />
