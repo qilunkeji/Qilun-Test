@@ -36,16 +36,18 @@ public class AuthController {
 
     @GetMapping("/api/v1/auth/options")
     public Map<String, Object> options() {
+        boolean iam = IamController.iamEnabled();
         Map<String, Object> out = new LinkedHashMap<>();
-        out.put("unified_login", false);
-        out.put("local_password_login", true);
-        out.put("login_url", null);
+        out.put("unified_login", iam);
+        out.put("local_password_login", !iam);
+        out.put("login_url", iam ? "/api/iam/login" : null);
         return out;
     }
 
     @PostMapping("/api/v1/auth/login")
     public Map<String, Object> login(@RequestBody(required = false) Map<String, Object> body,
                                      HttpServletRequest request, HttpServletResponse response) throws Exception {
+        if (IamController.iamEnabled()) throw new ApiError(403, "IAM_REQUIRED", "请使用齐论统一账号登录");
         String tenantIdIn = body == null ? null : str(body.get("tenant_id"));
         String username = body == null ? null : str(body.get("username"));
         String password = body == null ? null : str(body.get("password"));

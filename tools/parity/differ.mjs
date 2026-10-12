@@ -25,6 +25,7 @@ const here = resolve(fileURLToPath(new URL('.', import.meta.url)));
 const ROOT = resolve(here, '../..');
 const FIXED_PASSWORD = 'Parity!Fixed-2026';
 const FIXED_KEY = randomBytes(32).toString('hex'); // fixed per differ invocation, identical for both sides
+const IAM_WEBHOOK_SECRET_ENV = randomBytes(32).toString('hex');
 const { createHash } = await import('node:crypto');
 const AGENT_TOKEN = randomBytes(32).toString('base64url');
 const AGENT_SHA = createHash('sha256').update(AGENT_TOKEN).digest('hex');
@@ -263,6 +264,7 @@ async function runScenarios(base) {
   results.push(await flow('qa-potential-groups', '/api/v1/assessment/gh-replay/potential-groups', { body: (ctx.qaAbilities ?? []).map(a => ({ item: a.item, value: a.value })) }));
   results.push(await flow('qa-replication-blocked', '/api/v1/assessment/replication/score', { body: { version: 'evidence-v3-20260922', mode: 'ghrczx_strength_153', answers: {} } }));
   results.push({ name: 'ai-task-cancel', status: aiTaskCancel.status, body: normalize(await aiTaskCancel.json()), setCookie: null });
+
   // --- agent queue chain (external-agent mode)
   const mcp = async (method, params, id) => {
     const res = await fetch(base + '/mcp/agent', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + AGENT_TOKEN }, body: JSON.stringify({ jsonrpc: '2.0', id: id ?? 1, method, params }) });
