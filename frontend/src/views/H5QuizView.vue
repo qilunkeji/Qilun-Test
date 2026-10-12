@@ -17,6 +17,10 @@ const data = ref<OpenData | null>(null);
 const answers = ref<Record<string, number>>({});
 const currentIndex = ref(0);
 const status = ref('');
+// Timing: count only when page visible + interaction within 120s window
+let activeSeconds = 0;
+let lastInteraction = Date.now();
+let timingInterval: ReturnType<typeof setInterval> | undefined;
 const phase = ref<'quiz' | 'values' | 'rank'>('quiz');
 const selected = ref<string[][]>([[], [], [], []]);
 const ranked = ref<string[]>([]);
@@ -39,6 +43,7 @@ function choiceLabel(q: Question, choice: number) {
 }
 
 function touch() {
+  lastInteraction = Date.now();
   autosaver?.update({ ...answers.value });
 }
 
@@ -63,7 +68,7 @@ async function submitAll() {
   await autosaver?.flush();
   const res = await fetch('/api/v1/public/assessment/submit', {
     method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'omit',
-    body: JSON.stringify({ token: token.value, revision: autosaver?.revision ?? data.value?.revision ?? 0, answers: answers.value, value_draft: { selected: selected.value, ranked: ranked.value } }),
+    body: JSON.stringify({ token: token.value, revision: autosaver?.revision ?? data.value?.revision ?? 0, active_seconds: activeSeconds, answers: answers.value, value_draft: { selected: selected.value, ranked: ranked.value } }),
   });
   const payload = await res.json();
   if (!res.ok) { ElMessage.error(payload.error?.message ?? '提交失败'); return; }
@@ -97,6 +102,15 @@ onMounted(async () => {
     },
     state => { status.value = state; },
   );
+  // Start timing: 1s interval, visible + interaction within 120s
+  const trackInteraction = () => { lastInteraction = Date.now(); };
+  document.addEventListener('click', trackInteraction);
+  document.addEventListener('keydown', trackInteraction);
+  timingInterval = setInterval(() => {
+    if (document.visibilityState === 'visible' && Date.now() - lastInteraction < 120000) {
+      activeSeconds++;
+    }
+  }, 1000);
 });
 
 onUnmounted(() => {
