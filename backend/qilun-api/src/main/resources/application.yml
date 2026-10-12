@@ -13,6 +13,14 @@ qilun:
   production: ${QILUN_PRODUCTION:false}
   contact-key: ${QILUN_CONTACT_KEY:${CONTACT_ENCRYPTION_KEY:}}
   engine-model-file: ${QILUN_ENGINE_MODEL:.local/gh-inference-v1/model.json}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus,info
+  metrics:
+    tags:
+      application: qilun-api
 springdoc:
   api-docs:
     path: /api/v3/openapi.json

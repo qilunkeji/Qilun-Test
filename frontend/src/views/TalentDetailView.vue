@@ -36,6 +36,7 @@ onMounted(load);
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px">
       <h2>{{ talent.name }}</h2>
       <el-button @click="viewContact">查看联系方式</el-button>
+      <el-button type="primary" @click="$router.push(`/interviews/new/${talent.applications[0]?.id ?? ''}`)">发起面试</el-button>
     </div>
     <el-dialog v-model="showContact" :title="`${talent.name} 的联系方式`" width="400">
       <p v-if="contact" style="font-size: 18px; font-weight: 600; word-break: break-all">{{ contact }}</p>

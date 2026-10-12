@@ -19,6 +19,9 @@ const nav = [
   { to: '/assessment/rules', label: '规则' },
   { to: '/assessment/replica', label: '复刻面板' },
   { to: '/assessment/studio', label: '报告工作室' },
+  { to: '/assessment/binding', label: '测评绑定' },
+  { to: '/assessment/evidence', label: '证据字典' },
+  { to: '/assessment/experiment', label: '规则实验' },
   { to: '/settings', label: '设置' },
 ];
 </script>
