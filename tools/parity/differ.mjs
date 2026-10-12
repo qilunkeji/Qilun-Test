@@ -195,6 +195,36 @@ async function runScenarios(base) {
   }));
   results.push(await flow('material-archive', '/api/v1/recruiting/materials/' + ctx.materialId + '/archive', { body: {} }));
   results.push(await flow('interview-assessments', '/api/v1/interviews/assessments/' + ctx.applicationId, { method: 'GET' }));
+  // --- batch-1 endpoints: project groups, job versions, contact access, ai run chain, resume screens
+  results.push(await flow('group-create', '/api/v1/project-groups', { body: { name: '对等验证项目组' }, extract: j => { ctx.groupId = j.data.id; } }));
+  results.push(await flow('groups-list', '/api/v1/project-groups', { method: 'GET' }));
+  results.push(await flow('group-duplicate', '/api/v1/project-groups', { body: { name: '对等验证项目组' } }));
+  results.push(await flow('talent-assign', '/api/v1/talents/' + ctx.candidateId + '/project', { body: { project_group_id: ctx.groupId, previous_group_id: null } }));
+  const inviteList2 = await (await fetch(base + '/api/v1/assessment/invites', { headers: { Origin: base, Cookie: session } })).json();
+  const anyInviteId = inviteList2.data.items[0] && inviteList2.data.items[0].id;
+  if (anyInviteId) results.push(await flow('invite-assign', '/api/v1/assessment/invites/' + anyInviteId + '/project', { body: { project_group_id: ctx.groupId, previous_group_id: null } }));
+  results.push(await flow('contact-access-no-contact', '/api/v1/talents/' + ctx.candidateId + '/contact-access', { body: {} }));
+  results.push(await flow('job-version-create', '/api/v1/jobs/' + ctx.jobId + '/versions', {
+    body: { title: '对等验证岗位v2', department: '质量部', owner: 'parity', location: '远程', tasks: '职责v2', criteria: '标准v2', public_jd: 'JDv2', status: 'open', change_reason: '更新', expected_revision: 1 },
+    extract: j => { ctx.version2Id = j.data.version_id; },
+  }));
+  results.push(await flow('job-version-conflict', '/api/v1/jobs/' + ctx.jobId + '/versions', {
+    body: { title: '对等验证岗位v3', department: '质量部', owner: 'parity', location: '远程', tasks: '职责v3', criteria: '标准v3', public_jd: 'JDv3', status: 'open', change_reason: '再更新', expected_revision: 1 },
+  }));
+  results.push(await flow('ai-run-queue', '/api/v1/ai/run', {
+    body: { feature: 'job_optimize', material: '对等验证材料：这是一份用于AI队列验证的岗位材料，包含足够长度的文本内容。', authorized_to_send: true },
+    extract: j => { ctx.aiRunId = j.data.id; ctx.aiTaskId = j.data.task_id; },
+  }));
+  results.push(await flow('ai-runs-list', '/api/v1/ai/runs', { method: 'GET' }));
+  results.push(await flow('ai-run-detail', '/api/v1/ai/runs/' + ctx.aiRunId, { method: 'GET' }));
+  results.push(await flow('resume-screen-create', '/api/v1/resume-screens', {
+    body: { job_version_id: ctx.version2Id, requirements: '三年以上后端经验，熟悉PostgreSQL', resume_ids: [ctx.resumeId], authorized_to_send: true },
+    extract: j => { ctx.screenBatchId = j.data.id; },
+  }));
+  results.push(await flow('resume-screens-list', '/api/v1/resume-screens', { method: 'GET' }));
+  results.push(await flow('resume-screen-detail', '/api/v1/resume-screens/' + ctx.screenBatchId, { method: 'GET' }));
+  const aiTaskCancel = await fetch(base + '/api/v1/ai/tasks/' + ctx.aiTaskId + '/cancel', { method: 'POST', headers: { 'Content-Type': 'application/json', Origin: base, Cookie: session, 'X-CSRF-Token': csrf }, body: '{}' });
+  results.push({ name: 'ai-task-cancel', status: aiTaskCancel.status, body: normalize(await aiTaskCancel.json()), setCookie: null });
   // --- agent queue chain (external-agent mode)
   const mcp = async (method, params, id) => {
     const res = await fetch(base + '/mcp/agent', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + AGENT_TOKEN }, body: JSON.stringify({ jsonrpc: '2.0', id: id ?? 1, method, params }) });

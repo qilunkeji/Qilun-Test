@@ -194,10 +194,10 @@ public class AgentMcpController {
             d.put("type", def.type);
             d.put("version", def.version);
             d.put("title", def.title);
-            d.put("description", def.description);
+            d.put("description", def.description());
             d.put("priority", (long) def.priority);
             d.put("default_lease_minutes", (long) def.defaultLeaseMinutes);
-            d.put("rules_text", def.rulesText);
+            d.put("rules_text", def.rulesText());
             d.put("output_json_schema", AgentSchemas.outputSchema(def.type));
             d.put("context_tools", new ArrayList<>());
             d.put("validation_codes", def.ping

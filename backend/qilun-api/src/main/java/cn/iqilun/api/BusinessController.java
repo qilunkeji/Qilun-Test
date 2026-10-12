@@ -24,7 +24,9 @@ public class BusinessController {
 
     private final Db db;
 
-    public BusinessController(Db db) { this.db = db; }
+    private final ApiProperties properties;
+
+    public BusinessController(Db db, ApiProperties properties) { this.db = db; this.properties = properties; }
 
     static void allowBusiness(HttpServletRequest request) {
         GuardsFilter.Auth auth = (GuardsFilter.Auth) request.getAttribute(GuardsFilter.AUTH);
@@ -282,6 +284,55 @@ public class BusinessController {
         out.put("resumes", db.query("SELECT id,source_id,version,filename,content_hash,completeness,created_at FROM resume_versions WHERE tenant_id=$1 AND candidate_id=$2 ORDER BY version DESC", a.tenantId(), id));
         out.put("applications", db.query("SELECT a.*,v.title,v.version AS job_version FROM applications a JOIN job_versions v ON v.id=a.job_version_id AND v.tenant_id=a.tenant_id WHERE a.tenant_id=$1 AND a.candidate_id=$2 ORDER BY a.created_at DESC", a.tenantId(), id));
         out.put("assessments", db.query("SELECT i.id,i.submitted_at,i.created_at,i.revoked_at FROM assessment_invites i LEFT JOIN assessment_archive_bindings b ON b.tenant_id=i.tenant_id AND b.invite_id=i.id WHERE i.tenant_id=$1 AND coalesce(i.candidate_id,b.candidate_id)=$2 ORDER BY i.created_at DESC", a.tenantId(), id));
+        return out;
+    }
+
+    @org.springframework.web.bind.annotation.PostMapping("/api/v1/jobs/{id}/versions")
+    public org.springframework.http.ResponseEntity<Map<String, Object>> createJobVersion(@PathVariable String id,
+                                                                                        @RequestBody(required = false) Map<String, Object> body,
+                                                                                        HttpServletRequest request) throws Exception {
+        allowBusiness(request);
+        GuardsFilter.Auth a = (GuardsFilter.Auth) request.getAttribute(GuardsFilter.AUTH);
+        List<String> allowed = List.of("title", "department", "owner", "location", "tasks", "criteria", "public_jd", "status", "change_reason", "expected_revision");
+        if (body == null || body.keySet().stream().anyMatch(k -> !allowed.contains(k))
+            || !(body.get("expected_revision") instanceof Number e && e.longValue() >= 0))
+            throw new ApiError(400, "INVALID_INPUT", "输入格式不正确");
+        String versionId = UUID.randomUUID().toString();
+        db.tx(tx -> {
+            List<Map<String, Object>> prior = tx.query("SELECT revision FROM jobs WHERE tenant_id=$1 AND id=$2 FOR UPDATE", a.tenantId(), id);
+            if (prior.isEmpty()) throw new ApiError(404, "NOT_FOUND", "对象不存在或不在授权范围内");
+            long current = ((Number) prior.get(0).get("revision")).longValue();
+            if (current != e.longValue()) throw new ApiError(409, "VERSION_CONFLICT", "岗位已被修改，请重新加载后再保存");
+            tx.query("INSERT INTO job_versions(id,tenant_id,job_id,version,title,department,owner,location,tasks,criteria,public_jd,status,change_reason,created_by) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)",
+                versionId, a.tenantId(), id, current + 1, body.get("title"), body.get("department"), body.get("owner"), body.get("location"),
+                body.get("tasks"), body.get("criteria"), body.get("public_jd"), body.get("status"), body.get("change_reason"), a.userId());
+            tx.query("UPDATE jobs SET revision=revision+1,updated_at=now() WHERE tenant_id=$1 AND id=$2", a.tenantId(), id);
+            tx.query("INSERT INTO audit_events(id,tenant_id,actor_id,action,object_id) VALUES($1,$2,$3,$4,$5)",
+                UUID.randomUUID().toString(), a.tenantId(), a.userId(), "job.version_created", versionId);
+            return null;
+        });
+        Map<String, Object> out = new LinkedHashMap<>();
+        out.put("id", id);
+        out.put("version_id", versionId);
+        out.put("revision", ((Number) body.get("expected_revision")).longValue() + 1);
+        return org.springframework.http.ResponseEntity.status(201).body(out);
+    }
+
+    @org.springframework.web.bind.annotation.PostMapping("/api/v1/talents/{id}/contact-access")
+    public Map<String, Object> contactAccess(@PathVariable String id, HttpServletRequest request) throws Exception {
+        allowBusiness(request);
+        GuardsFilter.Auth a = (GuardsFilter.Auth) request.getAttribute(GuardsFilter.AUTH);
+        String value = db.tx(tx -> {
+            List<Map<String, Object>> rows = tx.query("SELECT contact_cipher FROM candidates WHERE tenant_id=$1 AND id=$2 AND retention_until>now()", a.tenantId(), id);
+            if (rows.isEmpty()) throw new ApiError(404, "NOT_FOUND", "对象不存在或不在授权范围内");
+            tx.query("INSERT INTO audit_events(id,tenant_id,actor_id,action,object_id) VALUES($1,$2,$3,$4,$5)",
+                UUID.randomUUID().toString(), a.tenantId(), a.userId(), "contact.read", id);
+            Object cipher = rows.get(0).get("contact_cipher");
+            return cipher == null ? null : cn.iqilun.common.Crypto.decryptContact(String.valueOf(cipher),
+                InviteAdminController.hexToBytes(properties.getContactKey()), a.tenantId());
+        });
+        Map<String, Object> out = new LinkedHashMap<>();
+        out.put("contact", value);
         return out;
     }
 
