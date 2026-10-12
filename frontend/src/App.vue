@@ -8,6 +8,9 @@ const nav = [
   { to: '/jobs', label: '岗位管理' },
   { to: '/talents', label: '人才档案' },
   { to: '/assessments', label: '测评中心' },
+  { to: '/interviews', label: '面试评估' },
+  { to: '/resume-library', label: '简历库' },
+  { to: '/assistant', label: 'AI 中心' },
   { to: '/settings', label: '设置' },
 ];
 </script>
