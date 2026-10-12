@@ -34,7 +34,7 @@ const MODE = process.argv.includes('--a') && process.argv.includes('--b') ? 'url
 const ONLY = arg('only') ? new Set(arg('only').split(',')) : null;
 
 // --- normalization ---------------------------------------------------------
-const VOLATILE_KEYS = new Set(['request_id', 'csrf_token', 'token', 'session', 'cookie', 'url', 'pin', 'lease_token', 'nonce']);
+const VOLATILE_KEYS = new Set(['request_id', 'csrf_token', 'token', 'session', 'cookie', 'url', 'pin', 'lease_token', 'nonce', 'waiting_seconds', 'oldest_queued_seconds']);
 const ISO_LIKE = /^\d{4}-\d{2}-\d{2}T\d{2}:/;
 const UUID_LIKE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const DB_ENGINE = new Set(['pglite', 'postgresql']);
@@ -224,6 +224,44 @@ async function runScenarios(base) {
   results.push(await flow('resume-screens-list', '/api/v1/resume-screens', { method: 'GET' }));
   results.push(await flow('resume-screen-detail', '/api/v1/resume-screens/' + ctx.screenBatchId, { method: 'GET' }));
   const aiTaskCancel = await fetch(base + '/api/v1/ai/tasks/' + ctx.aiTaskId + '/cancel', { method: 'POST', headers: { 'Content-Type': 'application/json', Origin: base, Cookie: session, 'X-CSRF-Token': csrf }, body: '{}' });
+  // --- assessment QA family (19 endpoints)
+  results.push(await flow('qa-product-rules', '/api/v1/assessment/product-rules', { method: 'GET' }));
+  results.push(await flow('qa-rules', '/api/v1/assessment/rules', { method: 'GET' }));
+  results.push(await flow('qa-replication', '/api/v1/assessment/replication', { method: 'GET' }));
+  results.push(await flow('qa-gh-evidence', '/api/v1/assessment/gh-evidence', { method: 'GET' }));
+  results.push(await flow('qa-gh-replay', '/api/v1/assessment/gh-replay', { method: 'GET' }));
+  results.push(await flow('qa-gh-inference', '/api/v1/assessment/gh-inference', { method: 'GET' }));
+  results.push(await flow('qa-rules-validate', '/api/v1/assessment/rules/validate', { body: {} }));
+  results.push(await flow('qa-rules-blocked', '/api/v1/assessment/rules/publish', { body: {} }));
+  const deriveInput = { adapter: 'gh_phone_senior_v81', source_field: 'type4Result', scale_ref: 'E1', input_kind: 'synthetic', purpose: 'rule_verification_only',
+    scores: { 财富: 82.5, 健康: 75, 享受: 67.5, 工作: 90, 权力: 78, 创新: 85.5, 情感: 72, 荣誉: 81 },
+    template: { reference: 'E1-phone-template-20260916', occupation: [21.6, 6.1, 3.6, 0], energy: [637.5, 472.5, 375, 257.5] } };
+  results.push(await flow('qa-rules-derive', '/api/v1/assessment/rules/derive', { body: deriveInput }));
+  results.push(await flow('qa-experiment', '/api/v1/assessment/rules/experiment', {
+    body: { purpose: 'synthetic_method_comparison', answers: [4, 2, 5, 1, 3, 3], benchmarks: [[3, 3, 4, 2, 3, 3], [5, 1, 4, 2, 2, 4], [4, 2, 3, 3, 4, 2]], aggregation: 'median', weights: [2, 1, 0.5] },
+  }));
+  const qaScores = { c8Score: 72, qualityScore: 85.4, motiveScore: 60, valueScore: 45 };
+  results.push(await flow('qa-final-match-raw', '/api/v1/assessment/gh-replay/final-match', { body: { version: 'gh-report-replay-v22', purpose: 'evidence_verification_only', route: 'addSomeMatchPeoRecord', component_precision: 'raw', scores: qaScores } }));
+  results.push(await flow('qa-final-match-rounded', '/api/v1/assessment/gh-replay/final-match', { body: { version: 'gh-report-replay-v22', purpose: 'evidence_verification_only', route: 'addSomeMatchPeoRecord', component_precision: 'rounded', scores: { c8Score: 72, qualityScore: 85, motiveScore: 60, valueScore: 45 } } }));
+  const openForQa = await (await fetch(base + '/api/v1/public/assessment/open', { method: 'POST', headers: { 'Content-Type': 'application/json', Origin: base }, body: JSON.stringify({ token: PK }) })).json();
+  const qaAnswers = openForQa.data.answers;
+  const qaGroups = openForQa.data.package.value_groups;
+  const qaAnswersAll = Object.fromEntries(openForQa.data.package.questions.map(q => [q.id, 4]));
+  const qaSelected = qaGroups.map(g => g.slice(0, 5));
+  const qaRanked = qaSelected.flat().slice(0, 10);
+  results.push(await flow('qa-evidence-score', '/api/v1/assessment/gh-evidence/score', {
+    body: { version: 'gh-server-evidence-20260930-v1', purpose: 'evidence_verification_only', input_kind: 'manual_answers', answers: qaAnswersAll, values: qaRanked.map((id, i) => ({ id, rank: i + 1 })) },
+  }));
+  results.push(await flow('qa-replay-score', '/api/v1/assessment/gh-replay/score', {
+    body: { version: 'gh-report-replay-v22', purpose: 'evidence_verification_only', input_kind: 'manual_answers', answers: qaAnswersAll, values: qaRanked.map((id, i) => ({ id, rank: i + 1 })), value_flow: { layout: 'captured_32_words_v3', selected_by_group: qaSelected, ranked: qaRanked } },
+  }));
+  const qaInf = await flow('qa-inference-score', '/api/v1/assessment/gh-inference/score', {
+    body: { version: 'qilun-gh-inverse-v1', purpose: 'development_reference_only', input_kind: 'manual_answers', answers: qaAnswersAll, values: qaRanked.map((id, i) => ({ id, rank: i + 1 })), value_flow: { layout: 'captured_32_words_v3', selected_by_group: qaSelected, ranked: qaRanked } },
+    extract: j => { ctx.qaAbilities = j.data.abilities; },
+  });
+  results.push(qaInf);
+  results.push(await flow('qa-potential-groups', '/api/v1/assessment/gh-replay/potential-groups', { body: (ctx.qaAbilities ?? []).map(a => ({ item: a.item, value: a.value })) }));
+  results.push(await flow('qa-replication-blocked', '/api/v1/assessment/replication/score', { body: { version: 'evidence-v3-20260922', mode: 'ghrczx_strength_153', answers: {} } }));
   results.push({ name: 'ai-task-cancel', status: aiTaskCancel.status, body: normalize(await aiTaskCancel.json()), setCookie: null });
   // --- agent queue chain (external-agent mode)
   const mcp = async (method, params, id) => {

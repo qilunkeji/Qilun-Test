@@ -16,6 +16,11 @@ public class GlobalExceptionHandler {
         Map<String, Object> error = new LinkedHashMap<>();
         error.put("code", e.code);
         error.put("message", e.getMessage());
+        if (e instanceof AssessmentQaController.ApiErrorWithBody withBody) {
+            for (Map.Entry<String, Object> extra : withBody.body.entrySet()) {
+                if (!"code".equals(extra.getKey()) && !"message".equals(extra.getKey())) error.put(extra.getKey(), extra.getValue());
+            }
+        }
         if (e.fields != null) {
             error.put("fields", e.fields.stream().map(f -> {
                 Map<String, String> out = new LinkedHashMap<>();

@@ -930,7 +930,7 @@ public final class Engine {
         throw new IllegalStateException("quality item missing");
     }
 
-    Map<String, Object> deriveGhPotentialGroups(List<Map<String, Object>> rows) {
+    public Map<String, Object> deriveGhPotentialGroups(List<Map<String, Object>> rows) {
         List<Map<String, Object>> ordered = new ArrayList<>(rows);
         ordered.sort(Comparator.<Map<String, Object>>comparingLong(m -> cfgParentOfQuality(lint(m.get("item")))).thenComparingLong(m -> lint(m.get("item"))));
         java.util.LinkedHashMap<String, List<String>> p5Ordered = new java.util.LinkedHashMap<>();
@@ -968,7 +968,7 @@ public final class Engine {
     }
 
     // ---- inference ---------------------------------------------------------
-    List<Double> ghInferenceFeatures(Map<String, Object> replay) {
+    public List<Double> ghInferenceFeatures(Map<String, Object> replay) {
         List<Map<String, Object>> roles = listOf(replay.get("roles"));
         List<Map<String, Object>> rows = listOf(replay.get("rows"));
         List<Map<String, Object>> baseItems = new ArrayList<>();
@@ -994,7 +994,7 @@ public final class Engine {
         return out;
     }
 
-    static final class Prediction {
+    public static final class Prediction {
         final double[] values;
         final double nearestDistance;
         final boolean outsideObservedDomain;
@@ -1005,7 +1005,7 @@ public final class Engine {
 
     static double clip(double x) { return Math.max(0, Math.min(100, x)); }
 
-    Prediction predictGhAbility(List<Double> x) {
+    public Prediction predictGhAbility(List<Double> x) {
         if (x.size() != 48) throw new IllegalStateException("INFERENCE_FEATURES_INVALID");
         for (double v : x) if (!Double.isFinite(v)) throw new IllegalStateException("INFERENCE_FEATURES_INVALID");
         List<Double> mean = doubleList(c.model.get("mean"));
@@ -1061,7 +1061,7 @@ public final class Engine {
         return out;
     }
 
-    Map<String, Object> ghPublicInverseSummary() {
+    public Map<String, Object> ghPublicInverseSummary() {
         Map<String, Object> s = mapOf(c.model.get("summary"));
         String[] auditKeys = {"quality_people", "quality_rows", "role_people", "eligible_intermediate_pairs", "independent_input_groups", "duplicate_input_rows", "same_input_conflicting_outputs_groups", "completion_pairing_window_seconds", "max_base_writing_duration_seconds", "all_base_and_derived_rows_within_120_seconds", "feature_count", "target_count", "known_questionnaire_pairs"};
         Map<String, Object> audit = obj();
@@ -1103,7 +1103,7 @@ public final class Engine {
         throw new IllegalStateException("quality definition missing");
     }
 
-    Map<String, Object> scoreGhInferredReport(Map<String, Object> replay, Prediction prediction) {
+    public Map<String, Object> scoreGhInferredReport(Map<String, Object> replay, Prediction prediction) {
         List<Double> qualityIds = doubleList(c.model.get("quality_ids"));
         List<Map<String, Object>> abilities = new ArrayList<>();
         for (int i = 0; i < qualityIds.size(); i++) {
@@ -1170,10 +1170,10 @@ public final class Engine {
     }
 
     // ---- qilun standard + invite -------------------------------------------
+
+
     public Map<String, Object> scoreQilunStandard(Map<String, Object> replay, Prediction prediction) {
         Map<String, Object> calculated = scoreGhInferredReport(replay, prediction);
-        // TS destructuring removes inference+limitations only; version/kind keep their
-        // first-layer positions and are overwritten in place by the result spread.
         Map<String, Object> result = copy(calculated);
         Map<String, Object> oldInference = mapOf(result.remove("inference"));
         result.remove("limitations");
@@ -1181,8 +1181,7 @@ public final class Engine {
         result.put("kind", "qilun_standard_development_result");
         Map<String, Object> product = obj();
         product.put("version", QILUN_STANDARD_VERSION);
-        Object fingerprint = rulesFingerprint;
-        product.put("rules_fingerprint", fingerprint);
+        product.put("rules_fingerprint", rulesFingerprint);
         product.put("ability_count", 28L);
         product.put("abilities_basis", "fixed_model_reference");
         product.put("runtime_training", false);
