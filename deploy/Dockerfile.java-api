@@ -1,0 +1,10 @@
+FROM eclipse-temurin:21-jre-alpine
+
+WORKDIR /app
+COPY app.jar app.jar
+COPY packages/assessment-engine/data/ /app/packages/assessment-engine/data/
+COPY infra/migrations/ /app/infra/migrations/
+COPY dist/admin-web/ /app/dist/admin-web/
+
+EXPOSE 43130
+ENTRYPOINT ["java", "-XX:MaxRAMPercentage=70", "-jar", "app.jar"]

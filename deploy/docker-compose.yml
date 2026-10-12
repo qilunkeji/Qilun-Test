@@ -1,0 +1,68 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: qilun-pg16
+    environment:
+      POSTGRES_USER: qilun
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+      POSTGRES_DB: qilun_talent
+    volumes:
+      - /opt/qilun-talent/shared/pg16:/var/lib/postgresql/data
+      - /opt/qilun-talent/shared/migrated.sql:/docker-entrypoint-initdb.d/01-data.sql:ro
+    ports:
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U qilun"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 384M
+
+  redis:
+    image: redis:7-alpine
+    container_name: qilun-redis
+    ports:
+      - "127.0.0.1:6379:6379"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+
+  api:
+    image: qilun/java-api:latest
+    container_name: qilun-talent-java
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      QILUN_DATABASE_URL: jdbc:postgresql://postgres:5432/qilun_talent?user=qilun&password=${PG_PASSWORD}
+      QILUN_ORIGIN: https://rc.iqilun.cn
+      SERVER_PORT: "43130"
+      NODE_ENV: production
+      SINGLE_INSTANCE_HTTPS: "1"
+      CONTACT_ENCRYPTION_KEY: ${CONTACT_ENCRYPTION_KEY}
+      DEFAULT_TENANT_ID: ${DEFAULT_TENANT_ID}
+      IAM_ENABLED: "1"
+      IAM_ISSUER: https://zh.iqilun.cn
+      IAM_CLIENT_ID: ${IAM_CLIENT_ID}
+      IAM_CLIENT_SECRET: ${IAM_CLIENT_SECRET}
+      IAM_WEBHOOK_SECRET: ${IAM_WEBHOOK_SECRET}
+      IAM_SYSTEM_ID: ${IAM_SYSTEM_ID}
+      PROCESSING_MODE: external_agent
+      AGENT_WRITE_TOKEN_SHA256: ${AGENT_WRITE_TOKEN_SHA256}
+    volumes:
+      - /opt/qilun-talent/shared/gh-inference-v1:/app/.local/gh-inference-v1:ro
+    ports:
+      - "127.0.0.1:43130:43130"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
