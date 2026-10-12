@@ -18,7 +18,7 @@ onMounted(load);
 <template>
   <div>
     <h2>人才档案</h2>
-    <el-table :data="rows">
+    <el-table :data="rows" @row-click="(row: any) => $router.push(`/talents/${row.id}`)">
       <el-table-column prop="name" label="姓名" />
       <el-table-column prop="purpose" label="用途">
         <template #default="{ row }">{{ (statusLabels as Record<string, string>)[row.purpose] ?? row.purpose }}</template>

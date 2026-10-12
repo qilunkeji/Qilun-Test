@@ -10,7 +10,9 @@ const nav = [
   { to: '/assessments', label: '测评中心' },
   { to: '/interviews', label: '面试评估' },
   { to: '/resume-library', label: '简历库' },
+  { to: '/optimize', label: '招聘优化' },
   { to: '/assistant', label: 'AI 中心' },
+  { to: '/project-groups', label: '项目组' },
   { to: '/settings', label: '设置' },
 ];
 </script>

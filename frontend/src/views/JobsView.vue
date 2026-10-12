@@ -22,6 +22,7 @@ onMounted(load);
   <div>
     <div style="display: flex; justify-content: space-between; align-items: center">
       <h2>岗位管理</h2>
+      <el-button type="primary" @click="router.push('/jobs/new')">创建岗位</el-button>
     </div>
     <el-table :data="rows" @row-click="(row: JobRow) => router.push(`/jobs/${row.id}`)">
       <el-table-column prop="title" label="岗位" />
