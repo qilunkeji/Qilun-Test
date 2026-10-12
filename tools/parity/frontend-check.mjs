@@ -1,7 +1,9 @@
 /**
- * R4 acceptance script: boots the Java API + Vue dev server, drives the whole
- * assessment chain in a real browser (via Playwright when available; falls back
- * to an API-level chain check with the same steps), and asserts each stage.
+ * R4 acceptance script (API-level): boots the Java API + Vue dev server and
+ * drives the assessment chain over HTTP through the frontend's dev proxy —
+ * the same request sequence the browser UI issues. NOT a browser-driven gate;
+ * browser evidence comes from the recorded IAB session (login -> quiz ->
+ * autosave saved -> reload resume).
  *
  *   node tools/parity/frontend-check.mjs
  * Exit 0 only when every stage passes.
