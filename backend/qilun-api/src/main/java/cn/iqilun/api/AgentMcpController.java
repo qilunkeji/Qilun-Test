@@ -123,6 +123,44 @@ public class AgentMcpController {
                 intOrNull(args.get("lease_minutes")), strOr(args.get("request_id"), UUID.randomUUID().toString()));
             case "submit_task_result" -> svc.submit(str(args.get("task_id")), str(args.get("lease_token")),
                 str(args.get("request_id")), args.get("result"), Boolean.TRUE.equals(args.get("validate_only")));
+            case "get_task_context" -> {
+                svc.sweep();
+                Map<String, Object> task = svc.getTask(str(args.get("task_id")), db);
+                svc.verifyLease(task, str(args.get("lease_token")));
+                yield svc.buildContext(task);
+            }
+            case "renew_lease" -> {
+                Map<String, Object> task = svc.getTask(str(args.get("task_id")), db);
+                svc.verifyLease(task, str(args.get("lease_token")));
+                int minutes = args.get("lease_minutes") instanceof Number mn ? mn.intValue() : 20;
+                yield db.query("UPDATE agent_tasks SET lease_until=now()+$2*interval '1 minute',updated_at=now() WHERE id=$1 RETURNING lease_until",
+                    task.get("id"), (long) minutes).get(0);
+            }
+            case "wait_for_tasks" -> {
+                long deadline = System.currentTimeMillis() + (args.get("timeout_seconds") instanceof Number tn ? tn.longValue() : 25) * 1000;
+                Map<String, Object> result2 = null;
+                while (System.currentTimeMillis() < deadline) {
+                    svc.sweep();
+                    List<Map<String, Object>> queued = db.query(
+                        "SELECT id,task_type FROM agent_tasks WHERE tenant_id=$1 AND state='queued' ORDER BY priority DESC,created_at LIMIT 5", System.getenv("DEFAULT_TENANT_ID"));
+                    if (!queued.isEmpty()) {
+                        Map<String, Object> out2 = new LinkedHashMap<>();
+                        List<Object> qlist = new ArrayList<>();
+                        for (Map<String, Object> q : queued) {
+                            Map<String, Object> row = new LinkedHashMap<>();
+                            row.put("task_id", q.get("id"));
+                            row.put("task_type", q.get("task_type"));
+                            qlist.add(row);
+                        }
+                        out2.put("queued", qlist);
+                        result2 = out2;
+                        break;
+                    }
+                    Thread.sleep(Math.min(1000, Math.max(1, deadline - System.currentTimeMillis())));
+                }
+                if (result2 == null) { result2 = new LinkedHashMap<>(); result2.put("queued", new ArrayList<>()); }
+                yield result2;
+            }
             case "fail_task" -> svc.fail(str(args.get("task_id")), str(args.get("lease_token")),
                 str(args.get("error_code")), Boolean.TRUE.equals(args.get("retry")), strOr(args.get("request_id"), UUID.randomUUID().toString()));
             case "get_task" -> {

@@ -785,4 +785,12 @@ public class AssessmentQaController {
             this.body = errorBody;
         }
     }
+
+    @GetMapping("/api/v1/assessment/layout/source/{file}")
+    public org.springframework.http.ResponseEntity<byte[]> layoutSource(@PathVariable String file, HttpServletRequest request) {
+        leadOnly(request);
+        return org.springframework.http.ResponseEntity.status(404)
+            .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+            .body(("{\"error\":{\"code\":\"LOCAL_SOURCE_UNAVAILABLE\",\"message\":\"原稿对照仅在指定的本机核验环境启用\"}}").getBytes());
+    }
 }
