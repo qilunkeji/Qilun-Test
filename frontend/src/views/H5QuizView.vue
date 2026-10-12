@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // 277-question quiz + value selection (4组×8选5 → 20排10), then submit.
 // DraftAutosaver ported verbatim (250ms debounce, sequence/ack).
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { DraftAutosaver } from '../logic/draft-autosaver';
@@ -97,6 +97,10 @@ onMounted(async () => {
     },
     state => { status.value = state; },
   );
+});
+
+onUnmounted(() => {
+  if (timingInterval) clearInterval(timingInterval);
 });
 </script>
 
