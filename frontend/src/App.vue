@@ -18,6 +18,7 @@ const nav = [
   { to: '/public-entries', label: '公共入口' },
   { to: '/assessment/rules', label: '规则' },
   { to: '/assessment/replica', label: '复刻面板' },
+  { to: '/assessment/studio', label: '报告工作室' },
   { to: '/settings', label: '设置' },
 ];
 </script>

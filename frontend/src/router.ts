@@ -28,6 +28,7 @@ export const router = createRouter({
     { path: '/public-entries', name: 'public-entries', component: () => import('./views/PublicEntryManagerView.vue') },
     { path: '/assessment/rules', name: 'assessment-rules', component: () => import('./views/AssessmentRulesView.vue') },
     { path: '/assessment/replica', name: 'assessment-replica', component: () => import('./views/AssessmentReplicaView.vue') },
+    { path: '/assessment/studio', name: 'report-studio', component: () => import('./views/ReportStudioView.vue') },,
     { path: '/h5', name: 'h5-entry', component: () => import('./views/H5EntryView.vue') },
     { path: '/h5/quiz', name: 'h5-quiz', component: () => import('./views/H5QuizView.vue') },
     { path: '/h5/report', name: 'h5-report', component: () => import('./views/H5ReportView.vue') },

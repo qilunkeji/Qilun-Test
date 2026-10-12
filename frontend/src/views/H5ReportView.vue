@@ -4,6 +4,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { saveReportImage, printReport } from '../logic/report-export';
+import ReportStudio from './ReportStudioView.vue';
 
 type Ability = { item: string; name: string; parent: string; value: number };
 type Report = {
@@ -88,6 +89,7 @@ onMounted(() => {
       <el-table-column prop="score" label="原始分" width="100" />
     </el-table>
 
+    <ReportStudio v-if="report" :report="report" :person-name="participantName" :submitted-at="null" style="margin-bottom: 16px" />
     <div style="display: flex; gap: 8px">
       <el-button type="primary" :loading="exporting" @click="exportPng">导出 PNG</el-button>
       <el-button @click="printReport(participantName || undefined)">打印/保存 PDF</el-button>
