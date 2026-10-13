@@ -29,9 +29,11 @@ jobs:
           $PSQL -c "SELECT id, name, created_at FROM tenants ORDER BY created_at;"
           echo "=== B. staff users and IAM mapping ==="
           $PSQL -c "SELECT u.tenant_id, u.username, u.role, i.subject AS iam_subject FROM staff_users u LEFT JOIN iam_identities i ON i.tenant_id=u.tenant_id AND i.user_id=u.id;"
-          echo "=== X. what image is the container really from ==="
-          docker inspect qilun-talent-java --format "config image: {{.Config.Image}}"
-          docker inspect qilun-talent-java --format "image sha: {{.Image}}"
-          sed -n "36,44p" /opt/qilun-talent/shared/docker-compose.yml
+          echo "=== Y. FINAL: new jar running + 401 leaves WARN ==="
+          echo "container jar:"; docker exec qilun-talent-java sha256sum /app/app.jar | cut -c1-16
+          echo "shared jar:"; sha256sum /opt/qilun-talent/shared/app.jar | cut -c1-16
+          curl -s -o /dev/null -H "Origin: https://rc.iqilun.cn" "http://127.0.0.1:43130/api/v1/assessment/invites?view=reports"
+          sleep 1
+          docker logs qilun-talent-java --since 40s 2>&1 | grep -E "API_ERROR|WARN" | tail -3
           echo "DIAG_DONE"
           EOF
