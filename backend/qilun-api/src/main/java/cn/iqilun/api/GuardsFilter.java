@@ -76,6 +76,9 @@ public class GuardsFilter extends OncePerRequestFilter {
                             chain.doFilter(request, response);
                             return;
                         } catch (ApiError e) {
+                            org.slf4j.LoggerFactory.getLogger(GuardsFilter.class)
+                                .warn("API_ERROR {} {} -> {} {}", request.getMethod(), request.getRequestURI()
+                                    + (request.getQueryString() == null ? "" : "?" + request.getQueryString()), e.status, e.code);
                             response.setStatus(e.status);
                             response.setContentType("application/json");
                             response.setCharacterEncoding("UTF-8");
@@ -83,6 +86,8 @@ public class GuardsFilter extends OncePerRequestFilter {
                             response.getWriter().write("{\"error\":{\"code\":\"" + e.code + "\",\"message\":\"" + e.getMessage() + "\"" + fields + "},\"request_id\":\"" + requestId + "\"}");
                             return;
                         } catch (Exception e) {
+                            org.slf4j.LoggerFactory.getLogger(GuardsFilter.class)
+                                .error("INTERNAL_ERROR {} {}", request.getMethod(), request.getRequestURI(), e);
                             response.setStatus(500);
                             response.setContentType("application/json");
                             response.setCharacterEncoding("UTF-8");
@@ -108,6 +113,9 @@ public class GuardsFilter extends OncePerRequestFilter {
             }
             chain.doFilter(request, response);
         } catch (ApiError e) {
+            org.slf4j.LoggerFactory.getLogger(GuardsFilter.class)
+                .warn("API_ERROR {} {} -> {} {}", request.getMethod(), request.getRequestURI()
+                    + (request.getQueryString() == null ? "" : "?" + request.getQueryString()), e.status, e.code);
             response.setStatus(e.status);
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
