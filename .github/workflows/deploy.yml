@@ -102,12 +102,16 @@ jobs:
           cp -r migrations/* build-context/infra/migrations/ 2>/dev/null || true
           cp -r frontend-dist/* build-context/dist/admin-web/
           cp Dockerfile build-context/
-          # Build
+          # Build. Tag BOTH :latest and whatever tag the server compose actually
+          # references (observed: qilun/java-api:iam-login-20261013 while CI only
+          # pushed :latest — the running container never saw a new jar).
+          RUN_TAG=$(docker inspect qilun-talent-java --format "{{.Config.Image}}" | sed "s|^qilun/java-api:||")
+          [ -n "$RUN_TAG" ] || RUN_TAG=latest
+          echo "building for tag: $RUN_TAG"
           cd build-context
-          docker build -t qilun/java-api:latest -f Dockerfile .
+          docker build -t qilun/java-api:latest -t "qilun/java-api:$RUN_TAG" -f Dockerfile .
           # Restart API only. --force-recreate is required: a retagged mutable
-          # :latest image alone does not make compose swap the running container
-          # (observed: build succeeded yet compose reported "Running", stale jar).
+          # tag alone does not make compose swap the running container.
           cd /opt/qilun-talent/shared
           export $(grep -E '^(CONTACT_ENCRYPTION_KEY|DEFAULT_TENANT_ID|IAM_CLIENT_ID|IAM_CLIENT_SECRET|IAM_WEBHOOK_SECRET|IAM_SYSTEM_ID|AGENT_WRITE_TOKEN_SHA256)=' production.env | xargs)
           export PG_PASSWORD=qilun_pg_2026
