@@ -69,14 +69,29 @@ jobs:
           echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H ${{ env.SERVER }} >> ~/.ssh/known_hosts
+          # One multiplexed connection: the runner→server link is slow (~25min per
+          # fresh handshake/transfer), so every ssh/scp below must reuse it.
+          printf 'Host deploy-target\n  HostName %s\n  User root\n  ControlMaster auto\n  ControlPath ~/.ssh/cm-%%r@%%h-%%p\n  ControlPersist 30m\n' "${{ env.SERVER }}" >> ~/.ssh/config
       - name: Upload artifacts
         run: |
-          scp backend/qilun-api/target/qilun-api-0.1.0-SNAPSHOT.jar root@${{ env.SERVER }}:${{ env.REMOTE_DIR }}/app.jar
-          scp -r frontend/dist/* root@${{ env.SERVER }}:${{ env.REMOTE_DIR }}/frontend-dist/
-          scp -r packages/assessment-engine/data root@${{ env.SERVER }}:${{ env.REMOTE_DIR }}/engine-data-new/
+          ssh deploy-target "mkdir -p ${{ env.REMOTE_DIR }}/frontend-dist ${{ env.REMOTE_DIR }}/engine-data-new"
+          LOCAL_JAR_SHA=$(sha256sum backend/qilun-api/target/qilun-api-0.1.0-SNAPSHOT.jar | cut -d' ' -f1)
+          REMOTE_JAR_SHA=$(ssh deploy-target "sha256sum ${{ env.REMOTE_DIR }}/app.jar 2>/dev/null | cut -d' ' -f1" || true)
+          if [ "$LOCAL_JAR_SHA" != "$REMOTE_JAR_SHA" ]; then
+            echo "jar changed ($LOCAL_JAR_SHA != $REMOTE_JAR_SHA) — uploading"
+            scp backend/qilun-api/target/qilun-api-0.1.0-SNAPSHOT.jar deploy-target:${{ env.REMOTE_DIR }}/app.jar
+          else
+            echo "jar unchanged — skipping 39MB upload"
+          fi
+          tar czf /tmp/frontend.tgz -C frontend/dist .
+          scp /tmp/frontend.tgz deploy-target:${{ env.REMOTE_DIR }}/frontend.tgz
+          ssh deploy-target "rm -rf ${{ env.REMOTE_DIR }}/frontend-dist && mkdir -p ${{ env.REMOTE_DIR }}/frontend-dist && tar xzf ${{ env.REMOTE_DIR }}/frontend.tgz -C ${{ env.REMOTE_DIR }}/frontend-dist"
+          tar czf /tmp/engine-data.tgz -C packages/assessment-engine/data .
+          scp /tmp/engine-data.tgz deploy-target:${{ env.REMOTE_DIR }}/engine.tgz
+          ssh deploy-target "rm -rf ${{ env.REMOTE_DIR }}/engine-data-new && mkdir -p ${{ env.REMOTE_DIR }}/engine-data-new && tar xzf ${{ env.REMOTE_DIR }}/engine.tgz -C ${{ env.REMOTE_DIR }}/engine-data-new"
       - name: Rebuild image & restart
         run: |
-          ssh root@${{ env.SERVER }} << 'EOF'
+          ssh deploy-target << 'EOF'
           set -e
           cd /opt/qilun-talent/shared
           # Update build context
