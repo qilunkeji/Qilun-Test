@@ -123,32 +123,18 @@ jobs:
       - name: Publish frontend to live static root
         run: |
           ssh deploy-target << 'EOF'
-          set -e
-          # The host openresty serves the SPA from the current release's
-          # dist/admin-web; the docker image copy is not what nginx reads.
-          echo "== layout diagnostics =="
-          ls -la /opt/qilun-talent/current || true
-          ls -la /opt/qilun-talent/current/dist || true
-          find /opt/qilun-talent/current -maxdepth 4 -name index.html -exec ls -la {} \; || true
-          LIVE_INDEX=$(find /opt/qilun-talent/current -maxdepth 4 -name index.html | head -1)
-          test -n "$LIVE_INDEX"
-          LIVE=$(dirname "$LIVE_INDEX")
-          test -d "$LIVE/assets"
-          echo "LIVE static root: $LIVE"
-          ts=$(date +%Y%m%d-%H%M%S)
-          mkdir -p /opt/qilun-talent/backups
-          tar czf "/opt/qilun-talent/backups/frontend-before-vue-restore-$ts.tgz" -C "$LIVE" .
-          SRC=/opt/qilun-talent/shared/frontend-dist
-          test -f "$SRC/index.html"
-          rm -rf "$LIVE/assets"
-          cp -r "$SRC/assets" "$LIVE/assets"
-          for dir in brand report-layout; do
-            if [ -d "$SRC/$dir" ]; then rm -rf "$LIVE/$dir"; cp -r "$SRC/$dir" "$LIVE/$dir"; fi
+          echo "== docker ps =="
+          docker ps --format '{{.Names}}\t{{.Ports}}' || true
+          echo "== openresty vhost conf =="
+          for f in /www/server/panel/vhost/nginx/*.conf /etc/nginx/conf.d/*.conf /usr/local/openresty/nginx/conf/conf.d/*.conf; do
+            [ -f "$f" ] && { echo "--- $f"; grep -nE "root |proxy_pass|server_name" "$f" | head -20; }
           done
-          install -m 644 "$SRC/index.html" "$LIVE/.index.new.html"
-          mv -f "$LIVE/.index.new.html" "$LIVE/index.html"
-          echo "FRONTEND PUBLISHED: $LIVE (backup frontend-before-vue-restore-$ts.tgz)"
-          sha256sum "$LIVE/index.html"
+          echo "== candidate index.html by mtime (Oct 12 18:01 GMT / Oct 13 02:01 +08) =="
+          find /www /opt /srv /var/www -maxdepth 7 -name index.html -newermt "2026-10-13 02:00" ! -newermt "2026-10-13 02:03" 2>/dev/null | head -20
+          echo "== /opt/qilun-talent =="
+          ls -la /opt/qilun-talent/ 2>/dev/null || true
+          ls -la /opt/qilun-talent/shared/ 2>/dev/null | head -20 || true
+          exit 0
           EOF
       - name: Verify deployment
         run: |
