@@ -35,8 +35,7 @@ jobs:
           echo "=== J. IAM sessions state (no tokens printed) ==="
           $PSQL -c "SELECT left(hash,8) AS hash8, payload->>'subject' AS subject, to_timestamp((payload->>'expires_at')::bigint/1000) AS token_exp, to_timestamp(expires/1000) AS session_exp FROM iam_sessions ORDER BY expires DESC;"
           echo "=== K. issuer health: zh.iqilun.cn /api/v1/me (expect 401 JSON if alive) ==="
-          curl -s -o /tmp/me.json -w "HTTP %{http_code} time=%{time_total}s
-" -H "Origin: https://rc.iqilun.cn" "https://zh.iqilun.cn/api/v1/me"
+          curl -s -o /tmp/me.json -w "HTTP %{http_code} time=%{time_total}s\n" -H "Origin: https://rc.iqilun.cn" "https://zh.iqilun.cn/api/v1/me"
           head -c 200 /tmp/me.json; echo
           echo "=== L. qilun-iam container log tail ==="
           docker logs qilun-iam --since 24h 2>&1 | grep -viE "healthcheck|GET /healthz" | tail -25
