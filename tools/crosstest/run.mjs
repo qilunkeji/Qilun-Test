@@ -52,7 +52,7 @@ writeFileSync(join(here, 'vectors.json'), JSON.stringify(vectors, null, 2));
 // 2) Java side: TS->Java decrypt, Java->TS vector, scrypt verify
 const compile = spawnSync(javac, ['-cp', JAR, 'CrossTest.java'], { cwd: here, encoding: 'utf8' });
 if (compile.status !== 0) { console.error('CROSSTEST_FAILED javac:', compile.stderr); process.exit(2); }
-const run = spawnSync(java, ['-cp', `${here}${join(';')}${here}/bcprov.jar`.replace(/\\/g, '/'), 'CrossTest', 'vectors.json'], { cwd: here, encoding: 'utf8' });
+const run = spawnSync(java, ['-cp', [here, `${here}/bcprov.jar`].join(process.platform === 'win32' ? ';' : ':'), 'CrossTest', 'vectors.json'], { cwd: here, encoding: 'utf8' });
 const out = run.stdout || '';
 console.log(out.trim());
 if (run.status !== 0 || !out.includes('TS->Java AES-GCM decrypt:   PASS') || !out.includes('scrypt(SHA256 hex compare): PASS')) {
