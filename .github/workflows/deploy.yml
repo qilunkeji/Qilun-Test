@@ -105,12 +105,14 @@ jobs:
           # Build
           cd build-context
           docker build -t qilun/java-api:latest -f Dockerfile .
-          # Restart API only
+          # Restart API only. --force-recreate is required: a retagged mutable
+          # :latest image alone does not make compose swap the running container
+          # (observed: build succeeded yet compose reported "Running", stale jar).
           cd /opt/qilun-talent/shared
           export $(grep -E '^(CONTACT_ENCRYPTION_KEY|DEFAULT_TENANT_ID|IAM_CLIENT_ID|IAM_CLIENT_SECRET|IAM_WEBHOOK_SECRET|IAM_SYSTEM_ID|AGENT_WRITE_TOKEN_SHA256)=' production.env | xargs)
           export PG_PASSWORD=qilun_pg_2026
-          docker compose -f docker-compose.yml up -d --no-deps api
-          sleep 10
+          docker compose -f docker-compose.yml up -d --no-deps --force-recreate api
+          sleep 12
           # Health check
           HEALTH=$(curl -s -o /dev/null -w '%{http_code}' -H 'Origin: https://rc.iqilun.cn' http://127.0.0.1:43130/api/v1/health)
           if [ "$HEALTH" != "200" ]; then
