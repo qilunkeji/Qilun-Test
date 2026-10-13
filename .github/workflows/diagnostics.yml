@@ -29,11 +29,11 @@ jobs:
           $PSQL -c "SELECT id, name, created_at FROM tenants ORDER BY created_at;"
           echo "=== B. staff users and IAM mapping ==="
           $PSQL -c "SELECT u.tenant_id, u.username, u.role, i.subject AS iam_subject FROM staff_users u LEFT JOIN iam_identities i ON i.tenant_id=u.tenant_id AND i.user_id=u.id;"
-          echo "=== C. active sessions per tenant ==="
-          $PSQL -c "SELECT tenant_id, count(*) AS active_sessions, max(created_at) AS latest FROM sessions WHERE expires_at>now() GROUP BY 1 ORDER BY 2 DESC;"
-          echo "=== D. runtime tenant config (non-secret) ==="
-          docker inspect qilun-talent-java --format '{{range .Config.Env}}{{println .}}{{end}}' | grep -E "^(DEFAULT_TENANT_ID|IAM_SYSTEM_ID|QILUN_DATABASE_URL|PROCESSING_MODE)" | sed -E 's#(jdbc:postgresql://[^/]*/)[^?]*#\1<db>#'
-          echo "=== E. recent business audit actor (who is logging in) ==="
-          $PSQL -c "SELECT actor_id, action, count(*) n, max(created_at) last FROM audit_events WHERE created_at>now()-interval '2 days' GROUP BY 1,2 ORDER BY 4 DESC LIMIT 15;"
+          echo "=== C. sessions schema ==="
+          $PSQL -c "\d sessions"
+          echo "=== F. API logs: invites/error trail (last 48h) ==="
+          docker logs qilun-talent-java --since 48h 2>&1 | grep -iE "exception|ERROR|assessment/invites" | tail -50
+          echo "=== G. API access: count of invites requests by status (from log) ==="
+          docker logs qilun-talent-java --since 48h 2>&1 | grep -oE "(GET|POST) /api/v1/assessment/invites[^ ]* [0-9]{3}" | sort | uniq -c | sort -rn | head -15
           echo "DIAG_DONE"
           EOF
