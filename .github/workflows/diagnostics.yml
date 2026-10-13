@@ -1,0 +1,42 @@
+name: Production Read-only Diagnostics
+
+on:
+  workflow_dispatch:
+
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H 124.223.159.190 >> ~/.ssh/known_hosts
+          printf 'Host deploy-target\n  HostName 124.223.159.190\n  User root\n  ControlMaster auto\n  ControlPath ~/.ssh/cm-%%r@%%h-%%p\n  ControlPersist 10m\n' >> ~/.ssh/config
+      - name: Read-only diagnostics (SELECT + find only)
+        run: |
+          ssh deploy-target << 'EOF'
+          set -e
+          PSQL="docker exec qilun-pg16 psql -U qilun -d qilun_talent -P pager=off"
+          echo "=== server time (for interpreting timestamps) ==="
+          date; docker exec qilun-pg16 psql -U qilun -d qilun_talent -P pager=off -c "SELECT now();"
+          echo "=== 1. assessment_invites per tenant: total / submitted / time range ==="
+          $PSQL -c "SELECT tenant_id, count(*) AS total, count(submitted_at) AS submitted, min(submitted_at) AS first_sub, max(submitted_at) AS last_sub, min(created_at)::date AS first_created, max(created_at)::date AS last_created FROM assessment_invites GROUP BY 1 ORDER BY 2 DESC;"
+          echo "=== 2. submitted reports: retention visibility (retained() clause) ==="
+          $PSQL -c "SELECT count(*) AS submitted_total, count(*) FILTER (WHERE ((i.candidate_id IS NOT NULL AND c.retention_until>now()) OR (i.candidate_id IS NULL AND i.independent_retention_until>now() AND (b.candidate_id IS NULL OR c.retention_until>now())))) AS visible_now, count(*) FILTER (WHERE i.candidate_id IS NOT NULL) AS bound_to_candidate, count(*) FILTER (WHERE i.candidate_id IS NULL) AS independent FROM assessment_invites i LEFT JOIN assessment_archive_bindings b ON b.tenant_id=i.tenant_id AND b.invite_id=i.id LEFT JOIN candidates c ON c.tenant_id=i.tenant_id AND c.id=coalesce(i.candidate_id,b.candidate_id) WHERE i.submitted_at IS NOT NULL;"
+          echo "=== 2b. if some submitted rows are hidden: which reason ==="
+          $PSQL -c "SELECT i.id, i.candidate_id, i.independent_retention_until::date AS ind_retention, c.retention_until::date AS cand_retention, i.submitted_at FROM assessment_invites i LEFT JOIN assessment_archive_bindings b ON b.tenant_id=i.tenant_id AND b.invite_id=i.id LEFT JOIN candidates c ON c.tenant_id=i.tenant_id AND c.id=coalesce(i.candidate_id,b.candidate_id) WHERE i.submitted_at IS NOT NULL AND NOT ((i.candidate_id IS NOT NULL AND c.retention_until>now()) OR (i.candidate_id IS NULL AND i.independent_retention_until>now() AND (b.candidate_id IS NULL OR c.retention_until>now()))) LIMIT 20;"
+          echo "=== 3. legacy migration artifacts ==="
+          ls -la /opt/qilun-talent/shared/migrated.sql 2>/dev/null || echo "no migrated.sql"
+          grep -c "INSERT INTO assessment_invites" /opt/qilun-talent/shared/migrated.sql 2>/dev/null || true
+          find /opt/qilun-talent -maxdepth 4 -type d \( -name ".local" -o -name "database" -o -name "*pglite*" \) 2>/dev/null | head -10
+          echo "--- stopped legacy containers ---"
+          docker ps -a --format '{{.Names}}\t{{.Status}}' | grep -iE "qilun|talent" || true
+          echo "=== 4. assessment audit trail ==="
+          $PSQL -c "SELECT action, count(*) AS n, min(created_at) AS first, max(created_at) AS last FROM audit_events WHERE action LIKE 'assessment%' GROUP BY 1 ORDER BY 4 DESC LIMIT 15;"
+          echo "=== 5. candidates retention distribution ==="
+          $PSQL -c "SELECT retention_until::date AS retention_date, count(*) FROM candidates GROUP BY 1 ORDER BY 1 LIMIT 30;"
+          echo "DIAG_DONE"
+          EOF
