@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { api, date, type Page } from '../logic/api';
 import Notice from '../components/Notice.vue';
 import EmptyBox from '../components/EmptyBox.vue';
@@ -12,6 +12,7 @@ type InviteRow = { id: string; name: string; title: string; version: string; pur
 type InviteList = Page<InviteRow> & { h5_origin: string; standard_assessment_available: boolean; standard_assessment_version: string };
 
 const route = useRoute();
+const router = useRouter();
 const tab = ref(route.query.tab === 'reports' ? 'reports' : 'invites');
 const list = ref<InviteList | null>(null);
 const reports = ref<InviteList | null>(null);
@@ -22,6 +23,13 @@ const days = ref(7);
 const created = ref<{ url: string; expires_at: string } | null>(null);
 
 const rows = computed(() => (tab.value === 'reports' ? reports.value : list.value));
+
+// Keep the active tab in the URL so a refresh keeps you on 已完成报告.
+function switchTab(next: 'invites' | 'reports') {
+  if (tab.value === next) return;
+  router.replace({ query: next === 'reports' ? { tab: 'reports' } : {} });
+  tab.value = next;
+}
 
 async function load() {
   error.value = '';
@@ -37,6 +45,7 @@ async function load() {
 }
 onMounted(load);
 watch(tab, load);
+watch(() => route.query.tab, t => { tab.value = t === 'reports' ? 'reports' : 'invites'; });
 
 async function createInvite() {
   creating.value = true;
@@ -68,8 +77,8 @@ function inviteState(r: InviteRow) {
   </div>
 
   <div class="tabbar" aria-label="测评栏目">
-    <button :aria-pressed="tab === 'invites'" :class="{ active: tab === 'invites' }" @click="tab = 'invites'">邀请与答题进度</button>
-    <button :aria-pressed="tab === 'reports'" :class="{ active: tab === 'reports' }" @click="tab = 'reports'">已完成报告</button>
+    <button :aria-pressed="tab === 'invites'" :class="{ active: tab === 'invites' }" @click="switchTab('invites')">邀请与答题进度</button>
+    <button :aria-pressed="tab === 'reports'" :class="{ active: tab === 'reports' }" @click="switchTab('reports')">已完成报告</button>
   </div>
 
   <Notice v-if="error" kind="error">{{ error }}</Notice>

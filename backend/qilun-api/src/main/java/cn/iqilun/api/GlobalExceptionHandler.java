@@ -13,6 +13,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ApiError.class)
     public ResponseEntity<Map<String, Object>> apiError(ApiError e, HttpServletRequest request) {
+        // 4xx carries no stack but is exactly what "page looks empty" investigations need.
+        org.slf4j.LoggerFactory.getLogger(GlobalExceptionHandler.class)
+            .warn("API_ERROR {} {} -> {} {}", request.getMethod(), request.getRequestURI()
+                + (request.getQueryString() == null ? "" : "?" + request.getQueryString()),
+                e.status, e.code);
         Map<String, Object> error = new LinkedHashMap<>();
         error.put("code", e.code);
         error.put("message", e.getMessage());
