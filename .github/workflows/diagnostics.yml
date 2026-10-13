@@ -29,21 +29,16 @@ jobs:
           $PSQL -c "SELECT id, name, created_at FROM tenants ORDER BY created_at;"
           echo "=== B. staff users and IAM mapping ==="
           $PSQL -c "SELECT u.tenant_id, u.username, u.role, i.subject AS iam_subject FROM staff_users u LEFT JOIN iam_identities i ON i.tenant_id=u.tenant_id AND i.user_id=u.id;"
-          echo "=== H. authenticated request test (temp session, auto-cleaned) ==="
-          TOKEN=diag_$(openssl rand -hex 24)
-          HASH=$(printf %s "$TOKEN" | sha256sum | cut -d' ' -f1)
-          $PSQL -c "INSERT INTO sessions SELECT '$HASH', u.tenant_id, u.id, 'diag-csrf', now()+interval '20 minutes' FROM staff_users u WHERE u.username='talent-admin';"
-          echo "--- GET /assessment/invites?view=reports ---"
-          curl -s -o /tmp/r1.json -w "HTTP %{http_code} size=%{size_download}\n" -H "Origin: https://rc.iqilun.cn" -H "Cookie: qilun_session=$TOKEN" "http://127.0.0.1:43130/api/v1/assessment/invites?view=reports"
-          head -c 1200 /tmp/r1.json; echo
-          echo "--- GET /assessment/invites (no view) ---"
-          curl -s -o /tmp/r2.json -w "HTTP %{http_code} size=%{size_download}\n" -H "Origin: https://rc.iqilun.cn" -H "Cookie: qilun_session=$TOKEN" "http://127.0.0.1:43130/api/v1/assessment/invites"
-          python3 -c "import json;d=json.load(open('/tmp/r2.json'));print('no-view total=',d.get('data',{}).get('total'))" 2>/dev/null || head -c 400 /tmp/r2.json
-          echo
-          echo "--- GET /dashboard ---"
-          curl -s -o /tmp/r3.json -w "HTTP %{http_code}\n" -H "Origin: https://rc.iqilun.cn" -H "Cookie: qilun_session=$TOKEN" "http://127.0.0.1:43130/api/v1/dashboard"
-          head -c 300 /tmp/r3.json; echo
-          $PSQL -c "DELETE FROM sessions WHERE token_hash='$HASH';"
-          echo "(temp session removed)"
+          echo "=== I. auth & access-denied audit trail ==="
+          $PSQL -c "SELECT action, count(*) n, max(created_at) last FROM audit_events WHERE action LIKE 'auth%' OR action='access.denied' GROUP BY 1 ORDER BY 3 DESC;"
+          $PSQL -c "SELECT actor_id, action, created_at FROM audit_events WHERE action='access.denied' ORDER BY created_at DESC LIMIT 10;"
+          echo "=== J. IAM sessions state (no tokens printed) ==="
+          $PSQL -c "SELECT left(hash,8) AS hash8, payload->>'subject' AS subject, to_timestamp((payload->>'expires_at')::bigint/1000) AS token_exp, to_timestamp(expires/1000) AS session_exp FROM iam_sessions ORDER BY expires DESC;"
+          echo "=== K. issuer health: zh.iqilun.cn /api/v1/me (expect 401 JSON if alive) ==="
+          curl -s -o /tmp/me.json -w "HTTP %{http_code} time=%{time_total}s
+" -H "Origin: https://rc.iqilun.cn" "https://zh.iqilun.cn/api/v1/me"
+          head -c 200 /tmp/me.json; echo
+          echo "=== L. qilun-iam container log tail ==="
+          docker logs qilun-iam --since 24h 2>&1 | grep -viE "healthcheck|GET /healthz" | tail -25
           echo "DIAG_DONE"
           EOF
