@@ -29,15 +29,11 @@ jobs:
           $PSQL -c "SELECT id, name, created_at FROM tenants ORDER BY created_at;"
           echo "=== B. staff users and IAM mapping ==="
           $PSQL -c "SELECT u.tenant_id, u.username, u.role, i.subject AS iam_subject FROM staff_users u LEFT JOIN iam_identities i ON i.tenant_id=u.tenant_id AND i.user_id=u.id;"
-          echo "=== I. auth & access-denied audit trail ==="
-          $PSQL -c "SELECT action, count(*) n, max(created_at) last FROM audit_events WHERE action LIKE 'auth%' OR action='access.denied' GROUP BY 1 ORDER BY 3 DESC;"
-          $PSQL -c "SELECT actor_id, action, created_at FROM audit_events WHERE action='access.denied' ORDER BY created_at DESC LIMIT 10;"
-          echo "=== J. IAM sessions state (no tokens printed) ==="
-          $PSQL -c "SELECT left(hash,8) AS hash8, payload->>'subject' AS subject, to_timestamp((payload->>'expires_at')::bigint/1000) AS token_exp, to_timestamp(expires/1000) AS session_exp FROM iam_sessions ORDER BY expires DESC;"
-          echo "=== K. issuer health: zh.iqilun.cn /api/v1/me (expect 401 JSON if alive) ==="
-          curl -s -o /tmp/me.json -w "HTTP %{http_code} time=%{time_total}s\n" -H "Origin: https://rc.iqilun.cn" "https://zh.iqilun.cn/api/v1/me"
-          head -c 200 /tmp/me.json; echo
-          echo "=== L. qilun-iam container log tail ==="
-          docker logs qilun-iam --since 24h 2>&1 | grep -viE "healthcheck|GET /healthz" | tail -25
+          echo "=== M. locate rc.iqilun.cn openresty site conf ==="
+          find /opt/1panel -name "*.conf" -path "*rc.iqilun.cn*" 2>/dev/null | head -5
+          CONFS=$(find /opt/1panel -name "*.conf" 2>/dev/null | xargs grep -l "rc.iqilun.cn" 2>/dev/null | head -5)
+          for f in $CONFS; do echo "--- $f ---"; cat "$f"; done
+          echo "=== N. which conf has the iam/login 302 rule ==="
+          find /opt/1panel -name "*.conf" 2>/dev/null | xargs grep -ln "iam/login" 2>/dev/null | head -5
           echo "DIAG_DONE"
           EOF
