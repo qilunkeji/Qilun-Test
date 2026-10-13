@@ -28,7 +28,7 @@ jobs:
           echo "=== A. tenants ==="
           $PSQL -c "SELECT id, name, created_at FROM tenants ORDER BY created_at;"
           echo "=== B. staff users and IAM mapping ==="
-          $PSQL -c "SELECT u.tenant_id, u.username, u.role, u.created_at, i.subject AS iam_subject FROM staff_users u LEFT JOIN iam_identities i ON i.tenant_id=u.tenant_id AND i.user_id=u.id ORDER BY u.created_at;"
+          $PSQL -c "SELECT u.tenant_id, u.username, u.role, i.subject AS iam_subject FROM staff_users u LEFT JOIN iam_identities i ON i.tenant_id=u.tenant_id AND i.user_id=u.id;"
           echo "=== C. active sessions per tenant ==="
           $PSQL -c "SELECT tenant_id, count(*) AS active_sessions, max(created_at) AS latest FROM sessions WHERE expires_at>now() GROUP BY 1 ORDER BY 2 DESC;"
           echo "=== D. runtime tenant config (non-secret) ==="
