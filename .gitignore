@@ -36,3 +36,7 @@ tools/parity/last-b.json
 frontend/dist/
 _ui.log
 _fe.log
+
+# legacy/reference archives
+qilun_talent_system_v1/
+apps/
