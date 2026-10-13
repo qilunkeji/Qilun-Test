@@ -29,10 +29,9 @@ jobs:
           $PSQL -c "SELECT id, name, created_at FROM tenants ORDER BY created_at;"
           echo "=== B. staff users and IAM mapping ==="
           $PSQL -c "SELECT u.tenant_id, u.username, u.role, i.subject AS iam_subject FROM staff_users u LEFT JOIN iam_identities i ON i.tenant_id=u.tenant_id AND i.user_id=u.id;"
-          echo "=== W. jar sha three-way check ==="
-          echo "shared:"; sha256sum /opt/qilun-talent/shared/app.jar | cut -c1-16
-          echo "container:"; docker exec qilun-talent-java sha256sum /app/app.jar | cut -c1-16
-          echo "build-context:"; sha256sum /opt/qilun-talent/shared/build-context/app.jar 2>/dev/null | cut -c1-16 || echo gone
-          echo "image id:"; docker images qilun/java-api --format "{{.ID}} {{.CreatedAt}}"
+          echo "=== X. what image is the container really from ==="
+          docker inspect qilun-talent-java --format "config image: {{.Config.Image}}"
+          docker inspect qilun-talent-java --format "image sha: {{.Image}}"
+          sed -n "36,44p" /opt/qilun-talent/shared/docker-compose.yml
           echo "DIAG_DONE"
           EOF
