@@ -29,13 +29,12 @@ jobs:
           $PSQL -c "SELECT id, name, created_at FROM tenants ORDER BY created_at;"
           echo "=== B. staff users and IAM mapping ==="
           $PSQL -c "SELECT u.tenant_id, u.username, u.role, i.subject AS iam_subject FROM staff_users u LEFT JOIN iam_identities i ON i.tenant_id=u.tenant_id AND i.user_id=u.id;"
-          echo "=== O. nginx access log: invites & auth traffic (last 7d) ==="
-          docker exec 1Panel-openresty-6AKl sh -c "grep -h 'assessment/invites' /var/log/nginx/rc.iqilun.cn.access.log* 2>/dev/null | tail -30" || true
-          echo "--- status code summary for invites ---"
-          docker exec 1Panel-openresty-6AKl sh -c "grep -h 'assessment/invites' /var/log/nginx/rc.iqilun.cn.access.log* 2>/dev/null | grep -oE ' (200|301|302|304|400|401|403|404|500|502|503) ' | sort | uniq -c" || true
-          echo "--- iam callback/login trail (last 40) ---"
-          docker exec 1Panel-openresty-6AKl sh -c "grep -hE 'iam/(login|callback)' /var/log/nginx/rc.iqilun.cn.access.log* 2>/dev/null | tail -40" || true
-          echo "--- browser UA requests today (non-curl), first 40 ---"
-          docker exec 1Panel-openresty-6AKl sh -c "grep -h '14/Oct/2026\|13/Oct/2026' /var/log/nginx/rc.iqilun.cn.access.log 2>/dev/null | grep -vE 'curl|Chrome-Lighthouse' | tail -40" || true
+          echo "=== P. verify new 4xx WARN logging ==="
+          CODE=$(curl -s -o /dev/null -w "%{http_code}" -H "Origin: https://rc.iqilun.cn" "http://127.0.0.1:43130/api/v1/assessment/invites")
+          echo "unauthenticated call -> $CODE (expect 401)"
+          sleep 1
+          docker logs qilun-talent-java --since 1m 2>&1 | grep "API_ERROR" | tail -3
+          echo "=== Q. live build check ==="
+          curl -s https://rc.iqilun.cn/index.html | grep -oE "index-[A-Za-z0-9_-]+\.js" | head -1
           echo "DIAG_DONE"
           EOF
