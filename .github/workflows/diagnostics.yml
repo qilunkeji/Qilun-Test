@@ -29,11 +29,24 @@ jobs:
           $PSQL -c "SELECT id, name, created_at FROM tenants ORDER BY created_at;"
           echo "=== B. staff users and IAM mapping ==="
           $PSQL -c "SELECT u.tenant_id, u.username, u.role, i.subject AS iam_subject FROM staff_users u LEFT JOIN iam_identities i ON i.tenant_id=u.tenant_id AND i.user_id=u.id;"
-          echo "=== C. sessions schema ==="
-          $PSQL -c "\d sessions"
-          echo "=== F. API logs: invites/error trail (last 48h) ==="
-          docker logs qilun-talent-java --since 48h 2>&1 | grep -iE "exception|ERROR|assessment/invites" | tail -50
-          echo "=== G. API access: count of invites requests by status (from log) ==="
-          docker logs qilun-talent-java --since 48h 2>&1 | grep -oE "(GET|POST) /api/v1/assessment/invites[^ ]* [0-9]{3}" | sort | uniq -c | sort -rn | head -15
+          echo "=== H. authenticated request test (temp session, auto-cleaned) ==="
+          TOKEN=diag_$(openssl rand -hex 24)
+          HASH=$(printf %s "$TOKEN" | sha256sum | cut -d' ' -f1)
+          $PSQL -c "INSERT INTO sessions SELECT '$HASH', u.tenant_id, u.id, 'diag-csrf', now()+interval '20 minutes' FROM staff_users u WHERE u.username='talent-admin';"
+          echo "--- GET /assessment/invites?view=reports ---"
+          curl -s -o /tmp/r1.json -w "HTTP %{http_code} size=%{size_download}
+" -H "Origin: https://rc.iqilun.cn" -H "Cookie: qilun_session=$TOKEN" "http://127.0.0.1:43130/api/v1/assessment/invites?view=reports"
+          head -c 1200 /tmp/r1.json; echo
+          echo "--- GET /assessment/invites (no view) ---"
+          curl -s -o /tmp/r2.json -w "HTTP %{http_code} size=%{size_download}
+" -H "Origin: https://rc.iqilun.cn" -H "Cookie: qilun_session=$TOKEN" "http://127.0.0.1:43130/api/v1/assessment/invites"
+          python3 -c "import json;d=json.load(open('/tmp/r2.json'));print('no-view total=',d.get('data',{}).get('total'))" 2>/dev/null || head -c 400 /tmp/r2.json
+          echo
+          echo "--- GET /dashboard ---"
+          curl -s -o /tmp/r3.json -w "HTTP %{http_code}
+" -H "Origin: https://rc.iqilun.cn" -H "Cookie: qilun_session=$TOKEN" "http://127.0.0.1:43130/api/v1/dashboard"
+          head -c 300 /tmp/r3.json; echo
+          $PSQL -c "DELETE FROM sessions WHERE token_hash='$HASH';"
+          echo "(temp session removed)"
           echo "DIAG_DONE"
           EOF
