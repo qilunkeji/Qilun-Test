@@ -123,18 +123,28 @@ jobs:
       - name: Publish frontend to live static root
         run: |
           ssh deploy-target << 'EOF'
-          echo "== docker ps =="
-          docker ps --format '{{.Names}}\t{{.Ports}}' || true
-          echo "== openresty vhost conf =="
-          for f in /www/server/panel/vhost/nginx/*.conf /etc/nginx/conf.d/*.conf /usr/local/openresty/nginx/conf/conf.d/*.conf; do
-            [ -f "$f" ] && { echo "--- $f"; grep -nE "root |proxy_pass|server_name" "$f" | head -20; }
-          done
-          echo "== candidate index.html by mtime (Oct 12 18:01 GMT / Oct 13 02:01 +08) =="
-          find /www /opt /srv /var/www -maxdepth 7 -name index.html -newermt "2026-10-13 02:00" ! -newermt "2026-10-13 02:03" 2>/dev/null | head -20
-          echo "== /opt/qilun-talent =="
-          ls -la /opt/qilun-talent/ 2>/dev/null || true
-          ls -la /opt/qilun-talent/shared/ 2>/dev/null | head -20 || true
-          exit 0
+          set -e
+          # 1Panel openresty serves the SPA from the site's frontend-access dir
+          # (mtime-matched to the served Last-Modified on 2026-10-13).
+          LIVE=/opt/1panel/www/sites/rc.iqilun.cn/frontend-access-20261013
+          test -f "$LIVE/index.html"
+          test -d "$LIVE/assets"
+          echo "LIVE static root: $LIVE"
+          echo "--- site conf references (record) ---"
+          grep -rn "frontend-access-20261013" /opt/1panel/apps/openresty/openresty/conf/ 2>/dev/null | head -5 || true
+          ts=$(date +%Y%m%d-%H%M%S)
+          mkdir -p /opt/qilun-talent/backups
+          tar czf "/opt/qilun-talent/backups/frontend-before-vue-restore-$ts.tgz" -C "$LIVE" .
+          SRC=/opt/qilun-talent/shared/frontend-dist
+          test -f "$SRC/index.html"
+          rm -rf "$LIVE/assets" "$LIVE/brand" "$LIVE/report-layout"
+          cp -r "$SRC/assets" "$LIVE/assets"
+          if [ -d "$SRC/brand" ]; then cp -r "$SRC/brand" "$LIVE/brand"; fi
+          if [ -d "$SRC/report-layout" ]; then cp -r "$SRC/report-layout" "$LIVE/report-layout"; fi
+          install -m 644 "$SRC/index.html" "$LIVE/.index.new.html"
+          mv -f "$LIVE/.index.new.html" "$LIVE/index.html"
+          echo "FRONTEND PUBLISHED: $LIVE (backup frontend-before-vue-restore-$ts.tgz)"
+          sha256sum "$LIVE/index.html" "$SRC/index.html"
           EOF
       - name: Verify deployment
         run: |
