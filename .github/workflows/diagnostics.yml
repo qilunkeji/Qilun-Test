@@ -29,16 +29,10 @@ jobs:
           $PSQL -c "SELECT id, name, created_at FROM tenants ORDER BY created_at;"
           echo "=== B. staff users and IAM mapping ==="
           $PSQL -c "SELECT u.tenant_id, u.username, u.role, i.subject AS iam_subject FROM staff_users u LEFT JOIN iam_identities i ON i.tenant_id=u.tenant_id AND i.user_id=u.id;"
-          echo "=== V. full picture: startup logs / jar content / fresh 401 ==="
-          echo "--- startup banner visible? (logs since 20m) ---"
-          docker logs qilun-talent-java --since 20m 2>&1 | grep -cE "Started|Tomcat|qilun" || true
-          docker logs qilun-talent-java --since 20m 2>&1 | head -5
-          echo "--- GuardsFilter.class inside jar has the log string? ---"
-          docker cp qilun-talent-java:/app/app.jar /tmp/check.jar >/dev/null 2>&1
-          python3 -c "import zipfile;z=zipfile.ZipFile('/tmp/check.jar');c=z.read('BOOT-INF/classes/cn/iqilun/api/GuardsFilter.class');print('API_ERROR in class:', b'API_ERROR' in c)"
-          echo "--- fresh 401 then ALL new log lines ---"
-          curl -s -o /dev/null -H "Origin: https://rc.iqilun.cn" "http://127.0.0.1:43130/api/v1/assessment/invites?view=reports"
-          sleep 1
-          docker logs qilun-talent-java --since 30s 2>&1 | tail -8
+          echo "=== W. jar sha three-way check ==="
+          echo "shared:"; sha256sum /opt/qilun-talent/shared/app.jar | cut -c1-16
+          echo "container:"; docker exec qilun-talent-java sha256sum /app/app.jar | cut -c1-16
+          echo "build-context:"; sha256sum /opt/qilun-talent/shared/build-context/app.jar 2>/dev/null | cut -c1-16 || echo gone
+          echo "image id:"; docker images qilun/java-api --format "{{.ID}} {{.CreatedAt}}"
           echo "DIAG_DONE"
           EOF
