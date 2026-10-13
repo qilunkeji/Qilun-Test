@@ -31,8 +31,7 @@ jobs:
           $PSQL -c "SELECT u.tenant_id, u.username, u.role, i.subject AS iam_subject FROM staff_users u LEFT JOIN iam_identities i ON i.tenant_id=u.tenant_id AND i.user_id=u.id;"
           echo "=== T. final: container fresh + 401 leaves WARN ==="
           docker inspect qilun-talent-java --format "container started: {{.State.StartedAt}}"
-          curl -s -o /dev/null -w "call -> %{http_code}
-" -H "Origin: https://rc.iqilun.cn" "http://127.0.0.1:43130/api/v1/assessment/invites?view=reports"
+          curl -s -o /dev/null -w "call -> %{http_code}\n" -H "Origin: https://rc.iqilun.cn" "http://127.0.0.1:43130/api/v1/assessment/invites?view=reports"
           sleep 1
           docker logs qilun-talent-java --since 3m 2>&1 | grep "API_ERROR" | tail -3
           echo "DIAG_DONE"
