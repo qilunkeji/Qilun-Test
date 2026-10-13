@@ -126,13 +126,18 @@ jobs:
           set -e
           # The host openresty serves the SPA from the current release's
           # dist/admin-web; the docker image copy is not what nginx reads.
-          RELEASE=$(readlink -f /opt/qilun-talent/current)
-          LIVE="$RELEASE/dist/admin-web"
-          test -d "$LIVE" && test -f "$LIVE/index.html"
+          echo "== layout diagnostics =="
+          ls -la /opt/qilun-talent/current || true
+          ls -la /opt/qilun-talent/current/dist || true
+          find /opt/qilun-talent/current -maxdepth 4 -name index.html -exec ls -la {} \; || true
+          LIVE_INDEX=$(find /opt/qilun-talent/current -maxdepth 4 -name index.html | head -1)
+          test -n "$LIVE_INDEX"
+          LIVE=$(dirname "$LIVE_INDEX")
+          test -d "$LIVE/assets"
           echo "LIVE static root: $LIVE"
           ts=$(date +%Y%m%d-%H%M%S)
           mkdir -p /opt/qilun-talent/backups
-          tar czf "/opt/qilun-talent/backups/frontend-before-vue-restore-$ts.tgz" -C "$RELEASE/dist" admin-web
+          tar czf "/opt/qilun-talent/backups/frontend-before-vue-restore-$ts.tgz" -C "$LIVE" .
           SRC=/opt/qilun-talent/shared/frontend-dist
           test -f "$SRC/index.html"
           rm -rf "$LIVE/assets"
