@@ -22,28 +22,19 @@ const report = ref<Report | null>(null);
 const token = ref('');
 const participantName = ref('');
 const exporting = ref(false);
+const exportError = ref('');
 const sheetEl = ref<HTMLElement | null>(null);
-
-const abilityGroups = computed(() => {
-  if (!report.value) return [];
-  const byParent = new Map<string, Ability[]>();
-  for (const a of report.value.result.abilities) {
-    const list = byParent.get(String(a.parent)) ?? [];
-    list.push(a);
-    byParent.set(String(a.parent), list);
-  }
-  return [...byParent.entries()].map(([parent, items]) => ({ parent, items: [...items].sort((x, y) => y.value - x.value) }));
-});
 
 const strengths = computed(() => report.value ? [...report.value.result.rows].filter(r => r.type === 2).sort((a, b) => b.score - a.score).slice(0, 10) : []);
 
 async function exportPng() {
   if (!sheetEl.value) return;
   exporting.value = true;
+  exportError.value = '';
   try {
     await saveReportImage(sheetEl.value, `${participantName.value || '齐论'}-测评报告.png`);
   } catch (e) {
-    (await import('element-plus')).ElMessage.error((e as Error).message);
+    exportError.value = (e as Error).message;
   } finally {
     exporting.value = false;
   }
@@ -60,39 +51,54 @@ onMounted(() => {
 </script>
 
 <template>
-  <div ref="sheetEl" style="max-width: 720px; margin: 0 auto; padding: 16px" v-if="report">
-    <h3>{{ report.result?.report_text?.temperament?.name ? `${participantName} · ${report.result.report_text.temperament.name}` : '齐论性格与发展测评 · 参考报告' }}</h3>
-    <el-alert type="info" :closable="false" show-icon title="能力分数是固定模型推算的参考评分，不等同于实际技能或绩效，不用于自动录用或淘汰。" style="margin-bottom: 16px" />
-
-    <h4>最突出的六项能力</h4>
-    <el-table :data="report.result.ability_summary.top_six" size="small" style="margin-bottom: 16px">
-      <el-table-column prop="name" label="能力" />
-      <el-table-column prop="value" label="参考分" width="100" />
-    </el-table>
-
-    <h4>待发展的三项</h4>
-    <el-table :data="report.result.ability_summary.bottom_three" size="small" style="margin-bottom: 16px">
-      <el-table-column prop="name" label="能力" />
-      <el-table-column prop="value" label="参考分" width="100" />
-    </el-table>
-
-    <h4>全部 28 项能力</h4>
-    <el-table :data="report.result.abilities" size="small" style="margin-bottom: 16px">
-      <el-table-column prop="name" label="能力" />
-      <el-table-column prop="value" label="参考分" width="100" />
-    </el-table>
-
-    <h4>前十大才干</h4>
-    <el-table :data="strengths" size="small" style="margin-bottom: 16px">
-      <el-table-column type="index" label="#" width="50" />
-      <el-table-column prop="name" label="才干" />
-      <el-table-column prop="score" label="原始分" width="100" />
-    </el-table>
-
-    <ReportStudio v-if="report" :report="report" :person-name="participantName" :submitted-at="null" style="margin-bottom: 16px" />
-    <div style="display: flex; gap: 8px">
-      <el-button type="primary" :loading="exporting" @click="exportPng">导出 PNG</el-button>
-      <el-button @click="printReport(participantName || undefined)">打印/保存 PDF</el-button>
+  <main class="h5-shell h5-reference h5-reference-report" v-if="report">
+    <div class="h5-brand no-print">
+      <img src="/brand/qilun-logo-light.png" alt="齐论AI" />
+      <span>个人参考报告</span>
     </div>
-  </div>
+    <section class="h5-card">
+      <h1>{{ report.result?.report_text?.temperament?.name ? `${participantName} · ${report.result.report_text.temperament.name}` : '齐论性格与发展测评 · 参考报告' }}</h1>
+      <div class="h5-reference-notice">能力分数是固定模型推算的参考评分，不等同于实际技能或绩效，不用于自动录用或淘汰。</div>
+
+      <div class="h5-result-section">
+        <h2>最突出的六项能力</h2>
+        <div class="h5-metrics">
+          <div v-for="a in report.result.ability_summary.top_six" :key="a.item">
+            <span>{{ a.name }}</span>
+            <div class="h5-metric-track"><i :style="{ width: `${Math.min(100, a.value)}%`, background: '#9b0000' }" /></div>
+            <b>{{ a.value.toFixed(0) }}</b>
+          </div>
+        </div>
+      </div>
+
+      <div class="h5-result-section">
+        <h2>待发展的三项</h2>
+        <div class="h5-metrics">
+          <div v-for="a in report.result.ability_summary.bottom_three" :key="a.item">
+            <span>{{ a.name }}</span>
+            <div class="h5-metric-track"><i :style="{ width: `${Math.min(100, a.value)}%`, background: '#7d1316' }" /></div>
+            <b>{{ a.value.toFixed(0) }}</b>
+          </div>
+        </div>
+      </div>
+
+      <div class="h5-result-section">
+        <h2>前十大才干</h2>
+        <ol style="padding-left:20px">
+          <li v-for="(r, i) in strengths" :key="r.item">{{ r.name }}<small style="color:#5f5b5b"> · 原始分 {{ r.score }}</small></li>
+        </ol>
+      </div>
+    </section>
+
+    <ReportStudio :report="report" :person-name="participantName" :submitted-at="null" />
+
+    <div class="h5-card no-print">
+      <p v-if="exportError" role="alert">{{ exportError }}</p>
+      <div class="h5-actions">
+        <button class="primary" :disabled="exporting" @click="exportPng">{{ exporting ? '正在导出…' : '导出 PNG' }}</button>
+        <button @click="printReport(participantName || undefined)">打印 / 保存 PDF</button>
+      </div>
+      <p class="h5-reference-footer">报告仅用于自我理解与发展沟通；引用与推导过程可在报告中逐条核对。</p>
+    </div>
+  </main>
 </template>

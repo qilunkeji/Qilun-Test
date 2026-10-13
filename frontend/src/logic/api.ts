@@ -17,3 +17,5 @@ export type Application={id:string;candidate_id:string;name:string;title:string;
 export type TalentDetail=Talent&{assessments?:{id:string;submitted_at:string|null;created_at:string;revoked_at:string|null}[];processing_basis:string;sources:{id:string;channel:string;external_id:string;authorization_ref:string}[];resumes:Resume[];applications:Application[]};
 export type ResumeDetail=Resume&{text_content:string;chunks:{id:string;line_number:number;text_content:string}[]};
 export const statusLabels:Record<string,string>={draft:'草稿',pending:'待确认',open:'招聘中',paused:'暂停',closed:'关闭',archived:'归档',pending_review:'待人工审阅',recruitment:'当前招聘',talent_pool:'授权储备',full:'完整材料',summary_only:'摘要资料'};
+// Legacy ui.tsx date(): "YYYY-MM-DD HH:mm", null → 未知.
+export const date=(value?:string|null)=>{const d=new Date(value??''),p=(n:number)=>String(n).padStart(2,'0');return Number.isFinite(d.getTime())?`${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`:'未知';};

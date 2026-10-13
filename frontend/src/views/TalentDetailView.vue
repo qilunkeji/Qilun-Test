@@ -1,80 +1,117 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
-import { ElMessage } from 'element-plus';
-import { api, statusLabels } from '../logic/api';
+import { onMounted, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { api, date, statusLabels, type TalentDetail } from '../logic/api';
+import Notice from '../components/Notice.vue';
+import BadgePill from '../components/BadgePill.vue';
+import LoadingState from '../components/LoadingState.vue';
+import RetryBox from '../components/RetryBox.vue';
 
-type Resume = { id: string; source_id: string; version: number; filename: string; content_hash: string; completeness: string; created_at: string };
-type Application = { id: string; job_id: string; title: string; job_version: number; batch: string; created_at: string };
-type Assessment = { id: string; submitted_at: string | null; created_at: string; revoked_at: string | null };
-type TalentDetail = { id: string; name: string; purpose: string; processing_basis: string; retention_until: string; created_at: string; project_group_id: string | null; sources: { id: string; channel: string; external_id: string; authorization_ref: string; created_at: string }[]; resumes: Resume[]; applications: Application[]; assessments: Assessment[] };
-
+// Legacy talent detail (talents.tsx): metadata + contact access (audited) + versions/applications/assessments.
 const route = useRoute();
-const talent = ref<TalentDetail | null>(null);
-const contact = ref<string | null>(null);
-const showContact = ref(false);
+const router = useRouter();
+const detail = ref<TalentDetail | null>(null);
+const error = ref('');
+const contact = ref('');
+const busy = ref(false);
+const refresh = ref(0);
 
 async function load() {
-  talent.value = await api<TalentDetail>(`/talents/${route.params.id}`);
-}
-
-async function viewContact() {
+  error.value = '';
+  detail.value = null;
   try {
-    const result = await api<{ contact: string | null }>(`/talents/${route.params.id}/contact-access`, {});
-    contact.value = result.contact;
-    showContact.value = true;
+    detail.value = await api<TalentDetail>(`/talents/${route.params.id}`);
   } catch (e) {
-    ElMessage.error((e as Error).message);
+    error.value = (e as Error).message;
   }
 }
-
 onMounted(load);
+
+async function viewContact() {
+  if (!detail.value || busy.value) return;
+  busy.value = true;
+  try {
+    const result = await api<{ contact: string | null }>(`/talents/${detail.value.id}/contact-access`, {});
+    contact.value = result.contact ?? '未提供';
+  } catch (e) {
+    error.value = (e as Error).message;
+  } finally {
+    busy.value = false;
+  }
+}
 </script>
 
 <template>
-  <div v-if="talent">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px">
-      <h2>{{ talent.name }}</h2>
-      <el-button @click="viewContact">查看联系方式</el-button>
-      <el-button type="primary" @click="$router.push(`/interviews/new/${talent.applications[0]?.id ?? ''}`)">发起面试</el-button>
+  <RetryBox v-if="error && !detail" :text="error" @retry="refresh++; load()" />
+  <LoadingState v-else-if="!detail" text="正在读取授权档案…" />
+  <section v-else class="panel">
+    <div class="section-heading">
+      <div>
+        <button class="text-button" @click="router.push('/talents')">← 返回人才列表</button>
+        <h2>{{ detail.name }} <BadgePill>{{ statusLabels[detail.purpose] ?? detail.purpose }}</BadgePill></h2>
+      </div>
+      <div class="actions">
+        <button :disabled="busy" @click="viewContact">{{ contact ? '再次查看联系方式（留审计）' : '查看联系方式（留审计）' }}</button>
+        <button class="primary" @click="router.push(`/interviews/new/${detail.applications[0]?.id ?? ''}`)">发起面试</button>
+      </div>
     </div>
-    <el-dialog v-model="showContact" :title="`${talent.name} 的联系方式`" width="400">
-      <p v-if="contact" style="font-size: 18px; font-weight: 600; word-break: break-all">{{ contact }}</p>
-      <p v-else style="color: #909399">未录入联系方式</p>
-      <p style="color: #909399; font-size: 12px; margin-top: 12px">查看已记录审计日志</p>
-    </el-dialog>
+    <Notice v-if="error" kind="error">{{ error }}</Notice>
+    <div v-if="contact" class="metadata"><span>联系方式：<strong class="mono wrap">{{ contact }}</strong></span></div>
+    <div class="metadata">
+      <span>保留至：{{ date(detail.retention_until) }}</span>
+      <span>建档：{{ date(detail.created_at) }}</span>
+      <span>处理依据：{{ detail.processing_basis }}</span>
+    </div>
 
-    <el-descriptions :column="3" border style="margin-bottom: 16px">
-      <el-descriptions-item label="用途">{{ (statusLabels as Record<string, string>)[talent.purpose] ?? talent.purpose }}</el-descriptions-item>
-      <el-descriptions-item label="保留至">{{ talent.retention_until }}</el-descriptions-item>
-      <el-descriptions-item label="建档时间">{{ talent.created_at }}</el-descriptions-item>
-      <el-descriptions-item label="处理依据" :span="3">{{ talent.processing_basis }}</el-descriptions-item>
-    </el-descriptions>
+    <h2>简历版本与证据</h2>
+    <div v-if="!detail.resumes.length" class="empty"><h3>还没有简历版本</h3><p>导入材料后生成版本记录。</p></div>
+    <div v-else class="table-scroll">
+      <table>
+        <thead><tr><th>版本</th><th>文件</th><th>完整度</th><th>导入时间</th><th>内容摘要</th></tr></thead>
+        <tbody>
+          <tr v-for="r in detail.resumes" :key="r.id">
+            <td>V{{ r.version }}</td>
+            <td>{{ r.filename }}</td>
+            <td>{{ statusLabels[r.completeness] ?? r.completeness }}</td>
+            <td>{{ date(r.created_at) }}</td>
+            <td><span class="mono wrap">{{ r.content_hash.slice(0, 16) }}</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-    <h4>简历版本（{{ talent.resumes.length }}）</h4>
-    <el-table :data="talent.resumes" size="small" style="margin-bottom: 16px">
-      <el-table-column prop="version" label="版本" width="70" />
-      <el-table-column prop="filename" label="文件" />
-      <el-table-column prop="completeness" label="完整度" />
-      <el-table-column prop="created_at" label="导入时间" />
-    </el-table>
+    <h2>岗位申请 · {{ detail.applications.length }}</h2>
+    <div v-if="!detail.applications.length" class="empty"><h3>还没有岗位申请</h3><p>在档案内选择岗位与简历版本建立申请。</p></div>
+    <div v-else class="table-scroll">
+      <table>
+        <thead><tr><th>岗位</th><th>岗位版本</th><th>申请批次</th><th>状态</th><th>固定简历版本引用</th><th>建立时间</th></tr></thead>
+        <tbody>
+          <tr v-for="a in detail.applications" :key="a.id">
+            <td><strong>{{ a.title }}</strong></td>
+            <td>V{{ a.job_version }}</td>
+            <td>{{ a.batch }}</td>
+            <td><BadgePill>{{ statusLabels[a.status] ?? a.status }}</BadgePill></td>
+            <td><span class="mono">V{{ a.resume_version }}</span></td>
+            <td>{{ date(a.created_at) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-    <h4>申请记录（{{ talent.applications.length }}）</h4>
-    <el-table :data="talent.applications" size="small" style="margin-bottom: 16px">
-      <el-table-column prop="title" label="岗位" />
-      <el-table-column prop="batch" label="批次" />
-      <el-table-column prop="created_at" label="申请时间" />
-    </el-table>
-
-    <h4>测评记录（{{ talent.assessments.length }}）</h4>
-    <el-table :data="talent.assessments" size="small">
-      <el-table-column prop="id" label="测评ID" />
-      <el-table-column prop="submitted_at" label="提交时间">
-        <template #default="{ row }">{{ row.submitted_at ?? '未提交' }}</template>
-      </el-table-column>
-      <el-table-column prop="revoked_at" label="撤销时间">
-        <template #default="{ row }">{{ row.revoked_at ?? '-' }}</template>
-      </el-table-column>
-    </el-table>
-  </div>
+    <h2>测评记录 · {{ detail.assessments?.length ?? 0 }}</h2>
+    <div v-if="!detail.assessments?.length" class="empty"><h3>还没有测评记录</h3><p>在测评中心发起邀请后，这里关联结果。</p></div>
+    <div v-else class="table-scroll">
+      <table>
+        <thead><tr><th>测评</th><th>创建时间</th><th>提交时间</th><th>状态</th></tr></thead>
+        <tbody>
+          <tr v-for="a in detail.assessments" :key="a.id">
+            <td><span class="mono wrap">{{ a.id.slice(0, 8) }}</span></td>
+            <td>{{ date(a.created_at) }}</td>
+            <td>{{ a.submitted_at ? date(a.submitted_at) : '未提交' }}</td>
+            <td><span :class="['status-pill', a.submitted_at ? 'done' : a.revoked_at ? 'closed' : '']">{{ a.revoked_at ? '已撤销' : a.submitted_at ? '已完成' : '进行中' }}</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
 </template>

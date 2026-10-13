@@ -1,33 +1,52 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
-import { api } from '../logic/api';
+import { computed, onMounted, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { api, date, statusLabels, type JobDetail } from '../logic/api';
+import Notice from '../components/Notice.vue';
+import BadgePill from '../components/BadgePill.vue';
+import LoadingState from '../components/LoadingState.vue';
+import RetryBox from '../components/RetryBox.vue';
 
-type JobVersion = { id: string; version: number; title: string; department: string; owner: string; location: string; tasks: string; criteria: string; public_jd: string; status: string; change_reason: string; created_at: string };
-type JobDetail = { id: string; revision: number; created_at: string; versions: JobVersion[] };
-
+// Legacy job detail (jobs.tsx): section-heading + version details list.
 const route = useRoute();
-const job = ref<JobDetail | null>(null);
+const router = useRouter();
+const detail = ref<JobDetail | null>(null);
+const error = ref('');
+const refresh = ref(0);
 
-onMounted(async () => {
-  job.value = await api<JobDetail>(`/jobs/${route.params.id}`);
-});
+async function load() {
+  error.value = '';
+  detail.value = null;
+  try {
+    detail.value = await api<JobDetail>(`/jobs/${route.params.id}`);
+  } catch {
+    error.value = '岗位暂不可访问，请确认账号权限或稍后重试。';
+  }
+}
+onMounted(load);
+
+const current = computed(() => detail.value?.versions[0]);
 </script>
 
 <template>
-  <div v-if="job">
-    <h2>{{ job.versions[0]?.title ?? '岗位' }}（第 {{ job.revision }} 版）</h2>
-    <el-tabs>
-      <el-tab-pane v-for="v in job.versions" :key="v.id" :label="`v${v.version}`">
-        <el-descriptions :column="2" border>
-          <el-descriptions-item label="部门">{{ v.department }}</el-descriptions-item>
-          <el-descriptions-item label="负责人">{{ v.owner }}</el-descriptions-item>
-          <el-descriptions-item label="地点">{{ v.location }}</el-descriptions-item>
-          <el-descriptions-item label="状态">{{ v.status }}</el-descriptions-item>
-          <el-descriptions-item label="职责" :span="2">{{ v.tasks }}</el-descriptions-item>
-          <el-descriptions-item label="要求" :span="2">{{ v.criteria }}</el-descriptions-item>
-        </el-descriptions>
-      </el-tab-pane>
-    </el-tabs>
-  </div>
+  <RetryBox v-if="error" :text="error" @retry="refresh++; load()" />
+  <LoadingState v-else-if="!detail" text="正在读取岗位…" />
+  <section v-else class="panel">
+    <div class="section-heading">
+      <div>
+        <button class="text-button" @click="router.push('/jobs')">← 返回岗位列表</button>
+        <h2>{{ current?.title }} <BadgePill>V{{ detail.revision }}</BadgePill></h2>
+      </div>
+      <button class="primary" @click="router.push(`/jobs/${detail.id}/edit`)">修改并保存新版本</button>
+    </div>
+    <Notice>岗位版本由人工确认。招聘优化可辅助拟稿；本页保存不向任何外部招聘渠道发布。</Notice>
+    <details v-for="v in detail.versions" :key="v.id" class="version" :open="v.id === current?.id">
+      <summary>V{{ v.version }} · {{ statusLabels[v.status] ?? v.status }} · {{ date(v.created_at) }}<span>{{ v.change_reason }}</span></summary>
+      <div class="metadata"><span>{{ v.department }}</span><span>负责人：{{ v.owner }}</span><span>{{ v.location }}</span></div>
+      <h3>核心任务</h3><p class="preserve">{{ v.tasks }}</p>
+      <h3>岗位证据标准</h3><p class="preserve">{{ v.criteria }}</p>
+      <h3>对外 JD</h3><p class="preserve">{{ v.public_jd }}</p>
+      <p class="muted mono wrap">版本引用：{{ v.id }}</p>
+    </details>
+  </section>
 </template>

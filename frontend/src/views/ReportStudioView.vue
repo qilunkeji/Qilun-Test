@@ -2,7 +2,6 @@
 // SVG 报告工作室 — Vue 3 port of original-report.tsx + gh-report-preview.tsx
 // Renders the 11-page master SVG with computed field overlays, charts, and branding.
 import { ref, computed, onMounted } from 'vue';
-import { ElMessage } from 'element-plus';
 import { saveReportImage, reportExportName, printReport } from '../logic/report-export';
 import { reportHeaderBranding, reportCoverBranding, reportFooterContactMask, reportFooterBranding, reportBodyBranding } from '../logic/report-branding';
 
@@ -16,16 +15,16 @@ type ReportData = {
     style?: { code: string; name: string };
     values?: { item: string; name: string; raw: number; calibrated: number | null; report_value: number | null }[];
     motivation?: { item: string; name: string; raw: number; calibrated: number; report_value: number }[];
-    roles?: { item: string; name: string; scoreTotalCalibrateSeniorNew: number }[];
-    rows?: { item: number; name: string; type: number; score: number }[];
+    roles?: { item: string; name: string; scoreTotalCalibrateSeniorNew?: number; [key: string]: unknown }[];
+    rows?: { item: number | string; name: string; type: number; score: number }[];
     traits?: { children: { item: string; name: string; score: number }[]; parents: { item: number; score: number | null }[] };
     strengths?: { item: string; name: string; score: number; rank: number }[];
     report_text?: {
-      temperament: { code: string; name: string; text: string };
-      values: { item: string; label: string; text: string }[];
-      motivation: { lines: { type: string; label: string; text: string }[] };
-      roles: { item: string; label: string; text: string }[];
-      strengths: { groups: { item: string; name: string; rows: { item: string; name: string; text: string; rank: number }[] }[]; bottom_six: { name: string }[] };
+      temperament?: { code?: string; name: string; text: string };
+      values?: { item: string; label: string; text: string }[];
+      motivation?: { lines: { type: string; label: string; text?: string; name?: string }[] };
+      roles?: { item: string; label: string; text: string }[];
+      strengths?: { groups: { item: string; name: string; rows: { item: string; name: string; text: string; rank: number }[] }[]; bottom_six?: { name: string }[] };
     };
     grade?: { value: number };
   };
@@ -38,6 +37,7 @@ const currentSheet = ref('data');
 const mode = ref<'blank' | 'computed'>(props.report ? 'computed' : 'blank');
 const zoom = ref<'fit' | 'native'>('fit');
 const saving = ref(false);
+const exportError = ref('');
 const sheetEl = ref<HTMLElement | null>(null);
 
 onMounted(async () => {
@@ -45,7 +45,7 @@ onMounted(async () => {
     const res = await fetch('/report-layout/manifest.json');
     if (!res.ok) throw new Error('母版加载失败');
     manifest.value = await res.json();
-  } catch (e) { ElMessage.error((e as Error).message); }
+  } catch (e) { exportError.value = (e as Error).message; }
 });
 
 const page = computed<Sheet | null>(() => {
@@ -93,9 +93,9 @@ const computedFields = computed<Record<string, string>>(() => {
   }
   if (r.traits?.children) fields['traits.table'] = r.traits.children.map(x => `${x.name} ${x.score}`).join('　');
   if (r.roles) {
-    const sorted = [...r.roles].sort((a, b) => b.scoreTotalCalibrateSeniorNew - a.scoreTotalCalibrateSeniorNew);
-    if (sorted[0]) fields['roles.primary'] = `${sorted[0].name}：${Math.round(sorted[0].scoreTotalCalibrateSeniorNew * 100) / 100}`;
-    if (sorted[1]) fields['roles.secondary'] = `${sorted[1].name}：${Math.round(sorted[1].scoreTotalCalibrateSeniorNew * 100) / 100}`;
+    const sorted = [...r.roles].sort((a, b) => (b.scoreTotalCalibrateSeniorNew ?? 0) - (a.scoreTotalCalibrateSeniorNew ?? 0));
+    if (sorted[0]) fields['roles.primary'] = `${sorted[0].name}：${Math.round((sorted[0].scoreTotalCalibrateSeniorNew ?? 0) * 100) / 100}`;
+    if (sorted[1]) fields['roles.secondary'] = `${sorted[1].name}：${Math.round((sorted[1].scoreTotalCalibrateSeniorNew ?? 0) * 100) / 100}`;
   }
   if (r.motivation) fields['motivation.top_bottom'] = `当前动机图表值：\n${r.motivation.map(x => `${x.name} ${x.report_value}`).join('　')}`;
   if (r.values) {
@@ -115,13 +115,13 @@ const palette = ['#ed8a8a', '#e2b4b3', '#6ac36c', '#b3d9ad', '#73a0fb', '#b0c6f9
 const chartData = computed(() => {
   const r = replay.value;
   if (!r || mode.value !== 'computed') return null;
-  const style = (r.rows ?? []).filter(x => x.type === 3).sort((a, b) => a.item - b.item).map((x, i) => ({ value: x.score, color: palette[i] }));
+  const style = (r.rows ?? []).filter(x => x.type === 3).sort((a, b) => (Number(a.item) || 0) - (Number(b.item) || 0)).map((x, i) => ({ value: x.score, color: palette[i] }));
   const values = [...(r.values ?? [])].filter(x => x.report_value !== null).sort((a, b) => (b.report_value ?? 0) - (a.report_value ?? 0)).map((x, i) => ({ value: x.report_value, color: palette[i], label: x.name.replace(/型$/, '') }));
   const motivation = ['财富', '健康', '享受', '工作', '权力', '创新', '情感', '荣誉'].map((name, i) => {
     const m = (r.motivation ?? []).find(x => x.name === name);
     return { value: m?.report_value ?? null, color: palette[i] };
   });
-  const roles = [...(r.roles ?? [])].sort((a, b) => b.scoreTotalCalibrateSeniorNew - a.scoreTotalCalibrateSeniorNew).map((x, i) => ({ value: Math.round(x.scoreTotalCalibrateSeniorNew * 100) / 100, color: palette[i], label: x.name }));
+  const roles = [...(r.roles ?? [])].sort((a, b) => (b.scoreTotalCalibrateSeniorNew ?? 0) - (a.scoreTotalCalibrateSeniorNew ?? 0)).map((x, i) => ({ value: Math.round((x.scoreTotalCalibrateSeniorNew ?? 0) * 100) / 100, color: palette[i], label: x.name }));
   const bigFive = [242, 246, 245, 244, 243].map(id => Math.round((r.traits?.parents?.find(p => p.item === id)?.score ?? 0) * 100) / 100);
   const abilities = (r.abilities ?? []).map(a => ({ value: a.value, color: palette[0] }));
   return { style, values, motivation, roles, bigFive, abilities };
@@ -132,9 +132,10 @@ const exportName = computed(() => props.personName?.trim() || '');
 async function exportPng() {
   if (!sheetEl.value) return;
   saving.value = true;
+  exportError.value = '';
   try {
     await saveReportImage(sheetEl.value, `${reportExportName(exportName.value)}.png`);
-  } catch (e) { ElMessage.error((e as Error).message); } finally { saving.value = false; }
+  } catch (e) { exportError.value = (e as Error).message; } finally { saving.value = false; }
 }
 </script>
 
@@ -144,6 +145,7 @@ async function exportPng() {
       <div>
         <h3>{{ isStandard ? '齐论测评数据表' : '原版报告' }}</h3>
         <p>{{ isStandard ? '性格与发展数据总览' : '一页数据总览 · 十页人才报告' }}</p>
+        <p v-if="exportError" role="alert" style="color:#9b0000">{{ exportError }}</p>
       </div>
       <div class="controls">
         <label>页面

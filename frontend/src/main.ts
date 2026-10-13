@@ -1,13 +1,11 @@
 import { createApp } from 'vue';
-import { createPinia } from 'pinia';
-import ElementPlus from 'element-plus';
-import zhCn from 'element-plus/es/locale/lang/zh-cn';
-import 'element-plus/dist/index.css';
 import App from './App.vue';
 import { router } from './router';
+// Legacy admin-web cascade order: styles.css → premium.css → unified-ui.css → home-refinement.css (+ h5-reference).
+import './styles/base.css';
+import './styles/theme.css';
+import './styles/unified.css';
+import './styles/home.css';
+import './styles/h5.css';
 
-createApp(App)
-  .use(createPinia())
-  .use(router)
-  .use(ElementPlus, { locale: zhCn })
-  .mount('#root');
+createApp(App).use(router).mount('#root');

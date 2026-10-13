@@ -1,18 +1,20 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { ElMessage } from 'element-plus';
 import { api } from '../logic/api';
+import Notice from '../components/Notice.vue';
 
+// Legacy rule-experiment.tsx: synthetic method comparison panel.
+type Row = { items: number[]; keyed: number[]; sum: number; normalized: number };
 type ExperimentResult = {
   version: string; status: string;
-  candidate: { items: number[]; keyed: number[]; sum: number; normalized: number }[];
-  benchmarks: { items: number[]; keyed: number[]; sum: number; normalized: number }[][];
+  candidate: Row[]; benchmarks: Row[][];
   target: number[]; weights: number[]; differences: number[]; components: number[];
   alternatives: { weighted_linear: number; weighted_quadratic: number; bottleneck: number };
   spread: number; trace: string[]; limitations: string[];
 };
 const loading = ref(false);
 const result = ref<ExperimentResult | null>(null);
+const error = ref('');
 const form = ref({
   answers: [3, 3, 3, 3, 3, 3] as number[],
   benchmarks: [[4, 2, 3, 3, 4, 2], [3, 3, 4, 2, 3, 3]] as number[][],
@@ -22,70 +24,94 @@ const form = ref({
 
 async function run() {
   loading.value = true;
+  error.value = '';
   try {
     result.value = await api<ExperimentResult>('/assessment/rules/experiment', { purpose: 'synthetic_method_comparison', ...form.value });
-  } catch (e) { ElMessage.error((e as Error).message); } finally { loading.value = false; }
+  } catch (e) {
+    error.value = (e as Error).message;
+  } finally {
+    loading.value = false;
+  }
 }
 </script>
 
 <template>
-  <div style="max-width: 800px">
-    <h2>规则参数实验</h2>
-    <el-card style="margin-bottom: 16px">
-      <el-form label-position="top">
-        <el-form-item label="候选人答案（6 项 1-5）">
-          <div style="display: flex; gap: 8px">
-            <el-input-number v-for="i in 6" :key="i" v-model="form.answers[i-1]" :min="1" :max="5" size="small" />
-          </div>
-        </el-form-item>
-        <el-form-item label="标杆组（每组 6 项）">
-          <div v-for="(bench, bi) in form.benchmarks" :key="bi" style="display: flex; gap: 8px; margin-bottom: 4px">
-            <el-input-number v-for="i in 6" :key="i" v-model="bench[i-1]" :min="1" :max="5" size="small" />
-            <el-button v-if="form.benchmarks.length > 1" size="small" circle @click="form.benchmarks.splice(bi, 1)">−</el-button>
-          </div>
-          <el-button v-if="form.benchmarks.length < 5" size="small" @click="form.benchmarks.push([3,3,3,3,3,3])">添加标杆</el-button>
-        </el-form-item>
-        <el-row :gutter="12">
-          <el-col :span="8">
-            <el-form-item label="聚合方式">
-              <el-radio-group v-model="form.aggregation">
-                <el-radio-button value="mean">均值</el-radio-button>
-                <el-radio-button value="median">中位数</el-radio-button>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-          <el-col :span="14">
-            <el-form-item label="权重（3 项）">
-              <div style="display: flex; gap: 8px">
-                <el-input-number v-for="i in 3" :key="i" v-model="form.weights[i-1]" :min="0.1" :max="100" size="small" />
-              </div>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-button type="primary" :loading="loading" @click="run" style="width: 100%">运行实验</el-button>
-      </el-form>
-    </el-card>
+  <section class="panel">
+    <div class="section-heading">
+      <div><h2>规则参数实验</h2><p>合成样例的方法对比；不使用任何真实答卷。</p></div>
+    </div>
+    <Notice v-if="error" kind="error">{{ error }}</Notice>
+    <form class="form-grid" @submit.prevent="run">
+      <div class="wide">
+        <h3>候选人答案（6 项，1–5）</h3>
+        <div class="actions" style="flex-wrap:wrap">
+          <label v-for="i in 6" :key="i" class="field" style="width:72px">
+            <span>第{{ i }}项</span>
+            <input v-model.number="form.answers[i - 1]" type="number" min="1" max="5" required />
+          </label>
+        </div>
+      </div>
+      <div class="wide">
+        <h3>标杆组（每组 6 项）</h3>
+        <div v-for="(bench, bi) in form.benchmarks" :key="bi" class="actions" style="flex-wrap:wrap;margin-bottom:6px">
+          <label v-for="i in 6" :key="i" class="field" style="width:72px">
+            <span>第{{ i }}项</span>
+            <input v-model.number="bench[i - 1]" type="number" min="1" max="5" required />
+          </label>
+          <button v-if="form.benchmarks.length > 1" type="button" @click="form.benchmarks.splice(bi, 1)">删除此组</button>
+        </div>
+        <button v-if="form.benchmarks.length < 5" type="button" @click="form.benchmarks.push([3, 3, 3, 3, 3, 3])">＋ 添加标杆组</button>
+      </div>
+      <label class="field"><span>聚合方式</span>
+        <select v-model="form.aggregation"><option value="mean">均值</option><option value="median">中位数</option></select>
+      </label>
+      <div class="field">
+        <span>权重（3 项）</span>
+        <div class="actions" style="flex-wrap:wrap">
+          <label v-for="i in 3" :key="i" class="field" style="width:88px">
+            <span>W{{ i }}</span>
+            <input v-model.number="form.weights[i - 1]" type="number" step="0.1" min="0.1" max="100" required />
+          </label>
+        </div>
+      </div>
+      <div class="form-footer">
+        <p>结果仅用于核对实现，不生成任何招聘结论。</p>
+        <button class="primary" :disabled="loading">{{ loading ? '计算中…' : '运行合成实验' }}</button>
+      </div>
+    </form>
+  </section>
 
-    <template v-if="result">
-      <h4>结果</h4>
-      <el-descriptions :column="3" border>
-        <el-descriptions-item label="线性加权">{{ result.alternatives.weighted_linear.toFixed(2) }}</el-descriptions-item>
-        <el-descriptions-item label="二次加权">{{ result.alternatives.weighted_quadratic.toFixed(2) }}</el-descriptions-item>
-        <el-descriptions-item label="短板">{{ result.alternatives.bottleneck.toFixed(2) }}</el-descriptions-item>
-        <el-descriptions-item label="极差">{{ result.spread.toFixed(2) }}</el-descriptions-item>
-        <el-descriptions-item label="状态">{{ result.status }}</el-descriptions-item>
-        <el-descriptions-item label="版本">{{ result.version }}</el-descriptions-item>
-      </el-descriptions>
-      <h4>中间数据</h4>
-      <el-table :data="result.candidate.map((c, i) => ({ key: `${c.items[0]}-${c.items[1]}`, sum: c.sum, normalized: c.normalized, target: result!.target[i], component: result!.components[i] }))" size="small">
-        <el-table-column prop="key" label="题目对" width="80" />
-        <el-table-column prop="sum" label="原始和" width="80" />
-        <el-table-column prop="normalized" label="标准化" width="80" />
-        <el-table-column prop="target" label="目标值" width="80" />
-        <el-table-column prop="component" label="得分" width="80" />
-      </el-table>
-      <h4>局限</h4>
-      <ul><li v-for="l in result.limitations" :key="l" style="color: #909399">{{ l }}</li></ul>
-    </template>
-  </div>
+  <section v-if="result" class="panel">
+    <div class="section-heading">
+      <div><h2>结果 · {{ result.version }}</h2><p>状态：{{ result.status }}</p></div>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>方法</th><th>数值</th></tr></thead>
+        <tbody>
+          <tr><td>线性加权</td><td>{{ result.alternatives.weighted_linear.toFixed(2) }}</td></tr>
+          <tr><td>二次加权</td><td>{{ result.alternatives.weighted_quadratic.toFixed(2) }}</td></tr>
+          <tr><td>短板法</td><td>{{ result.alternatives.bottleneck.toFixed(2) }}</td></tr>
+          <tr><td>极差</td><td>{{ result.spread.toFixed(2) }}</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>中间数据</h3>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>题目对</th><th>原始和</th><th>标准化</th><th>目标值</th><th>分项得分</th></tr></thead>
+        <tbody>
+          <tr v-for="(c, i) in result.candidate" :key="i">
+            <td>{{ c.items[0] }}-{{ c.items[1] }}</td>
+            <td>{{ c.sum }}</td>
+            <td>{{ c.normalized.toFixed(3) }}</td>
+            <td>{{ result.target[i].toFixed(3) }}</td>
+            <td>{{ result.components[i].toFixed(3) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>局限</h3>
+    <ul class="limitations"><li v-for="l in result.limitations" :key="l">{{ l }}</li></ul>
+  </section>
 </template>

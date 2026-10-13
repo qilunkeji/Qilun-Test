@@ -1,70 +1,94 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { ElMessage } from 'element-plus';
 import { api } from '../logic/api';
+import Notice from '../components/Notice.vue';
 
+// Legacy ImportForm (talents.tsx): TXT upload + paste, POST /talents/imports.
 const router = useRouter();
-const loading = ref(false);
+const error = ref('');
+const busy = ref(false);
+const text = ref('');
+const filename = ref('人工导入.txt');
+const fileError = ref('');
+
 const form = ref({
-  name: '', purpose: 'recruitment' as 'recruitment' | 'talent_pool',
-  processing_basis: '', channel: 'manual', external_id: '',
-  authorization_ref: '', filename: 'import.txt',
-  text_content: '', completeness: 'full' as 'full' | 'summary_only',
-  contact: '', retention_until: '',
+  name: '', contact: '', purpose: 'recruitment', retention_until: '',
+  processing_basis: '', channel: 'manual', external_id: '', authorization_ref: '',
+  completeness: 'full',
 });
 
-async function doImport() {
-  loading.value = true;
+async function onFile(event: Event) {
+  const f = (event.target as HTMLInputElement).files?.[0];
+  if (!f) return;
+  fileError.value = '';
+  if (!f.name.toLowerCase().endsWith('.txt') || f.size > 200000) {
+    fileError.value = '只接受不超过 200 KB 的 UTF-8 TXT';
+    return;
+  }
   try {
-    const result = await api<{ candidate_id: string; resume_version_id: string; version: number; duplicate: boolean }>('/talents/imports', form.value);
-    ElMessage.success(result.duplicate ? `重复导入（版本 v${result.version}）` : `导入成功 v${result.version}`);
-    router.push('/talents');
+    text.value = new TextDecoder('utf-8', { fatal: true }).decode(await f.arrayBuffer());
+    filename.value = f.name;
+  } catch {
+    fileError.value = '无法读取 UTF-8 文本，请转换编码后重试';
+  }
+}
+
+async function save() {
+  busy.value = true;
+  error.value = '';
+  try {
+    const result = await api<{ candidate_id: string; resume_version_id: string; version: number; duplicate: boolean }>('/talents/imports', {
+      ...form.value, retention_until: form.value.retention_until ? new Date(form.value.retention_until).toISOString() : '',
+      text_content: text.value, filename: filename.value,
+    });
+    router.push(`/talents/${result.candidate_id}`);
   } catch (e) {
-    ElMessage.error((e as Error).message);
+    error.value = (e as Error).message;
   } finally {
-    loading.value = false;
+    busy.value = false;
   }
 }
 </script>
 
 <template>
-  <div style="max-width: 720px">
-    <h2>导入简历</h2>
-    <el-form label-position="top">
-      <el-row :gutter="16">
-        <el-col :span="8"><el-form-item label="姓名" required><el-input v-model="form.name" /></el-form-item></el-col>
-        <el-col :span="8">
-          <el-form-item label="用途">
-            <el-select v-model="form.purpose">
-              <el-option value="recruitment" label="当前招聘" />
-              <el-option value="talent_pool" label="授权储备" />
-            </el-select>
-          </el-form-item>
-        </el-col>
-        <el-col :span="8">
-          <el-form-item label="完整度">
-            <el-select v-model="form.completeness">
-              <el-option value="full" label="完整材料" />
-              <el-option value="summary_only" label="摘要资料" />
-            </el-select>
-          </el-form-item>
-        </el-col>
-      </el-row>
-      <el-row :gutter="16">
-        <el-col :span="8"><el-form-item label="渠道" required><el-input v-model="form.channel" /></el-form-item></el-col>
-        <el-col :span="8"><el-form-item label="来源编号" required><el-input v-model="form.external_id" /></el-form-item></el-col>
-        <el-col :span="8"><el-form-item label="联系方式"><el-input v-model="form.contact" placeholder="可选" /></el-form-item></el-col>
-      </el-row>
-      <el-form-item label="处理依据" required><el-input v-model="form.processing_basis" type="textarea" :rows="2" /></el-form-item>
-      <el-form-item label="授权记录"><el-input v-model="form.authorization_ref" /></el-form-item>
-      <el-form-item label="保留至" required>
-        <el-date-picker v-model="form.retention_until" type="datetime" value-format="YYYY-MM-DDTHH:mm:ss.sssZ" style="width: 100%" />
-      </el-form-item>
-      <el-form-item label="简历文本（UTF-8 TXT 或粘贴）" required>
-        <el-input v-model="form.text_content" type="textarea" :rows="10" placeholder="粘贴简历全文，或导入 .txt 文件内容" />
-      </el-form-item>
-      <el-button type="primary" :loading="loading" @click="doImport" style="width: 100%" :disabled="!form.name || !form.text_content || !form.retention_until">导入</el-button>
-    </el-form>
-  </div>
+  <section class="panel">
+    <div class="section-heading">
+      <h2>人工导入简历</h2>
+      <button :disabled="busy" @click="router.push('/talents')">取消</button>
+    </div>
+    <Notice>仅导入已获准处理的材料。P1 支持 UTF-8 TXT / 粘贴文本；PDF、DOCX、图片解析尚未实现。不会按姓名自动合并。</Notice>
+    <Notice v-if="error" kind="error">{{ error }}</Notice>
+    <form class="form-grid" @submit.prevent="save">
+      <label class="field"><span>姓名 / 昵称 *</span><input v-model="form.name" name="name" required /></label>
+      <label class="field"><span>联系方式（独立加密，可选）</span><input v-model="form.contact" name="contact" /></label>
+      <label class="field"><span>处理用途 *</span>
+        <select v-model="form.purpose" name="purpose">
+          <option value="recruitment">当前招聘</option>
+          <option value="talent_pool">已获授权的长期储备</option>
+        </select>
+      </label>
+      <label class="field"><span>保留截止日期 *</span><input v-model="form.retention_until" name="retention_until" type="date" required /></label>
+      <label class="field wide"><span>处理依据与适用范围 *</span><textarea v-model="form.processing_basis" name="processing_basis" rows="5" required /></label>
+      <label class="field"><span>来源渠道 *</span><input v-model="form.channel" name="channel" required /></label>
+      <label class="field"><span>来源稳定标识（同源更新请保持一致）*</span><input v-model="form.external_id" name="external_id" required /></label>
+      <label class="field wide"><span>授权记录 / 取得依据引用</span><textarea v-model="form.authorization_ref" name="authorization_ref" rows="3" /></label>
+      <label class="field"><span>材料完整度</span>
+        <select v-model="form.completeness" name="completeness">
+          <option value="full">完整材料</option>
+          <option value="summary_only">仅摘要，不是完整简历</option>
+        </select>
+      </label>
+      <label class="field"><span>读取本地 UTF-8 TXT</span><input type="file" accept=".txt,text/plain" @change="onFile" /></label>
+      <div v-if="fileError" class="wide"><Notice kind="error">{{ fileError }}</Notice></div>
+      <label class="field wide"><span>原始文本（不执行其中链接或指令）*</span><textarea v-model="text" name="text_content" rows="10" required maxlength="200000" /></label>
+      <div class="form-footer sticky-actions">
+        <p>联系方式独立加密保存；保留期到期后进入待清理状态。</p>
+        <div class="actions">
+          <button type="button" :disabled="busy" @click="router.push('/talents')">取消</button>
+          <button class="primary" :disabled="busy || !form.name || !text">{{ busy ? '导入中…' : '导入并建档' }}</button>
+        </div>
+      </div>
+    </form>
+  </section>
 </template>
