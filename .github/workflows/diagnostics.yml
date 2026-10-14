@@ -18,31 +18,16 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H 124.223.159.190 >> ~/.ssh/known_hosts
           printf 'Host deploy-target\n  HostName 124.223.159.190\n  User root\n  ControlMaster auto\n  ControlPath ~/.ssh/cm-%%r@%%h-%%p\n  ControlPersist 10m\n' >> ~/.ssh/config
-      - name: Forensics (read-only)
+      - name: Extract operator CSS from backup (read-only)
         run: |
           ssh deploy-target 'bash -s' << 'OUTER'
-          echo "=== 1. login sessions (who was on this box) ==="
-          last -n 15 2>/dev/null | head -15 || true
-          echo "=== 2. root shell history tail (what was run) ==="
-          tail -40 /root/.bash_history 2>/dev/null || echo none
-          echo "=== 3. backups folder (their safety copies reveal intent) ==="
-          ls -lat /opt/qilun-talent/backups/ | head -12
-          echo "=== 4. live static dir current state ==="
-          ls -lat /opt/1panel/www/sites/rc.iqilun.cn/frontend-access-20261013/ | head -10
-          ls -lat /opt/1panel/www/sites/rc.iqilun.cn/frontend-access-20261013/assets/ | grep -v "index-" | head -10
-          echo "--- live index.html head ---"
-          head -c 400 /opt/1panel/www/sites/rc.iqilun.cn/frontend-access-20261013/index.html
+          B=/opt/qilun-talent/backups/frontend-before-vue-restore-20261014-171730.tgz
+          echo "=== backup contains ==="
+          tar -tzf "$B" | grep -E "restored|index" | head -5
+          echo "=== their index.html (stylesheet links) ==="
+          tar -xzOf "$B" index.html 2>/dev/null | grep -oE '<link[^>]*>|<script[^>]*>' | head -6
+          echo "=== their CSS full content ==="
+          tar -xzOf "$B" assets/assessment-restored20261014.css 2>/dev/null | head -c 3000
           echo
-          echo "--- custom css content head ---"
-          head -c 600 /opt/1panel/www/sites/rc.iqilun.cn/frontend-access-20261013/assets/assessment-restored20261014.css 2>/dev/null || echo "file gone"
-          echo
-          echo "=== 5. files modified under /opt in last 24h (excluding logs) ==="
-          find /opt/qilun-talent /opt/1panel/www/sites/rc.iqilun.cn -mmin -1440 -type f 2>/dev/null | grep -vE "\.log|access|error_log" | head -25
-          echo "=== 6. compose & env file mtimes ==="
-          ls -la /opt/qilun-talent/shared/docker-compose.yml /opt/qilun-talent/shared/production.env 2>/dev/null
-          echo "=== 7. docker images timeline ==="
-          docker images --format '{{.Repository}}:{{.Tag}} {{.CreatedAt}}' | grep qilun | sort | head -8
-          echo "=== 8. DB schema: iam tables now ==="
-          docker exec qilun-pg16 psql -U qilun -d qilun_talent -P pager=off -c "SELECT table_name, column_name, data_type FROM information_schema.columns WHERE table_name IN ('iam_states','iam_sessions') ORDER BY table_name, ordinal_position;"
           echo "DIAG_DONE"
           OUTER
