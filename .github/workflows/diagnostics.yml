@@ -21,27 +21,29 @@ jobs:
       - name: Read-only diagnostics (SELECT + find only)
         run: |
           ssh deploy-target << 'EOF'
-          set -e
-          PSQL="docker exec qilun-pg16 psql -U qilun -d qilun_talent -P pager=off"
-          echo "=== server time (for interpreting timestamps) ==="
-          date; docker exec qilun-pg16 psql -U qilun -d qilun_talent -P pager=off -c "SELECT now();"
-          echo "=== A. tenants ==="
-          $PSQL -c "SELECT id, name, created_at FROM tenants ORDER BY created_at;"
-          echo "=== B. staff users and IAM mapping ==="
-          $PSQL -c "SELECT u.tenant_id, u.username, u.role, i.subject AS iam_subject FROM staff_users u LEFT JOIN iam_identities i ON i.tenant_id=u.tenant_id AND i.user_id=u.id;"
           echo "=== FIX: no-cache for SPA shell (backup + verify + reload) ==="
           CONF=/opt/1panel/www/conf.d/rc.iqilun.cn.conf
           cp "$CONF" "/opt/qilun-talent/backups/nginx-conf-before-nocache-$(date +%Y%m%d%H%M%S).conf"
-          if ! grep -q "Cache-Control" "$CONF"; then
-            sed -i "s|location / { try_files \$uri \$uri/ /index.html; }|location = /index.html { add_header Cache-Control \"no-cache\"; try_files \$uri =404; }
-    location / { add_header Cache-Control \"no-cache\"; try_files \$uri \$uri/ /index.html; }|" "$CONF"
-          fi
-          grep -n "Cache-Control" "$CONF" || echo "SED_FAILED"
-          docker exec 1Panel-openresty-6AKl nginx -t 2>&1 | tail -2
+          python3 - <<'PY'
+conf='/opt/1panel/www/conf.d/rc.iqilun.cn.conf'
+s=open(conf).read()
+if 'Cache-Control' in s:
+    print('already patched')
+else:
+    old='location / { try_files $uri $uri/ /index.html; }'
+    new='location = /index.html { add_header Cache-Control "no-cache"; }
+    location / { add_header Cache-Control "no-cache"; try_files $uri $uri/ /index.html; }'
+    assert old in s, 'pattern missing'
+    s=s.replace(old,new,1)
+    open(conf,'w').write(s)
+    print('patched')
+PY
+          grep -n "Cache-Control" "$CONF" || echo "PATCH_FAILED"
+          docker exec 1Panel-openresty-6AKl nginx -t 2>&1 | tail -1
           docker exec 1Panel-openresty-6AKl nginx -s reload 2>&1 | tail -1
           sleep 1
           echo "--- verify ---"
-          curl -sI https://rc.iqilun.cn/assessments | grep -iE "HTTP/|cache-control"
-          curl -sI https://rc.iqilun.cn/index.html | grep -iE "HTTP/|cache-control"
+          curl -sI https://rc.iqilun.cn/assessments | grep -iE "^HTTP|cache-control"
+          curl -sI https://rc.iqilun.cn/index.html | grep -iE "^HTTP|cache-control"
           echo "DIAG_DONE"
           EOF
