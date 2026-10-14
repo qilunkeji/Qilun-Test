@@ -21,13 +21,13 @@ jobs:
       - name: Extract operator CSS from backup (read-only)
         run: |
           ssh deploy-target 'bash -s' << 'OUTER'
-          B=/opt/qilun-talent/backups/frontend-before-vue-restore-20261014-171730.tgz
-          echo "=== backup contains ==="
-          tar -tzf "$B" | grep -E "restored|index" | head -5
-          echo "=== their index.html (stylesheet links) ==="
-          tar -xzOf "$B" index.html 2>/dev/null | grep -oE '<link[^>]*>|<script[^>]*>' | head -6
-          echo "=== their CSS full content ==="
-          tar -xzOf "$B" assets/assessment-restored20261014.css 2>/dev/null | head -c 3000
-          echo
+          for B in /opt/qilun-talent/backups/frontend-before-vue-restore-20261014-173049.tgz /opt/qilun-talent/backups/frontend-before-vue-restore-20261014-171730.tgz; do
+            echo "=== $B ==="
+            tar -tzf "$B" | grep -vE "index-[A-Za-z0-9_-]+|[A-Za-z]+View-|components-|logic-" | head -20
+            echo "--- index.html links ---"
+            tar -xzOf "$B" ./index.html 2>/dev/null | grep -oE '(href|src)="[^"]*"' | head -8
+          done
+          echo "--- live dir right now: any non-hashed files? ---"
+          ls /opt/1panel/www/sites/rc.iqilun.cn/frontend-access-20261013/assets/ | grep -vE "^[A-Za-z]+-[A-Za-z0-9_-]+\.(js|css)$|^[a-z]+\.(png|jpg|svg|woff2?)$" | head -10
           echo "DIAG_DONE"
           OUTER
