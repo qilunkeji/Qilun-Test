@@ -18,20 +18,27 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H 124.223.159.190 >> ~/.ssh/known_hosts
           printf 'Host deploy-target\n  HostName 124.223.159.190\n  User root\n  ControlMaster auto\n  ControlPath ~/.ssh/cm-%%r@%%h-%%p\n  ControlPersist 10m\n' >> ~/.ssh/config
-      - name: Logs (read-only)
+      - name: Reproduce state write (harmless temp state, auto-expires 10min)
         run: |
           ssh deploy-target 'bash -s' << 'OUTER'
-          echo "=== 1. INTERNAL_ERROR stack traces (last 2) ==="
-          docker logs qilun-talent-java --since 6h 2>&1 | grep -n "INTERNAL_ERROR" | tail -5
-          echo "--- full stack around last occurrence ---"
-          docker logs qilun-talent-java --since 6h 2>&1 | awk '/INTERNAL_ERROR/{found=NR} END{print found}' > /tmp/lastline
-          L=$(cat /tmp/lastline)
-          echo "stack starts at line $L"
-          docker logs qilun-talent-java --since 6h 2>&1 | sed -n "$((L-2)),$((L+60))p"
-          echo "=== 2. request_id match ==="
-          docker logs qilun-talent-java --since 6h 2>&1 | grep -c "98084195-44d3-4bb3-9236-e60e2f024379" || true
-          echo "=== 3. IAM center health ==="
-          curl -s -o /dev/null -w "issuer root: %{http_code}\n" https://zh.iqilun.cn/
-          docker logs qilun-iam --since 6h 2>&1 | grep -viE "healthcheck|GET /healthz" | tail -15
+          PSQL="docker exec qilun-pg16 psql -U qilun -d qilun_talent -P pager=off"
+          echo "=== 1. trigger a real /api/iam/login (same as a browser would) ==="
+          curl -s -o /dev/null -D /tmp/login_headers.txt -w "login -> %{http_code}\n" "https://rc.iqilun.cn/api/iam/login?returnTo=%2Fassessments"
+          grep -iE "^location|^set-cookie" /tmp/login_headers.txt | sed -E 's/(state|nonce)=[^&;]{6}[^&;]*/\1=<redacted>/g' | head -3
+          echo "=== 2. inspect what was actually stored (raw text + column type) ==="
+          $PSQL -c "SELECT pg_typeof(payload), left(payload::text, 120) AS raw_payload_head FROM iam_states ORDER BY expires DESC LIMIT 3;"
+          $PSQL -c "SELECT column_name, data_type FROM information_schema.columns WHERE table_name='iam_states';"
+          echo "=== 3. reproduce callback parse with the stored state ==="
+          STATE_HASH=$(curl -s -D - -o /dev/null "https://rc.iqilun.cn/api/iam/login?returnTo=%2F" | grep -io 'state=[a-z0-9_-]*' | head -1 | cut -d= -f2)
+          echo "got state cookie value head: ${STATE_HASH:0:6}..."
+          $PSQL -c "SELECT left(payload::text, 100) FROM iam_states ORDER BY expires DESC LIMIT 1;"
+          echo "--- now call callback with that state and a bogus code (expect the 500 repro) ---"
+          STATE_DB=$(docker exec qilun-pg16 psql -U qilun -d qilun_talent -t -A -c "SELECT payload->>'state' FROM iam_states ORDER BY expires DESC LIMIT 1")
+          echo "state from db head: ${STATE_DB:0:6}..."
+          curl -s -o /tmp/cb.json -w "callback -> %{http_code}\n" "https://rc.iqilun.cn/api/iam/callback?code=bogus_test_code&state=$STATE_DB"
+          head -c 300 /tmp/cb.json; echo
+          sleep 1
+          echo "=== 4. latest stack (should be the same JsonParseException if repro'd) ==="
+          docker logs qilun-talent-java --since 2m 2>&1 | grep -A3 "INTERNAL_ERROR" | head -8
           echo "DIAG_DONE"
           OUTER
