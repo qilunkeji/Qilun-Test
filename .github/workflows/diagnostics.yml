@@ -18,26 +18,25 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H 124.223.159.190 >> ~/.ssh/known_hosts
           printf 'Host deploy-target\n  HostName 124.223.159.190\n  User root\n  ControlMaster auto\n  ControlPath ~/.ssh/cm-%%r@%%h-%%p\n  ControlPersist 10m\n' >> ~/.ssh/config
-      - name: Read-only diagnostics (SELECT + find only)
+      - name: Ops (backup + patch + verify)
         run: |
-          ssh deploy-target << 'EOF'
-          echo "=== FIX: no-cache for SPA shell (backup + verify + reload) ==="
+          ssh deploy-target 'bash -s' << 'OUTER'
+          echo "=== FIX: no-cache for SPA shell ==="
           CONF=/opt/1panel/www/conf.d/rc.iqilun.cn.conf
           cp "$CONF" "/opt/qilun-talent/backups/nginx-conf-before-nocache-$(date +%Y%m%d%H%M%S).conf"
           python3 - <<'PY'
-conf='/opt/1panel/www/conf.d/rc.iqilun.cn.conf'
-s=open(conf).read()
-if 'Cache-Control' in s:
-    print('already patched')
-else:
-    old='location / { try_files $uri $uri/ /index.html; }'
-    new='location = /index.html { add_header Cache-Control "no-cache"; }
-    location / { add_header Cache-Control "no-cache"; try_files $uri $uri/ /index.html; }'
-    assert old in s, 'pattern missing'
-    s=s.replace(old,new,1)
-    open(conf,'w').write(s)
-    print('patched')
-PY
+          conf = '/opt/1panel/www/conf.d/rc.iqilun.cn.conf'
+          s = open(conf).read()
+          if 'Cache-Control' in s:
+              print('already patched')
+          else:
+              old = 'location / { try_files $uri $uri/ /index.html; }'
+              new = 'location = /index.html { add_header Cache-Control "no-cache"; }\n    location / { add_header Cache-Control "no-cache"; try_files $uri $uri/ /index.html; }'
+              assert old in s, 'pattern missing'
+              s = s.replace(old, new, 1)
+              open(conf, 'w').write(s)
+              print('patched')
+          PY
           grep -n "Cache-Control" "$CONF" || echo "PATCH_FAILED"
           docker exec 1Panel-openresty-6AKl nginx -t 2>&1 | tail -1
           docker exec 1Panel-openresty-6AKl nginx -s reload 2>&1 | tail -1
@@ -46,4 +45,4 @@ PY
           curl -sI https://rc.iqilun.cn/assessments | grep -iE "^HTTP|cache-control"
           curl -sI https://rc.iqilun.cn/index.html | grep -iE "^HTTP|cache-control"
           echo "DIAG_DONE"
-          EOF
+          OUTER
