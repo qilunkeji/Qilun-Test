@@ -18,16 +18,22 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H 124.223.159.190 >> ~/.ssh/known_hosts
           printf 'Host deploy-target\n  HostName 124.223.159.190\n  User root\n  ControlMaster auto\n  ControlPath ~/.ssh/cm-%%r@%%h-%%p\n  ControlPersist 10m\n' >> ~/.ssh/config
-      - name: Extract operator CSS from backup (read-only)
+      - name: Close the evidence loop (read-only)
         run: |
           ssh deploy-target 'bash -s' << 'OUTER'
-          for B in /opt/qilun-talent/backups/frontend-before-vue-restore-20261014-173049.tgz /opt/qilun-talent/backups/frontend-before-vue-restore-20261014-171730.tgz; do
-            echo "=== $B ==="
-            tar -tzf "$B" | grep -vE "index-[A-Za-z0-9_-]+|[A-Za-z]+View-|components-|logic-" | head -20
-            echo "--- index.html links ---"
-            tar -xzOf "$B" ./index.html 2>/dev/null | grep -oE '(href|src)="[^"]*"' | head -8
+          echo "=== 1. live assets dir: EVERY file (no filtering) ==="
+          ls -la /opt/1panel/www/sites/rc.iqilun.cn/frontend-access-20261013/assets/ | tail -n +2
+          echo "=== 2. live index.html: full content ==="
+          cat /opt/1panel/www/sites/rc.iqilun.cn/frontend-access-20261013/index.html
+          echo "=== 3. ALL backups: does ANY contain the operator css? ==="
+          for B in /opt/qilun-talent/backups/frontend-before-vue-restore-*.tgz; do
+            N=$(tar -tzf "$B" | grep -c "assessment-restored" || true)
+            echo "$N  $(basename $B)"
           done
-          echo "--- live dir right now: any non-hashed files? ---"
-          ls /opt/1panel/www/sites/rc.iqilun.cn/frontend-access-20261013/assets/ | grep -vE "^[A-Za-z]+-[A-Za-z0-9_-]+\.(js|css)$|^[a-z]+\.(png|jpg|svg|woff2?)$" | head -10
+          echo "=== 4. anything written into live dir since 17:30? ==="
+          find /opt/1panel/www/sites/rc.iqilun.cn/ -newermt "2026-10-14 17:31" -type f 2>/dev/null | head -10
+          echo "=== 5. iam jsonb + my fix still in place ==="
+          docker exec qilun-pg16 psql -U qilun -d qilun_talent -t -A -c "SELECT data_type FROM information_schema.columns WHERE table_name='iam_states' AND column_name='payload'"
+          docker exec qilun-talent-java sha256sum /app/app.jar | cut -c1-16
           echo "DIAG_DONE"
           OUTER
