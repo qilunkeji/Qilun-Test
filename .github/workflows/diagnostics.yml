@@ -18,22 +18,22 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H 124.223.159.190 >> ~/.ssh/known_hosts
           printf 'Host deploy-target\n  HostName 124.223.159.190\n  User root\n  ControlMaster auto\n  ControlPath ~/.ssh/cm-%%r@%%h-%%p\n  ControlPersist 10m\n' >> ~/.ssh/config
-      - name: Close the evidence loop (read-only)
+      - name: Inventory all hosted sites (read-only)
         run: |
           ssh deploy-target 'bash -s' << 'OUTER'
-          echo "=== 1. live assets dir: EVERY file (no filtering) ==="
-          ls -la /opt/1panel/www/sites/rc.iqilun.cn/frontend-access-20261013/assets/ | tail -n +2
-          echo "=== 2. live index.html: full content ==="
-          cat /opt/1panel/www/sites/rc.iqilun.cn/frontend-access-20261013/index.html
-          echo "=== 3. ALL backups: does ANY contain the operator css? ==="
-          for B in /opt/qilun-talent/backups/frontend-before-vue-restore-*.tgz; do
-            N=$(tar -tzf "$B" | grep -c "assessment-restored" || true)
-            echo "$N  $(basename $B)"
-          done
-          echo "=== 4. anything written into live dir since 17:30? ==="
-          find /opt/1panel/www/sites/rc.iqilun.cn/ -newermt "2026-10-14 17:31" -type f 2>/dev/null | head -10
-          echo "=== 5. iam jsonb + my fix still in place ==="
-          docker exec qilun-pg16 psql -U qilun -d qilun_talent -t -A -c "SELECT data_type FROM information_schema.columns WHERE table_name='iam_states' AND column_name='payload'"
-          docker exec qilun-talent-java sha256sum /app/app.jar | cut -c1-16
+          echo "=== 1. all sites in 1panel ==="
+          ls /opt/1panel/www/sites/ 2>/dev/null
+          echo "=== 2. count by TLD ==="
+          ls /opt/1panel/www/sites/ 2>/dev/null | awk -F. '{print $(NF)}' | sort | uniq -c | sort -rn
+          echo "=== 3. .icu domains: what does each serve? ==="
+          for f in /opt/1panel/www/conf.d/*.icu.conf /opt/1panel/www/conf.d/*.conf; do
+            [ -f "$f" ] || continue
+            SN=$(grep -m1 "server_name" "$f" | sed 's/;//')
+            PP=$(grep -m1 "proxy_pass" "$f" | tr -d ' ;')
+            RT=$(grep -m1 "root " "$f" | tr -d ' ;')
+            echo "$(basename $f) | $SN | ${PP}${RT}"
+          done | sort -u | head -45
+          echo "=== 4. certs issued for icu domains ==="
+          ls /opt/1panel/www/sites/*/ssl/fullchain.pem 2>/dev/null | awk -F/ '{print $6}' | sort | head -35
           echo "DIAG_DONE"
           OUTER
