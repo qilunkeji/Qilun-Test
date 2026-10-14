@@ -335,7 +335,7 @@ public class IamController {
     /** iam_states/iam_sessions.payload arrived as text in the legacy schema and
      * jsonb after the 2026-10-14 rebuild: jsonb comes back as a Map, so
      * String.valueOf() would yield "{nonce=...}" that Jackson rejects. */
-    private static Map<String, Object> payloadOf(Object raw) {
+    private static Map<String, Object> payloadOf(Object raw) throws Exception {
         if (raw instanceof Map<?, ?> m) {
             Map<String, Object> out = new LinkedHashMap<>();
             for (Map.Entry<?, ?> e : m.entrySet()) out.put(String.valueOf(e.getKey()), e.getValue());
