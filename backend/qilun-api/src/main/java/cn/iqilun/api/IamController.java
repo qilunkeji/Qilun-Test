@@ -13,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.LinkedHashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -199,7 +200,7 @@ public class IamController {
             Crypto.digest(state), System.currentTimeMillis());
         if (rows.isEmpty()) throw new ApiError(400, "INVALID_INPUT", "登录请求已过期或已经使用");
         db.query("DELETE FROM iam_states WHERE hash=$1", Crypto.digest(state));
-        Map<String, Object> pending = CatalogJson.parse(String.valueOf(rows.get(0).get("payload")));
+        Map<String, Object> pending = payloadOf(rows.get(0).get("payload"));
         // token exchange
         String tokenEndpoint = config.get("issuer") + "/token";
         String form = "grant_type=authorization_code&code=" + code
@@ -308,7 +309,7 @@ public class IamController {
         List<Map<String, Object>> rows = db.query("SELECT payload FROM iam_sessions WHERE hash=$1 AND expires>$2",
             Crypto.digest(cookie), System.currentTimeMillis());
         if (rows.isEmpty()) throw new ApiError(403, "CSRF_REJECTED", "会话校验失败");
-        Map<String, Object> payload = CatalogJson.parse(String.valueOf(rows.get(0).get("payload")));
+        Map<String, Object> payload = payloadOf(rows.get(0).get("payload"));
         if (!String.valueOf(request.getHeader("x-csrf-token")).equals(payload.get("csrf")))
             throw new ApiError(403, "CSRF_REJECTED", "会话校验失败");
         db.query("DELETE FROM iam_sessions WHERE hash=$1", Crypto.digest(cookie));
@@ -331,6 +332,18 @@ public class IamController {
         };
     }
 
+    /** iam_states/iam_sessions.payload arrived as text in the legacy schema and
+     * jsonb after the 2026-10-14 rebuild: jsonb comes back as a Map, so
+     * String.valueOf() would yield "{nonce=...}" that Jackson rejects. */
+    private static Map<String, Object> payloadOf(Object raw) {
+        if (raw instanceof Map<?, ?> m) {
+            Map<String, Object> out = new LinkedHashMap<>();
+            for (Map.Entry<?, ?> e : m.entrySet()) out.put(String.valueOf(e.getKey()), e.getValue());
+            return out;
+        }
+        return CatalogJson.parse(String.valueOf(raw));
+    }
+
     private Map<String, String> requireConfig() {
         Map<String, String> config = config();
         if (config == null) throw new ApiError(503, "IAM_NOT_CONFIGURED", "统一登录未启用");
@@ -344,7 +357,7 @@ public class IamController {
         List<Map<String, Object>> rows = db.query("SELECT payload FROM iam_sessions WHERE hash=$1 AND expires>$2",
             Crypto.digest(cookie), System.currentTimeMillis());
         if (rows.isEmpty()) return null;
-        Map<String, Object> payload = CatalogJson.parse(String.valueOf(rows.get(0).get("payload")));
+        Map<String, Object> payload = payloadOf(rows.get(0).get("payload"));
         try {
             Map<String, Object> user = liveUser(config, str(payload.get("access_token")));
             Map<String, Object> local = mapIdentity(db, config, user);
