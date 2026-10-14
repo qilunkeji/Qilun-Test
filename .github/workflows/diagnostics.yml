@@ -18,31 +18,27 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H 124.223.159.190 >> ~/.ssh/known_hosts
           printf 'Host deploy-target\n  HostName 124.223.159.190\n  User root\n  ControlMaster auto\n  ControlPath ~/.ssh/cm-%%r@%%h-%%p\n  ControlPersist 10m\n' >> ~/.ssh/config
-      - name: Ops (backup + patch + verify)
+      - name: Version snapshot (read-only)
         run: |
           ssh deploy-target 'bash -s' << 'OUTER'
-          echo "=== FIX: no-cache for SPA shell ==="
-          CONF=/opt/1panel/www/conf.d/rc.iqilun.cn.conf
-          cp "$CONF" "/opt/qilun-talent/backups/nginx-conf-before-nocache-$(date +%Y%m%d%H%M%S).conf"
-          python3 - <<'PY'
-          conf = '/opt/1panel/www/conf.d/rc.iqilun.cn.conf'
-          s = open(conf).read()
-          if 'Cache-Control' in s:
-              print('already patched')
-          else:
-              old = 'location / { try_files $uri $uri/ /index.html; }'
-              new = 'location = /index.html { add_header Cache-Control "no-cache"; }\n    location / { add_header Cache-Control "no-cache"; try_files $uri $uri/ /index.html; }'
-              assert old in s, 'pattern missing'
-              s = s.replace(old, new, 1)
-              open(conf, 'w').write(s)
-              print('patched')
-          PY
-          grep -n "Cache-Control" "$CONF" || echo "PATCH_FAILED"
-          docker exec 1Panel-openresty-6AKl nginx -t 2>&1 | tail -1
-          docker exec 1Panel-openresty-6AKl nginx -s reload 2>&1 | tail -1
-          sleep 1
-          echo "--- verify ---"
-          curl -sI https://rc.iqilun.cn/assessments | grep -iE "^HTTP|cache-control"
-          curl -sI https://rc.iqilun.cn/index.html | grep -iE "^HTTP|cache-control"
+          echo "=== 1. public frontend version ==="
+          curl -s https://rc.iqilun.cn/index.html | grep -oE 'assets/index-[A-Za-z0-9_-]+\.(js|css)' | sort -u
+          curl -sI https://rc.iqilun.cn/ | grep -iE '^HTTP|cache-control|last-modified'
+          echo "=== 2. backend jar: container vs uploaded vs build-context ==="
+          echo "container:"; docker exec qilun-talent-java sha256sum /app/app.jar | cut -c1-16
+          echo "shared:"; sha256sum /opt/qilun-talent/shared/app.jar | cut -c1-16
+          echo "build-context:"; sha256sum /opt/qilun-talent/shared/build-context/app.jar 2>/dev/null | cut -c1-16 || echo gone
+          echo "=== 3. container identity ==="
+          docker inspect qilun-talent-java --format 'image={{.Config.Image}} started={{.State.StartedAt}} status={{.State.Status}}'
+          docker inspect qilun-talent-java --format 'image_sha={{.Image}}' | cut -c1-30
+          echo "=== 4. live static dir content ==="
+          ls -la /opt/1panel/www/sites/rc.iqilun.cn/frontend-access-20261013/ | head -8
+          ls /opt/1panel/www/sites/rc.iqilun.cn/frontend-access-20261013/assets/ | grep -E '^index' 
+          echo "=== 5. nginx conf state ==="
+          grep -n 'Cache-Control' /opt/1panel/www/conf.d/rc.iqilun.cn.conf || echo NO_PATCH
+          echo "=== 6. docker images for api ==="
+          docker images | grep -E 'qilun/java-api' | head -5
+          echo "=== 7. 401 WARN logging still live (no call, just recent lines) ==="
+          docker logs qilun-talent-java --since 10m 2>&1 | grep -c 'API_ERROR' || true
           echo "DIAG_DONE"
           OUTER
