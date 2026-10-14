@@ -29,14 +29,19 @@ jobs:
           $PSQL -c "SELECT id, name, created_at FROM tenants ORDER BY created_at;"
           echo "=== B. staff users and IAM mapping ==="
           $PSQL -c "SELECT u.tenant_id, u.username, u.role, i.subject AS iam_subject FROM staff_users u LEFT JOIN iam_identities i ON i.tenant_id=u.tenant_id AND i.user_id=u.id;"
-          echo "=== Z. current state: user browser traffic + report view results ==="
-          echo "--- all browser (non-curl) requests, last 20 ---"
-          docker exec 1Panel-openresty-6AKl sh -c "grep -hE 'Mozilla' /var/log/nginx/rc.iqilun.cn.access.log | tail -20" || true
-          echo "--- view=reports results (all history, status summary) ---"
-          docker exec 1Panel-openresty-6AKl sh -c "grep -h 'view=reports' /var/log/nginx/rc.iqilun.cn.access.log | grep -oE 'HTTP/1.1. [0-9]{3}' | sort | uniq -c" || true
-          echo "--- any API_ERROR WARN since new jar ---"
-          docker logs qilun-talent-java 2>&1 | grep "API_ERROR" | tail -10 || true
-          echo "--- live build ---"
-          curl -s https://rc.iqilun.cn/index.html | grep -oE "index-[A-Za-z0-9_-]+\.js" | head -1
+          echo "=== FIX: no-cache for SPA shell (backup + verify + reload) ==="
+          CONF=/opt/1panel/www/conf.d/rc.iqilun.cn.conf
+          cp "$CONF" "/opt/qilun-talent/backups/nginx-conf-before-nocache-$(date +%Y%m%d%H%M%S).conf"
+          if ! grep -q "Cache-Control" "$CONF"; then
+            sed -i "s|location / { try_files \$uri \$uri/ /index.html; }|location = /index.html { add_header Cache-Control \"no-cache\"; try_files \$uri =404; }
+    location / { add_header Cache-Control \"no-cache\"; try_files \$uri \$uri/ /index.html; }|" "$CONF"
+          fi
+          grep -n "Cache-Control" "$CONF" || echo "SED_FAILED"
+          docker exec 1Panel-openresty-6AKl nginx -t 2>&1 | tail -2
+          docker exec 1Panel-openresty-6AKl nginx -s reload 2>&1 | tail -1
+          sleep 1
+          echo "--- verify ---"
+          curl -sI https://rc.iqilun.cn/assessments | grep -iE "HTTP/|cache-control"
+          curl -sI https://rc.iqilun.cn/index.html | grep -iE "HTTP/|cache-control"
           echo "DIAG_DONE"
           EOF
